@@ -8,4 +8,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+This repo contains misc exploration.
+
+
+# ICA vs flashier
+
+* [Rank 1 case](ica_vs_flash_r1_update.html)

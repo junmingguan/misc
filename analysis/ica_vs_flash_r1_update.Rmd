@@ -1,0 +1,37 @@
+---
+title: "ica_vs_flash_r1_update"
+author: "junmingguan"
+date: "2025-11-08"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+We want to compare fastICA's rank-1 update with that of flashier. Matthew previously examined an (example)[<https://stephens999.github.io/misc/fastica_02.html>] where rank-1 fastICA almost perfectly picks up one column of the true mixing matrix, but flashier does not. Our conjecture is that flashier's failure arises from an overemphasis on the *fit* term. We plan to investigate this further and potentially improve flashier's rank-1 update. More concretely, we posit this following model for an observed data matrix $\boldsymbol{Y}\in \mathbb{R}^{n\times d}$:
+
+$$
+\begin{aligned}
+\boldsymbol{Y} &= \boldsymbol{M}+ \boldsymbol{\ell f}^\top + \boldsymbol{E} \\
+\ell_{i}&\stackrel{iid}{\sim} g_\ell \\
+f_{j}&\stackrel{iid}{\sim} g_f \\
+E_{ij}&\stackrel{iid}{\sim} \mathcal{N}(0, \sigma^2),
+\end{aligned}
+$$
+
+where $\boldsymbol{M}\in\mathbb{R}^{n\times d}$. We hope that $\boldsymbol{M}$ can act as a 'stand-in' matrix—if one chooses to fit a rank-1 model even if the true signals are of rank\>1, $\boldsymbol{M}$ will capture any remaining true signals without leaking any to the error term.
+
+## TODO
+
+-   Find a small example in which fastICA works but PCA does not.
+
+-   In real data, does initializing flashier from fastICA produce better ELBO? Try it on some single cell data set. We should process the dataset in a way (e.g., log+1 transform) such that we can apply fastICA (which doesnt handle non-negative constraints)
+
+-   We conjecture that another possible reason why rank-1 flashier fails is the EB component. Try fixing the prior to the true data generating distribution.
+
+-   Try the following update:
+
+    -   Update $\boldsymbol{\ell}$ and $\boldsymbol{f}$ by running flashier back fit on $\boldsymbol{Y}-\boldsymbol{M}$.
+
+    -   Update $\boldsymbol{M}$ by truncated SVD on $\boldsymbol{Y} - \boldsymbol{\ell f}^\top$.
