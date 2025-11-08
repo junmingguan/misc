@@ -1,7 +1,7 @@
-name: "misc"
+name: misc
 output_dir: ../docs
 navbar:
-  title: "misc"
+  title: misc
   left:
   - text: Home
     href: index.html
@@ -9,9 +9,13 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/junmingguan/misc
 output:
   workflowr::wflow_html:
     toc: yes
     toc_float: yes
-    theme: cosmo
+    theme: united
     highlight: textmate
