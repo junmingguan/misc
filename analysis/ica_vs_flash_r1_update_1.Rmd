@@ -2,7 +2,9 @@
 title: "ICA vs flash rank-1 update (1)"
 author: "Junming Guan"
 date: "2025-11-08"
-output: workflowr::wflow_html
+output:
+  workflowr::wflow_html:
+    toc: true
 editor_options:
   chunk_output_type: console
 ---

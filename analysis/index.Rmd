@@ -3,16 +3,16 @@ title: "Home"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
-    toc: false
+    toc: true
 editor_options:
   chunk_output_type: console
 ---
 
-This repo contains misc exploration.
+This repo contains misc explorations.
 
 # ICA vs flashier
 
-We want to compare fastICA's rank-1 update with that of flashier. Matthew previously examined an (example)[<https://stephens999.github.io/misc/fastica_02.html>] where rank-1 fastICA almost perfectly picks up one column of the true mixing matrix, but flashier does not. Our conjecture is that flashier's failure arises from an overemphasis on the *fit* term. We plan to investigate this further and potentially improve flashier's rank-1 update. More concretely, we posit this following model for an observed data matrix $\boldsymbol{Y}\in \mathbb{R}^{n\times d}$:
+We want to compare fastICA's rank-1 update with that of flashier. Matthew previously examined an [example](https://stephens999.github.io/misc/fastica_02.html) where rank-1 fastICA almost perfectly picks up one column of the true mixing matrix, but flashier does not. Our conjecture is that flashier's failure arises from an overemphasis on the *fit* term. We plan to investigate this further and potentially improve flashier's rank-1 update. More concretely, we posit this following model for an observed data matrix $\boldsymbol{Y}\in \mathbb{R}^{n\times d}$:
 
 $$
 \begin{aligned}
