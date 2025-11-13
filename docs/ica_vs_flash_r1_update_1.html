@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree65a5c9c907e98735bfe6d9b366a6993af4e56f7etargetblank65a5c9ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree12e9d2e0e11e3e0b40115306183bee0a3ff96821targetblank12e9d2ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/65a5c9c907e98735bfe6d9b366a6993af4e56f7e" target="_blank">65a5c9c</a>
+<a href="https://github.com/junmingguan/misc/tree/12e9d2e0e11e3e0b40115306183bee0a3ff96821" target="_blank">12e9d2e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree65a5c9c907e98735bfe6d9b366a6993af4e56f7etargetblank65a5c9ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree12e9d2e0e11e3e0b40115306183bee0a3ff96821targetblank12e9d2ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/65a5c9c907e98735bfe6d9b366a6993af4e56f7e" target="_blank">65a5c9c</a>.
+<a href="https://github.com/junmingguan/misc/tree/12e9d2e0e11e3e0b40115306183bee0a3ff96821" target="_blank">12e9d2e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -605,6 +605,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/12e9d2e0e11e3e0b40115306183bee0a3ff96821/analysis/ica_vs_flash_r1_update_1.Rmd" target="_blank">12e9d2e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+<td>
+wflow_publish(c("analysis/ica_vs_flash_r1_update_1.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/71e288edbcb53152802630e8725e6f1604331213/docs/ica_vs_flash_r1_update_1.html" target="_blank">71e288e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -687,6 +721,42 @@ library(Matrix)
 library(fastICA)
 library(fastTopics)
 library(ebnm)</code></pre>
+<div
+id="rank-1-update-with-rank-constraint-on-the-residual-matrix-algorithm"
+class="section level2">
+<h2>rank-1 update with rank constraint on the residual matrix:
+algorithm</h2>
+<p><span class="math display">\[
+\min_{\boldsymbol{M}, \boldsymbol{\ell}, \boldsymbol{f} ,\sigma^2}
+\frac{1}{2\sigma^2}\|\boldsymbol{Y}-\boldsymbol{\ell}\boldsymbol{f}^\top
+-\boldsymbol{M}\|^2_F + \text{pen}(\boldsymbol{\ell}) +
+\text{pen}(\boldsymbol{f}) + \lambda \|\boldsymbol{M} \|_*
+\]</span></p>
+<p>For each iteration <span class="math inline">\(t\)</span>:</p>
+<ul>
+<li><p>Update <span class="math inline">\(\boldsymbol{M}\)</span> by
+solving</p>
+<p><span class="math display">\[
+\min_{\boldsymbol{M}} \frac{1}{2\sigma_{t-1}^2}\|\boldsymbol{A}
+-\boldsymbol{M}\|^2_F + \lambda \|\boldsymbol{M} \|_*,
+\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol{A}=\boldsymbol{Y} -
+\mathbb{E}_{q_{t-1}}[\boldsymbol{\ell f}^\top]\)</span>, via truncated
+SVD: <span class="math inline">\({\boldsymbol{M}}_{t}=\boldsymbol{U}_A
+\text{diag}\{(s_i-\lambda
+\sigma_{t-1}^2)_+\}\boldsymbol{V}_A^\top\)</span>.</p></li>
+<li><p>Flashier backfit to update <span
+class="math inline">\(\boldsymbol{\ell}\)</span>, <span
+class="math inline">\(\boldsymbol{f}\)</span> and <span
+class="math inline">\(\sigma^2\)</span>:</p>
+<p><span class="math display">\[
+\min_{\boldsymbol{\ell}, \boldsymbol{f} ,\sigma^2}
+\frac{1}{2\sigma^2}\|\boldsymbol{Y}-\boldsymbol{\ell}\boldsymbol{f}^\top
+-\boldsymbol{M}_t\|^2_F + \text{pen}(\boldsymbol{\ell}) +
+\text{pen}(\boldsymbol{f}).
+\]</span></p></li>
+</ul>
+</div>
 <div id="code" class="section level2">
 <h2>Code</h2>
 <div id="rank-1-update-with-rank-constraint-on-the-residual-matrix"
@@ -699,7 +769,7 @@ class="section level3">
 }
 
 
-r1_update &lt;- function(Y, c, max_iter = 100) {
+r1_update &lt;- function(Y, lambda, sigma_init, g_init, fix_param = FALSE, max_iter = 100) {
   svd_result &lt;- svd(Y)
   
   # Access the components
@@ -710,15 +780,30 @@ r1_update &lt;- function(Y, c, max_iter = 100) {
   f &lt;- matrix(f, ncol = 1)
   elbo &lt;- c()
   sigma &lt;- c()
+  sigma_prev &lt;- sigma_init
   fit &lt;- c()
   nuc &lt;- c()
   for (i in 1:max_iter) {
-    M &lt;- svt(Y - l %*% t(f), c)
-    flash_res &lt;- flash_init(Y - M) |&gt; flash_factors_init(init = list(l, f), ebnm_fn = ebnm_point_normal) |&gt; flash_backfit(verbose = 0)
+    if (fix_param) {
+      M &lt;- svt(Y - l %*% t(f), lambda * sigma_init^2)
+      flash_res &lt;- flash_init(Y - M, S = sigma_init) |&gt; 
+        flash_factors_init(init = list(l, f), 
+                           ebnm_fn = c(
+                             flash_ebnm(prior_family = &#39;normal_scale_mixture&#39;, g_init = g_init[[1]], fix_g = TRUE), 
+                             flash_ebnm(prior_family = &#39;normal_scale_mixture&#39;, g_init = g_init[[2]], fix_g = TRUE))
+                           ) |&gt; flash_backfit(verbose = 0)
+    } else {
+      M &lt;- svt(Y - l %*% t(f), lambda * sigma_prev^2)
+      flash_res &lt;- flash_init(Y - M) |&gt; 
+        flash_factors_init(init = list(l, f), 
+                           ebnm_fn = ebnm_point_normal) |&gt; flash_backfit(verbose = 0)
+    }
+
     l &lt;- flash_res$L_pm
     f &lt;- flash_res$F_pm
     elbo &lt;- c(elbo, flash_res$elbo)
     sigma &lt;- c(sigma, flash_res$residuals_sd)
+    sigma_prev &lt;- flash_res$residuals_sd
     fit &lt;- c(fit, mean((Y-M-l%*%t(f)))^2)
     nuc &lt;- c(nuc, sum(abs(svd(M)$d)))
     rank &lt;- c(rank, sum(abs(svd(M)$d) &gt; 1e-5))
@@ -806,6 +891,19 @@ noise &lt;- matrix(rnorm(M * T, mean = 0, sd = eps), nrow = M, ncol = T)
 
 # Calculate the final data matrix G = X @ Y + noise
 G &lt;- X %*% Y + noise</code></pre>
+<pre class="r"><code>l_prior &lt;- list(
+  pi = p_a,
+  mean = c(0, 0),
+  sd = c(0, 5)
+)
+class(l_prior) &lt;- &quot;normalmix&quot;
+f_prior &lt;- list(
+  pi = p_b,
+  mean = c(0, 0),
+  sd = c(0, 5)
+)
+class(f_prior) &lt;- &quot;normalmix&quot;
+g_init &lt;- list(l_prior, f_prior)</code></pre>
 <div id="fastica" class="section level3">
 <h3>fastICA</h3>
 <pre class="r"><code>X1 = preprocess(G)
@@ -843,68 +941,27 @@ a = t(G) %*% s/sum(s^2)</code></pre>
  [9,]  0.01310495
 [10,] -0.23330206</code></pre>
 </div>
-<div id="rank-1-update-with-rank-constraint-on-the-residual-matrix-1"
+<div
+id="rank-1-update-with-rank-constraint-on-the-residual-matrix-with-prior-and-sigma2-fixed"
 class="section level3">
-<h3>rank-1 update with rank constraint on the residual matrix</h3>
-<pre class="r"><code>res &lt;- r1_update(G, 10, max_iter = 1000)
+<h3>rank-1 update with rank constraint on the residual matrix with prior
+and <span class="math inline">\(\sigma^2\)</span> fixed</h3>
+<pre class="r"><code>res &lt;- r1_update(G, 10/eps, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
 cor(X, res$l)</code></pre>
 <pre><code>             [,1]
- [1,] -0.02309321
- [2,] -0.56984939
- [3,] -0.57850659
- [4,] -0.07909178
- [5,]  0.06808558
- [6,] -0.09831194
- [7,]  0.06439676
- [8,]  0.48123487
- [9,]  0.10864181
-[10,] -0.36169394</code></pre>
+ [1,] -0.06100314
+ [2,] -0.55698064
+ [3,] -0.42629704
+ [4,] -0.08939524
+ [5,]  0.07031006
+ [6,] -0.10348440
+ [7,] -0.02259008
+ [8,]  0.38278879
+ [9,]  0.08108598
+[10,] -0.19462796</code></pre>
 <div id="elbo" class="section level4">
 <h4>ELBO</h4>
 <pre class="r"><code>plot(res$elbo)</code></pre>
-<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
-Past versions of unnamed-chunk-8-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-8-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/f6acacfa68b1a4ce493a77beab84686f8ba324a9/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-8-1.png" target="_blank">f6acacf</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="nuclear-norm-of-widehatboldsymbolm" class="section level4">
-<h4>Nuclear norm of <span
-class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h4>
-<pre class="r"><code>plot(res$nuc)</code></pre>
 <p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
@@ -944,13 +1001,10 @@ junmingguan
 </div>
 </div>
 </div>
-<div
-id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2"
-class="section level4">
-<h4>Fit term <span class="math inline">\(\frac{1}{MT}\|\boldsymbol{Y} -
-\boldsymbol{\ell}\boldsymbol{f}^\top -
-\boldsymbol{M}\|_F^2\)</span></h4>
-<pre class="r"><code>plot(res$fit)</code></pre>
+<div id="nuclear-norm-of-widehatboldsymbolm" class="section level4">
+<h4>Nuclear norm of <span
+class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h4>
+<pre class="r"><code>plot(res$nuc)</code></pre>
 <p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
@@ -990,9 +1044,13 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="estimated-standard-errors" class="section level4">
-<h4>Estimated standard errors</h4>
-<pre class="r"><code>plot(res$sigma)</code></pre>
+<div
+id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2"
+class="section level4">
+<h4>Fit term <span class="math inline">\(\frac{1}{MT}\|\boldsymbol{Y} -
+\boldsymbol{\ell}\boldsymbol{f}^\top -
+\boldsymbol{M}\|_F^2\)</span></h4>
+<pre class="r"><code>plot(res$fit)</code></pre>
 <p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
@@ -1032,25 +1090,17 @@ junmingguan
 </div>
 </div>
 </div>
+<div id="estimated-standard-errors" class="section level4">
+<h4>Estimated standard errors</h4>
+<pre class="r"><code>plot(res$sigma)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="pure-flashier" class="section level3">
 <h3>Pure flashier</h3>
 <div id="prior-fixed" class="section level4">
 <h4>Prior fixed</h4>
-<pre class="r"><code>l_prior &lt;- list(
-  pi = p_a,
-  mean = c(0, 0),
-  sd = c(0, 5)
-)
-class(l_prior) &lt;- &quot;normalmix&quot;
-f_prior &lt;- list(
-  pi = p_b,
-  mean = c(0, 0),
-  sd = c(0, 5)
-)
-class(f_prior) &lt;- &quot;normalmix&quot;
-
-fit.pn = flash(G, 
+<pre class="r"><code>fit.pn = flash(G, S=eps,
                ebnm_fn = c(flash_ebnm(prior_family = &#39;normal_scale_mixture&#39;, g_init = l_prior, fix_g = TRUE),
                            flash_ebnm(prior_family = &#39;normal_scale_mixture&#39;, g_init = f_prior, fix_g = TRUE)),
                greedy_Kmax = 1)</code></pre>
