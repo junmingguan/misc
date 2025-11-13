@@ -1,0 +1,225 @@
+---
+title: "ICA vs flash rank-1 update (1)"
+author: "Junming Guan"
+date: "2025-11-08"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(flashier)
+library(Matrix)
+library(fastICA)
+library(fastTopics)
+library(ebnm)
+```
+
+## Code
+
+### rank-1 update with rank constraint on the residual matrix
+
+```{r}
+
+svt <- function(Z, tau) {
+  svdZ <- svd(Z)
+  d <- pmax(svdZ$d - tau, 0)
+  return(svdZ$u %*% (d * t(svdZ$v)))
+}
+
+
+r1_update <- function(Y, c, max_iter = 100) {
+  svd_result <- svd(Y)
+  
+  # Access the components
+  l <- svd_result$d^0.5 * svd_result$u[,1]
+  f <- svd_result$d^0.5 * svd_result$v[,1]
+  M <- Y - outer(l, f)
+  l <- matrix(l, ncol = 1)
+  f <- matrix(f, ncol = 1)
+  elbo <- c()
+  sigma <- c()
+  fit <- c()
+  nuc <- c()
+  for (i in 1:max_iter) {
+    M <- svt(Y - l %*% t(f), c)
+    flash_res <- flash_init(Y - M) |> flash_factors_init(init = list(l, f), ebnm_fn = ebnm_point_normal) |> flash_backfit(verbose = 0)
+    l <- flash_res$L_pm
+    f <- flash_res$F_pm
+    elbo <- c(elbo, flash_res$elbo)
+    sigma <- c(sigma, flash_res$residuals_sd)
+    fit <- c(fit, mean((Y-M-l%*%t(f)))^2)
+    nuc <- c(nuc, sum(abs(svd(M)$d)))
+    rank <- c(rank, sum(abs(svd(M)$d) > 1e-5))
+  }
+  
+  return(list(l=l, f=f, M=M, elbo=elbo, sigma=sigma, fit=fit, nuc=nuc, rank = rank))
+}
+
+```
+
+### fastICA rank-1 update
+
+```{r}
+fastica_r1update = function(X,w){
+  w= w/sqrt(sum(w^2))
+  P = t(X) %*% w
+  G = tanh(P)
+  G2 = 1-tanh(P)^2
+  w = X %*% G - sum(G2) * w 
+  return(w)
+}
+
+preprocess = function(X, n.comp=10){
+  n <- nrow(X)
+  p <- ncol(X)
+  X <- scale(X, scale = FALSE)
+  X <- t(X)
+  
+  ## This appears to be equivalant to X1 = t(svd(X)$v[,1:n.comp])       
+  V <- X %*% t(X)/n
+  s <- La.svd(V)
+  D <- diag(c(1/sqrt(s$d)))
+  K <- D %*% t(s$u)
+  K <- matrix(K[1:n.comp, ], n.comp, p)
+  X1 <- K %*% X
+  return(X1)
+}
+
+```
+
+## Simulation results
+
+We simulated $\boldsymbol{G}=\boldsymbol{X}\boldsymbol{Y}+\boldsymbol{E}$, where entries in $\boldsymbol{X}$ are generated from $\pi_x \delta_0+(1-\pi_x)\mathcal{N}(0, 5^2)$ with $\pi_x=0.7$, and entries in $\boldsymbol{Y}$ are generated from $\pi_y \delta_0+(1-\pi_y)\mathcal{N}(0, 5^2)$ with $\pi_y=0.8$.
+
+```{r}
+M <- 1000 # Number of variants/samples (rows)
+L <- 10    # True number of latent factors
+T <- 100   # Number of traits/phenotypes (columns)
+
+s_1 <- 0   # Standard Deviation 1 (Spike component)
+s_2 <- 5   # Standard Deviation 2 (Slab component)
+eps <- 1e-2 # Standard Deviation for observation noise 
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Data Simulation (G = X %*% Y + noise)
+
+# 3.1. Generating Standard Deviation Matrices (a and b)
+# Elements are sampled from {s_1, s_2} [1, 2].
+sd_choices <- c(s_1, s_2)
+
+# Matrix 'a' (M x L): Standard deviations for X (Probabilities p=[0.7, 0.3]) [4]
+p_a <- c(0.7, 0.3)
+a_vector <- sample(sd_choices, size = M * L, replace = TRUE, prob = p_a)
+a <- matrix(a_vector, nrow = M, ncol = L)
+
+# Matrix 'b' (L x T): Standard deviations for Y (Probabilities p=[0.8, 0.2]) [4]
+p_b <- c(0.8, 0.2)
+b_vector <- sample(sd_choices, size = L * T, replace = TRUE, prob = p_b)
+b <- matrix(b_vector, nrow = L, ncol = T)
+
+# Generating Latent Factors (X and Y)
+# X is drawn from Normal(0, a)
+X <- matrix(rnorm(M * L, mean = 0, sd = a), nrow = M, ncol = L)
+
+# Y is drawn from Normal(0, b)
+Y <- matrix(rnorm(L * T, mean = 0, sd = b), nrow = L, ncol = T)
+
+# Generating Noise and Final Data Matrix G
+# Noise is generated from Normal(0, eps)
+noise <- matrix(rnorm(M * T, mean = 0, sd = eps), nrow = M, ncol = T)
+
+# Calculate the final data matrix G = X @ Y + noise
+G <- X %*% Y + noise
+```
+
+### fastICA
+
+```{r}
+X1 = preprocess(G)
+w = rnorm(nrow(X1))
+for(i in 1:100)
+  w = fastica_r1update(X1,w)
+cor(X,t(X1) %*% w)
+
+w = w/sqrt(sum(w^2))
+s = t(X1) %*% w
+a = t(G) %*% s/sum(s^2)
+
+```
+
+### PCA
+
+```{r}
+cor(X, svd(G)$u[,1])
+```
+
+### rank-1 update with rank constraint on the residual matrix
+
+```{r}
+res <- r1_update(G, 10, max_iter = 1000)
+cor(X, res$l)
+```
+
+#### ELBO
+
+```{r}
+plot(res$elbo)
+```
+
+#### Nuclear norm of $\widehat{\boldsymbol{M}}$
+
+```{r}
+plot(res$nuc)
+```
+
+#### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
+
+```{r}
+plot(res$fit)
+```
+
+#### Estimated standard errors
+
+```{r}
+plot(res$sigma)
+```
+
+### Pure flashier
+
+#### Prior fixed
+
+```{r}
+
+l_prior <- list(
+  pi = p_a,
+  mean = c(0, 0),
+  sd = c(0, 5)
+)
+class(l_prior) <- "normalmix"
+f_prior <- list(
+  pi = p_b,
+  mean = c(0, 0),
+  sd = c(0, 5)
+)
+class(f_prior) <- "normalmix"
+
+fit.pn = flash(G, 
+               ebnm_fn = c(flash_ebnm(prior_family = 'normal_scale_mixture', g_init = l_prior, fix_g = TRUE),
+                           flash_ebnm(prior_family = 'normal_scale_mixture', g_init = f_prior, fix_g = TRUE)),
+               greedy_Kmax = 1)
+cor(X, fit.pn$L_pm)
+fit.pn$elbo
+```
+
+#### Prior not fixed
+
+```{r}
+fit.pn = flash(G, 
+               ebnm_fn = ebnm_point_normal,
+               greedy_Kmax = 1)
+cor(X, fit.pn$L_pm)
+fit.pn$elbo
+```
