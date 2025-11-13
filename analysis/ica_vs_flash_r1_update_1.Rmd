@@ -17,6 +17,28 @@ library(fastTopics)
 library(ebnm)
 ```
 
+## rank-1 update with rank constraint on the residual matrix: algorithm
+
+$$
+\min_{\boldsymbol{M}, \boldsymbol{\ell}, \boldsymbol{f} ,\sigma^2} \frac{1}{2\sigma^2}\|\boldsymbol{Y}-\boldsymbol{\ell}\boldsymbol{f}^\top -\boldsymbol{M}\|^2_F + \text{pen}(\boldsymbol{\ell}) + \text{pen}(\boldsymbol{f}) + \lambda \|\boldsymbol{M} \|_*
+$$
+
+For each iteration $t$:
+
+-   Update $\boldsymbol{M}$ by solving
+
+    $$
+    \min_{\boldsymbol{M}} \frac{1}{2\sigma_{t-1}^2}\|\boldsymbol{A} -\boldsymbol{M}\|^2_F + \lambda \|\boldsymbol{M} \|_*,
+    $$
+
+    where $\boldsymbol{A}=\boldsymbol{Y} - \mathbb{E}_{q_{t-1}}[\boldsymbol{\ell f}^\top]$, via truncated SVD: ${\boldsymbol{M}}_{t}=\boldsymbol{U}_A \text{diag}\{(s_i-\lambda \sigma_{t-1}^2)_+\}\boldsymbol{V}_A^\top$.
+
+-   Flashier backfit to update $\boldsymbol{\ell}$, $\boldsymbol{f}$ and $\sigma^2$:
+
+    $$
+    \min_{\boldsymbol{\ell}, \boldsymbol{f} ,\sigma^2} \frac{1}{2\sigma^2}\|\boldsymbol{Y}-\boldsymbol{\ell}\boldsymbol{f}^\top -\boldsymbol{M}_t\|^2_F + \text{pen}(\boldsymbol{\ell}) + \text{pen}(\boldsymbol{f}).
+    $$
+
 ## Code
 
 ### rank-1 update with rank constraint on the residual matrix
@@ -30,7 +52,7 @@ svt <- function(Z, tau) {
 }
 
 
-r1_update <- function(Y, c, max_iter = 100) {
+r1_update <- function(Y, lambda, sigma_init, g_init, fix_param = FALSE, max_iter = 100) {
   svd_result <- svd(Y)
   
   # Access the components
@@ -41,15 +63,30 @@ r1_update <- function(Y, c, max_iter = 100) {
   f <- matrix(f, ncol = 1)
   elbo <- c()
   sigma <- c()
+  sigma_prev <- sigma_init
   fit <- c()
   nuc <- c()
   for (i in 1:max_iter) {
-    M <- svt(Y - l %*% t(f), c)
-    flash_res <- flash_init(Y - M) |> flash_factors_init(init = list(l, f), ebnm_fn = ebnm_point_normal) |> flash_backfit(verbose = 0)
+    if (fix_param) {
+      M <- svt(Y - l %*% t(f), lambda * sigma_init^2)
+      flash_res <- flash_init(Y - M, S = sigma_init) |> 
+        flash_factors_init(init = list(l, f), 
+                           ebnm_fn = c(
+                             flash_ebnm(prior_family = 'normal_scale_mixture', g_init = g_init[[1]], fix_g = TRUE), 
+                             flash_ebnm(prior_family = 'normal_scale_mixture', g_init = g_init[[2]], fix_g = TRUE))
+                           ) |> flash_backfit(verbose = 0)
+    } else {
+      M <- svt(Y - l %*% t(f), lambda * sigma_prev^2)
+      flash_res <- flash_init(Y - M) |> 
+        flash_factors_init(init = list(l, f), 
+                           ebnm_fn = ebnm_point_normal) |> flash_backfit(verbose = 0)
+    }
+
     l <- flash_res$L_pm
     f <- flash_res$F_pm
     elbo <- c(elbo, flash_res$elbo)
     sigma <- c(sigma, flash_res$residuals_sd)
+    sigma_prev <- flash_res$residuals_sd
     fit <- c(fit, mean((Y-M-l%*%t(f)))^2)
     nuc <- c(nuc, sum(abs(svd(M)$d)))
     rank <- c(rank, sum(abs(svd(M)$d) > 1e-5))
@@ -137,6 +174,22 @@ noise <- matrix(rnorm(M * T, mean = 0, sd = eps), nrow = M, ncol = T)
 G <- X %*% Y + noise
 ```
 
+```{r}
+l_prior <- list(
+  pi = p_a,
+  mean = c(0, 0),
+  sd = c(0, 5)
+)
+class(l_prior) <- "normalmix"
+f_prior <- list(
+  pi = p_b,
+  mean = c(0, 0),
+  sd = c(0, 5)
+)
+class(f_prior) <- "normalmix"
+g_init <- list(l_prior, f_prior)
+```
+
 ### fastICA
 
 ```{r}
@@ -158,10 +211,10 @@ a = t(G) %*% s/sum(s^2)
 cor(X, svd(G)$u[,1])
 ```
 
-### rank-1 update with rank constraint on the residual matrix
+### rank-1 update with rank constraint on the residual matrix with prior and $\sigma^2$ fixed
 
 ```{r}
-res <- r1_update(G, 10, max_iter = 1000)
+res <- r1_update(G, 10/eps, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
 cor(X, res$l)
 ```
 
@@ -194,21 +247,7 @@ plot(res$sigma)
 #### Prior fixed
 
 ```{r}
-
-l_prior <- list(
-  pi = p_a,
-  mean = c(0, 0),
-  sd = c(0, 5)
-)
-class(l_prior) <- "normalmix"
-f_prior <- list(
-  pi = p_b,
-  mean = c(0, 0),
-  sd = c(0, 5)
-)
-class(f_prior) <- "normalmix"
-
-fit.pn = flash(G, 
+fit.pn = flash(G, S=eps,
                ebnm_fn = c(flash_ebnm(prior_family = 'normal_scale_mixture', g_init = l_prior, fix_g = TRUE),
                            flash_ebnm(prior_family = 'normal_scale_mixture', g_init = f_prior, fix_g = TRUE)),
                greedy_Kmax = 1)
