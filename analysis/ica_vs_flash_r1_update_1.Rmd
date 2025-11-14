@@ -210,60 +210,86 @@ a = t(G) %*% s/sum(s^2)
 cor(X, svd(G)$u[,1])
 ```
 
+### rank-1 update with rank constraint on the residual matrix
+
+#### $\lambda=10$
+
+```{r}
+res <- r1_update(G, 10, sigma_init=eps, g_init = g_init, fix_param = FALSE, max_iter = 1000)
+cor(X, res$l)
+```
+
+##### ELBO
+
+```{r}
+plot(res$elbo)
+```
+
+##### Nuclear norm of $\widehat{\boldsymbol{M}}$
+
+```{r}
+plot(res$nuc)
+```
+
+##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
+
+```{r}
+plot(res$fit)
+```
+
+#### $\lambda=10000$
+
+```{r}
+res <- r1_update(G, 10000, sigma_init=eps, g_init = g_init, fix_param = FALSE, max_iter = 1000)
+cor(X, res$l)
+```
+
+##### ELBO
+
+```{r}
+plot(res$elbo)
+```
+
+##### Nuclear norm of $\widehat{\boldsymbol{M}}$
+
+```{r}
+plot(res$nuc)
+```
+
+##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
+
+```{r}
+plot(res$fit)
+```
+
+#### $\lambda=100000$
+
+```{r}
+res <- r1_update(G, 100000, sigma_init=eps, g_init = g_init, fix_param = FALSE, max_iter = 1000)
+cor(X, res$l)
+```
+
+##### ELBO
+
+```{r}
+plot(res$elbo)
+```
+
+##### Nuclear norm of $\widehat{\boldsymbol{M}}$
+
+```{r}
+plot(res$nuc)
+```
+
+##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
+
+```{r}
+plot(res$fit)
+```
+
 ### rank-1 update with rank constraint on the residual matrix with prior and $\sigma^2$ fixed
 
-#### $\lambda=0.1$ 
-
-```{r}
-res <- r1_update(G, 0.1, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
-cor(X, res$l)
-```
-
-##### ELBO
-
-```{r}
-plot(res$elbo)
-```
-
-##### Nuclear norm of $\widehat{\boldsymbol{M}}$
-
-```{r}
-plot(res$nuc)
-```
-
-##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
-
-```{r}
-plot(res$fit)
-```
-
-#### $\lambda=1$ 
-
-```{r}
-res <- r1_update(G, 1, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
-cor(X, res$l)
-```
-
-##### ELBO
-
-```{r}
-plot(res$elbo)
-```
-
-##### Nuclear norm of $\widehat{\boldsymbol{M}}$
-
-```{r}
-plot(res$nuc)
-```
-
-##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
-
-```{r}
-plot(res$fit)
-```
-
-
-#### $\lambda=10$ 
+#### $\lambda=10$
 
 ```{r}
 res <- r1_update(G, 10, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
@@ -288,6 +314,55 @@ plot(res$nuc)
 plot(res$fit)
 ```
 
+#### $\lambda=10000$
+
+```{r}
+res <- r1_update(G, 10000, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
+cor(X, res$l)
+```
+
+##### ELBO
+
+```{r}
+plot(res$elbo)
+```
+
+##### Nuclear norm of $\widehat{\boldsymbol{M}}$
+
+```{r}
+plot(res$nuc)
+```
+
+##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
+
+```{r}
+plot(res$fit)
+```
+
+#### $\lambda=100000$
+
+```{r}
+res <- r1_update(G, 100000, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
+cor(X, res$l)
+```
+
+##### ELBO
+
+```{r}
+plot(res$elbo)
+```
+
+##### Nuclear norm of $\widehat{\boldsymbol{M}}$
+
+```{r}
+plot(res$nuc)
+```
+
+##### Fit term $\frac{1}{MT}\|\boldsymbol{Y} - \boldsymbol{\ell}\boldsymbol{f}^\top - \boldsymbol{M}\|_F^2$
+
+```{r}
+plot(res$fit)
+```
 
 ### Pure flashier
 
