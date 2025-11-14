@@ -237,6 +237,12 @@ plot(res$nuc)
 plot(res$fit)
 ```
 
+##### Estimated standard errors
+
+```{r}
+plot(res$sigma)
+```
+
 #### $\lambda=10000$
 
 ```{r}
@@ -262,6 +268,12 @@ plot(res$nuc)
 plot(res$fit)
 ```
 
+##### Estimated standard errors
+
+```{r}
+plot(res$sigma)
+```
+
 #### $\lambda=100000$
 
 ```{r}
@@ -285,6 +297,12 @@ plot(res$nuc)
 
 ```{r}
 plot(res$fit)
+```
+
+##### Estimated standard errors
+
+```{r}
+plot(res$sigma)
 ```
 
 ### rank-1 update with rank constraint on the residual matrix with prior and $\sigma^2$ fixed
