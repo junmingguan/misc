@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea060fec05abab76062d122ceca87d791731cb9cbtargetblanka060feca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree9b210d156dfc67dac80d30062b68245d79bab9fetargetblank9b210d1a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/a060fec05abab76062d122ceca87d791731cb9cb" target="_blank">a060fec</a>
+<a href="https://github.com/junmingguan/misc/tree/9b210d156dfc67dac80d30062b68245d79bab9fe" target="_blank">9b210d1</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea060fec05abab76062d122ceca87d791731cb9cbtargetblanka060feca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree9b210d156dfc67dac80d30062b68245d79bab9fetargetblank9b210d1a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/a060fec05abab76062d122ceca87d791731cb9cb" target="_blank">a060fec</a>.
+<a href="https://github.com/junmingguan/misc/tree/9b210d156dfc67dac80d30062b68245d79bab9fe" target="_blank">9b210d1</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -605,6 +605,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/9b210d156dfc67dac80d30062b68245d79bab9fe/analysis/ica_vs_flash_r1_update_1.Rmd" target="_blank">9b210d1</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+<td>
+wflow_publish(c("analysis/ica_vs_flash_r1_update_1.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/ica_vs_flash_r1_update_1.html" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -975,26 +1009,76 @@ a = t(G) %*% s/sum(s^2)</code></pre>
  [9,]  0.01310495
 [10,] -0.23330206</code></pre>
 </div>
-<div
-id="rank-1-update-with-rank-constraint-on-the-residual-matrix-with-prior-and-sigma2-fixed"
+<div id="rank-1-update-with-rank-constraint-on-the-residual-matrix-1"
 class="section level3">
-<h3>rank-1 update with rank constraint on the residual matrix with prior
-and <span class="math inline">\(\sigma^2\)</span> fixed</h3>
-<div id="lambda0.1" class="section level4">
-<h4><span class="math inline">\(\lambda=0.1\)</span></h4>
-<pre class="r"><code>res &lt;- r1_update(G, 0.1, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
-cor(X, res$l)</code></pre>
+<h3>rank-1 update with rank constraint on the residual matrix</h3>
+<div id="lambda10" class="section level4">
+<h4><span class="math inline">\(\lambda=10\)</span></h4>
+<pre class="r"><code>res &lt;- r1_update(G, 10, sigma_init=eps, g_init = g_init, fix_param = FALSE, max_iter = 1000)</code></pre>
+<pre><code>  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!</code></pre>
+<pre class="r"><code>cor(X, res$l)</code></pre>
 <pre><code>              [,1]
- [1,] -0.034115831
- [2,] -0.173460351
- [3,] -0.241840479
- [4,] -0.042322137
- [5,]  0.038182188
- [6,] -0.079955581
- [7,] -0.002200763
- [8,]  0.211198318
- [9,] -0.018742223
-[10,] -0.084001132</code></pre>
+ [1,] -0.033852731
+ [2,] -0.173681296
+ [3,] -0.241853718
+ [4,] -0.042460845
+ [5,]  0.038667317
+ [6,] -0.080076941
+ [7,] -0.001982472
+ [8,]  0.211279393
+ [9,] -0.018683448
+[10,] -0.084168468</code></pre>
 <div id="elbo" class="section level5">
 <h5>ELBO</h5>
 <pre class="r"><code>plot(res$elbo)</code></pre>
@@ -1021,6 +1105,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-9-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/junmingguan/misc/blob/cd608b661a7c14f4837d398130983d1578f44482/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-9-1.png" target="_blank">cd608b6</a>
@@ -1075,6 +1170,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-10-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/junmingguan/misc/blob/cd608b661a7c14f4837d398130983d1578f44482/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-10-1.png" target="_blank">cd608b6</a>
@@ -1134,6 +1240,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-11-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/cd608b661a7c14f4837d398130983d1578f44482/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-11-1.png" target="_blank">cd608b6</a>
 </td>
 <td>
@@ -1160,31 +1277,105 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="lambda1" class="section level4">
-<h4><span class="math inline">\(\lambda=1\)</span></h4>
-<pre class="r"><code>res &lt;- r1_update(G, 1, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
+<div id="lambda10000" class="section level4">
+<h4><span class="math inline">\(\lambda=10000\)</span></h4>
+<pre class="r"><code>res &lt;- r1_update(G, 10000, sigma_init=eps, g_init = g_init, fix_param = FALSE, max_iter = 1000)
 cor(X, res$l)</code></pre>
-<pre><code>              [,1]
- [1,] -0.034152510
- [2,] -0.173731429
- [3,] -0.241981620
- [4,] -0.042368935
- [5,]  0.038194085
- [6,] -0.079963722
- [7,] -0.002208645
- [8,]  0.211329624
- [9,] -0.018666195
-[10,] -0.084091303</code></pre>
+<pre><code>             [,1]
+ [1,]  0.03694491
+ [2,] -0.33900819
+ [3,] -0.65262210
+ [4,] -0.03372809
+ [5,]  0.09689449
+ [6,] -0.32126231
+ [7,]  0.02614059
+ [8,]  0.63982337
+ [9,] -0.03433193
+[10,] -0.05383972</code></pre>
 <div id="elbo-1" class="section level5">
 <h5>ELBO</h5>
 <pre class="r"><code>plot(res$elbo)</code></pre>
 <p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-13-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="nuclear-norm-of-widehatboldsymbolm-1" class="section level5">
 <h5>Nuclear norm of <span
 class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h5>
 <pre class="r"><code>plot(res$nuc)</code></pre>
 <p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-14-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div
 id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2-1"
@@ -1194,9 +1385,199 @@ class="section level5">
 \boldsymbol{M}\|_F^2\)</span></h5>
 <pre class="r"><code>plot(res$fit)</code></pre>
 <p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-15-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="lambda10" class="section level4">
+</div>
+</div>
+<div id="lambda100000" class="section level4">
+<h4><span class="math inline">\(\lambda=100000\)</span></h4>
+<pre class="r"><code>res &lt;- r1_update(G, 100000, sigma_init=eps, g_init = g_init, fix_param = FALSE, max_iter = 1000)
+cor(X, res$l)</code></pre>
+<pre><code>             [,1]
+ [1,]  0.03694491
+ [2,] -0.33900819
+ [3,] -0.65262210
+ [4,] -0.03372809
+ [5,]  0.09689449
+ [6,] -0.32126231
+ [7,]  0.02614059
+ [8,]  0.63982337
+ [9,] -0.03433193
+[10,] -0.05383972</code></pre>
+<div id="elbo-2" class="section level5">
+<h5>ELBO</h5>
+<pre class="r"><code>plot(res$elbo)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-17-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="nuclear-norm-of-widehatboldsymbolm-2" class="section level5">
+<h5>Nuclear norm of <span
+class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h5>
+<pre class="r"><code>plot(res$nuc)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-18-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div
+id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2-2"
+class="section level5">
+<h5>Fit term <span class="math inline">\(\frac{1}{MT}\|\boldsymbol{Y} -
+\boldsymbol{\ell}\boldsymbol{f}^\top -
+\boldsymbol{M}\|_F^2\)</span></h5>
+<pre class="r"><code>plot(res$fit)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/25a3e406bc36fdc4051ecc78837283f72c5ca719/docs/figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-19-1.png" target="_blank">25a3e40</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div
+id="rank-1-update-with-rank-constraint-on-the-residual-matrix-with-prior-and-sigma2-fixed"
+class="section level3">
+<h3>rank-1 update with rank constraint on the residual matrix with prior
+and <span class="math inline">\(\sigma^2\)</span> fixed</h3>
+<div id="lambda10-1" class="section level4">
 <h4><span class="math inline">\(\lambda=10\)</span></h4>
 <pre class="r"><code>res &lt;- r1_update(G, 10, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
 cor(X, res$l)</code></pre>
@@ -1211,25 +1592,97 @@ cor(X, res$l)</code></pre>
  [8,]  0.212659533
  [9,] -0.017832460
 [10,] -0.084910214</code></pre>
-<div id="elbo-2" class="section level5">
+<div id="elbo-3" class="section level5">
 <h5>ELBO</h5>
 <pre class="r"><code>plot(res$elbo)</code></pre>
-<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="nuclear-norm-of-widehatboldsymbolm-2" class="section level5">
+<div id="nuclear-norm-of-widehatboldsymbolm-3" class="section level5">
 <h5>Nuclear norm of <span
 class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h5>
 <pre class="r"><code>plot(res$nuc)</code></pre>
-<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div
-id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2-2"
+id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2-3"
 class="section level5">
 <h5>Fit term <span class="math inline">\(\frac{1}{MT}\|\boldsymbol{Y} -
 \boldsymbol{\ell}\boldsymbol{f}^\top -
 \boldsymbol{M}\|_F^2\)</span></h5>
 <pre class="r"><code>plot(res$fit)</code></pre>
-<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="lambda10000-1" class="section level4">
+<h4><span class="math inline">\(\lambda=10000\)</span></h4>
+<pre class="r"><code>res &lt;- r1_update(G, 10000, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
+cor(X, res$l)</code></pre>
+<pre><code>             [,1]
+ [1,] -0.06469684
+ [2,] -0.75640160
+ [3,] -0.44016558
+ [4,] -0.13114474
+ [5,]  0.07369531
+ [6,] -0.07320068
+ [7,] -0.05824924
+ [8,]  0.40941488
+ [9,]  0.16120346
+[10,] -0.21800051</code></pre>
+<div id="elbo-4" class="section level5">
+<h5>ELBO</h5>
+<pre class="r"><code>plot(res$elbo)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="nuclear-norm-of-widehatboldsymbolm-4" class="section level5">
+<h5>Nuclear norm of <span
+class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h5>
+<pre class="r"><code>plot(res$nuc)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div
+id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2-4"
+class="section level5">
+<h5>Fit term <span class="math inline">\(\frac{1}{MT}\|\boldsymbol{Y} -
+\boldsymbol{\ell}\boldsymbol{f}^\top -
+\boldsymbol{M}\|_F^2\)</span></h5>
+<pre class="r"><code>plot(res$fit)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="lambda100000-1" class="section level4">
+<h4><span class="math inline">\(\lambda=100000\)</span></h4>
+<pre class="r"><code>res &lt;- r1_update(G, 100000, sigma_init=eps, g_init = g_init, fix_param = TRUE, max_iter = 1000)
+cor(X, res$l)</code></pre>
+<pre><code>             [,1]
+ [1,]  0.02286579
+ [2,]  0.56168853
+ [3,]  0.57592901
+ [4,]  0.08928959
+ [5,] -0.08235714
+ [6,]  0.10124633
+ [7,] -0.05699289
+ [8,] -0.47531248
+ [9,] -0.12532107
+[10,]  0.37730136</code></pre>
+<div id="elbo-5" class="section level5">
+<h5>ELBO</h5>
+<pre class="r"><code>plot(res$elbo)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="nuclear-norm-of-widehatboldsymbolm-5" class="section level5">
+<h5>Nuclear norm of <span
+class="math inline">\(\widehat{\boldsymbol{M}}\)</span></h5>
+<pre class="r"><code>plot(res$nuc)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div
+id="fit-term-frac1mtboldsymboly---boldsymbolellboldsymbolftop---boldsymbolm_f2-5"
+class="section level5">
+<h5>Fit term <span class="math inline">\(\frac{1}{MT}\|\boldsymbol{Y} -
+\boldsymbol{\ell}\boldsymbol{f}^\top -
+\boldsymbol{M}\|_F^2\)</span></h5>
+<pre class="r"><code>plot(res$fit)</code></pre>
+<p><img src="figure/ica_vs_flash_r1_update_1.Rmd/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
