@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="junmingguan" />
+
+<meta name="date" content="2026-02-24" />
+
+<title>Rank-1 fastICA and flashier with Radmacher prior</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">misc</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/junmingguan/misc">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Rank-1 fastICA and flashier with Radmacher
+prior</h1>
+<h4 class="author">junmingguan</h4>
+<h4 class="date">2026-02-24</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-03-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>misc/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251108code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251108code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251108)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree7d68aeb6b235cfdf8008c3b78db55e236036956btargetblank7d68aeba">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/junmingguan/misc/tree/7d68aeb6b235cfdf8008c3b78db55e236036956b" target="_blank">7d68aeb</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree7d68aeb6b235cfdf8008c3b78db55e236036956btargetblank7d68aeba"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/junmingguan/misc/tree/7d68aeb6b235cfdf8008c3b78db55e236036956b" target="_blank">7d68aeb</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
+    Untracked:  analysis/preemble.tex
+
+Unstaged changes:
+    Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
+    Modified:   analysis/index.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/ica_vs_flashier_r1_rad.Rmd</code>) and HTML
+(<code>docs/ica_vs_flashier_r1_rad.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/7d68aeb6b235cfdf8008c3b78db55e236036956b/analysis/ica_vs_flashier_r1_rad.Rmd" target="_blank">7d68aeb</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+<td>
+wflow_publish(c("analysis/ica_vs_flashier_r1_rad.Rmd"))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>library(flashier)
+library(Matrix)
+library(fastICA)
+library(fastTopics)
+library(ebnm)
+source(&#39;code/ebcd_functions.R&#39;)
+source(&#39;code/ebnm_rademacher.R&#39;)</code></pre>
+<pre class="r"><code>simulate_unbalanaced_rad_groups &lt;- function(
+    K, n=100, p=1000, noise=1, percent_one=0.2) {
+  set.seed(1)
+  L = matrix(-1,nrow=n,ncol=K)
+  for(i in 1:K){L[sample(1:n,floor(percent_one*n)),i]=1}
+  FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+  X = L %*% t(FF) + rnorm(n*p, 0, noise)
+  return(list(X=X, L=L, FF=FF))
+}</code></pre>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>In this exploration, we attempt to</p>
+<ol style="list-style-type: decimal">
+<li>understand why applying rank-1 fastICA to whitened <span
+class="math inline">\(\pm 1\)</span> sources might fail to recover one
+of the true sources when they are unbalanced;</li>
+<li>examine whether rank-1 flashier with Rademacher prior on the loading
+(source) could solve the problem.</li>
+</ol>
+<p>rank-1 fastICA seems to fail when the proportion of 1s (say, <span
+class="math inline">\(p\)</span>) in the true <span
+class="math inline">\(\pm 1\)</span> sources is close to 0.21 or 0.79.
+This is because in this case, whitening and centering forces these
+sources to have Gaussian-like fastICA objective values, and the
+algorithm tends to prefer other more non-Gaussian estimates, which might
+not be binary. Rank-1 flashier with Rademacher prior appears to do well
+in this case, but only when the true number of groups (<span
+class="math inline">\(K\)</span>) is no more than 3. When <span
+class="math inline">\(K\)</span> is large, even initializing from one of
+the true sources does not help.</p>
+<p>Another finding is that when the <span
+class="math inline">\(K=3\)</span> groups are unbalanced, in which case
+flashier with Rademacher prior can still find a true source if properly
+initialized, flashier solutions that perfectly recover a true source
+have low ELBO (although not too far away from the highest ELBO). But
+when <span class="math inline">\(K\)</span> becomes larger, all flashier
+solutions (randomly initialzed or initialized from the truth) are
+effectively the same. One conjecture is that the true sources usually
+correspond to local maxima of the ELBO; when <span
+class="math inline">\(K\)</span> is relatively small, the local maxima
+are not too far away from the global maximum, so flashier can get stuck
+on one of the local ones. Specifically, when <span
+class="math inline">\(K=1\)</span>, the corresponding local maximum of
+the true source might actually be global. When <span
+class="math inline">\(K\)</span> is large, the global maximum might be
+far above the local ones, so flashier is less likely to pick up the
+latter.</p>
+<p>Problems to consider next:</p>
+<p>Q: it there any relationship between <span
+class="math inline">\(K\)</span> and <span
+class="math inline">\(p\)</span> in the unbalanced groups examples?</p>
+<p>Q: Apparently, flashier with Rademacher prior on the loadings only
+cares about ELBO, not non-Gaussianity. We have theoretically established
+equivalence between fastICA and flashier with Rademacher prior for
+whitened data, so this is a better way to go. But it seems in practice
+they do not give similar solutions. Further exploration is needed to
+understand the link and characterize the solutions given by whitening +
+flashier with Rademacher.</p>
+</div>
+<div id="recap-of-rank-1-fastica" class="section level2">
+<h2>Recap of rank-1 fastICA</h2>
+<p>To recap, given a data matrix <span class="math inline">\(Y \in
+\mathbb{R}^{n\times d}\)</span>, Rank-1 fastICA aims to find a direction
+of the dataset <span class="math inline">\(Y =
+\begin{bmatrix}\boldsymbol{y}_1 &amp; \dots &amp;
+\boldsymbol{y}_n\end{bmatrix}^\top\in \mathbb{R}^{n\times d}\)</span>,
+<span class="math inline">\(Y\boldsymbol{w}\)</span>, that is maximally
+non-Gaussian by optimizes the following objective:</p>
+<p><span class="math display">\[
+    \max_{\boldsymbol{w}} \left(\mathbb{E} {G(\boldsymbol{w}^\top
+\boldsymbol{y})} - \mathbb{E} {G(Z)} \right)^2, \ \ s.t.\
+\|\boldsymbol{w}\|=1.
+\]</span></p>
+<p>We assume that <span class="math inline">\(Y\)</span> has been
+column-centered, i.e., <span class="math inline">\(Y=CY\)</span> where
+<span
+class="math inline">\(C=I_n=\frac{1}{n}\boldsymbol{11}^\top\)</span>,
+and whitened, i.e., <span class="math inline">\(Y^\top=KY^\top\)</span>
+where <span class="math inline">\(K=D^{-1/2}U^\top\)</span>,
+eigen-decomposition of <span class="math inline">\(Y^\top Y/n\)</span>.
+The empirical objective is</p>
+<p><span class="math display">\[
+    \max_{\boldsymbol{w}} \left(\frac{1}{n}\sum_{i=1}^n
+G(\boldsymbol{w}^\top \boldsymbol{y}_i) - \mathbb{E} {G(Z)}
+\right)^2=\max_{\boldsymbol{w}} \left( G(\boldsymbol{w}^\top
+Y)\boldsymbol{1} - \mathbb{E} {G(Z)} \right)^2, \ \ s.t.\
+\|\boldsymbol{w}\|=1.
+\]</span></p>
+<p>We consider the contrast function given by</p>
+<p><span class="math display">\[
+G(x)=\log \cosh{x} = \log \frac{e^x+e^{-x}}{2}.
+\]</span></p>
+<p>with first derivative</p>
+<p><span class="math display">\[
+g(x)=G&#39;(x)= \tanh{x}= \frac{e^x-e^{-x}}{e^x+e^{-x}}
+\]</span></p>
+<p>and second derivative</p>
+<p><span class="math display">\[
+g&#39;(x)=G&#39;&#39;(x) = 1-\tanh^2{x}.
+\]</span></p>
+<p>The maximum of the objective corresponds to some optima of <span
+class="math inline">\(\mathbb{E}{G(\boldsymbol{w^\top y})}\)</span>, and
+the KKT conditions give the fixed point equation:</p>
+<p><span class="math display">\[
+\mathbb{E}{\boldsymbol{y} g(\boldsymbol{w^\top y})} - \beta
+\boldsymbol{w} = 0.
+\]</span></p>
+<p>The Jacobian matrix is then</p>
+<p><span class="math display">\[
+J(\boldsymbol{w}) = \mathbb{E}{\boldsymbol{yy^\top}
+g&#39;(\boldsymbol{w^\top y})} - \beta I \approx
+\mathbb{E}{\boldsymbol{yy^\top}}\mathbb{E}{g&#39;(\boldsymbol{w^\top
+y})} - \beta I = \mathbb{E}{g&#39;(\boldsymbol{w^\top y})}I - \beta I.
+\]</span> A newton update to solve the fixed point equation gives</p>
+<p><span class="math display">\[
+\boldsymbol{w}^+ = \boldsymbol{w} - (\mathbb{E}{\boldsymbol{y}
+g(\boldsymbol{w^\top y})} - \beta \boldsymbol{w}) /
+(\mathbb{E}{g&#39;(\boldsymbol{w^\top y})} - \beta).
+\]</span> Multiply both sides by the denominator gives the rank-1
+fastICA algorithm:</p>
+<p><span class="math display">\[
+\begin{align}\boldsymbol{w}^+ &amp;= \mathbb{E}{\boldsymbol{y}
+g(\boldsymbol{w^\top y})} - \mathbb{E}{g&#39;(\boldsymbol{w^\top y})}
+\boldsymbol{w} \\
+&amp;  \boldsymbol{w}=\boldsymbol{w}^+/\|\boldsymbol{w}^+\|\end{align}
+\]</span></p>
+<p>The empirical version of the fixed point equation is</p>
+<p><span class="math display">\[
+\frac{1}{n}\sum_{i=1}^n \boldsymbol{y_i} g(\boldsymbol{w^\top
+y_i})=\frac{1}{n}Y^\top g(Y \boldsymbol{w}) = \frac{1}{n}Y^\top \tanh{Y
+\boldsymbol{w}} \propto \boldsymbol{w}.
+\]</span></p>
+<p>This gives rise to the following update:</p>
+<p><span class="math display">\[
+\begin{align*}
+    \boldsymbol{v} &amp;\leftarrow \tanh(Yw) \\
+    \boldsymbol{w} &amp; \leftarrow Y^\top \boldsymbol{v}/ \|Y^\top
+\boldsymbol{v}\|_2,
+\end{align*}
+\]</span></p>
+<p>or more succinctly,</p>
+<p><span class="math display">\[
+\begin{align*}
+    \boldsymbol{v} \leftarrow \tanh(S \boldsymbol{v /
+\sqrt{\boldsymbol{v}^\top S \boldsymbol{v}}}),
+\end{align*}
+\]</span></p>
+<p>where <span class="math inline">\(S = Y Y^\top\)</span>.</p>
+<pre class="r"><code>fastica_r1update_1iter = function(X,w){
+  w= w/sqrt(sum(w^2))
+  P = t(X) %*% w
+  G = tanh(P)
+  G2 = 1-tanh(P)^2
+  w = X %*% G - sum(G2) * w 
+  w = w/sqrt(sum(w^2))
+  return(w)
+}
+
+fastica_r1update = function(init_w, X1, n_iter = 100) {
+  w = init_w
+  for(i in 1:n_iter)
+    {
+    w = fastica_r1update_1iter(X1,w)
+  }
+  return(w)
+}
+
+preprocess = function(X, n.comp=10){
+  n &lt;- nrow(X)
+  p &lt;- ncol(X)
+  X &lt;- scale(X, scale = FALSE)
+  X &lt;- t(X)
+  
+  ## This appears to be equivalant to X1 = t(svd(X)$v[,1:n.comp])       
+  V &lt;- X %*% t(X)/n
+  s &lt;- La.svd(V)
+  D &lt;- diag(c(1/sqrt(s$d)))
+  K &lt;- D %*% t(s$u)
+  K &lt;- matrix(K[1:n.comp, ], n.comp, p)
+  X1 &lt;- K %*% X
+  return(X1)
+}
+
+preprocess2 = function(X, n.comp=10){
+  n &lt;- nrow(X)
+  p &lt;- ncol(X)
+  X &lt;- scale(X, scale = FALSE)
+  X &lt;- t(X)
+  
+  svd.X &lt;- svd(X)
+  X1 &lt;- svd.X$u[,1:n.comp] %*% diag(rep(1, n.comp)) %*% t(svd.X$v[,1:n.comp])
+  return(X1)
+}
+
+compute_objective = function(X,w){
+  P = t(X) %*% w
+  return(mean(log(cosh(P))))
+}
+
+compute_objective_s = function(s){
+  return(mean(log(cosh(s))))
+}</code></pre>
+</div>
+<div id="failure-of-rank-1-fastica-on-unbalanced-groups"
+class="section level2">
+<h2>Failure of rank-1 fastICA on unbalanced groups</h2>
+<p>First we note that by a Taylor’s expansion:</p>
+<p><span class="math display">\[
+\mathbb{E}[\log(\cosh(X))] \approx \frac{1}{2}\mathbb{E}[X^2] -
+\frac{1}{12}\mathbb{E}[X^4] = \frac{1}{2} -
+\frac{1}{12}\mathbb{E}[x^4]=\frac{1}{4}-\frac{1}{12}\kappa, \quad
+\kappa=\mathbb{E}{x^4}-3
+\]</span></p>
+<p>for a random variable <span class="math inline">\(X\)</span> with
+unit second moment, where <span class="math inline">\(\kappa\)</span>
+represents the kurtosis. So roughly, if we were to find a source that
+such that the objective is large, we would obtain something that has low
+kurtosis, and vise versa.</p>
+<p>To understand why rank-1 fastICA might have trouble uncovering
+unbalanced <span class="math inline">\(\pm 1\)</span> sources, note that
+the mean and variance of a <span class="math inline">\(\{-1,
+1\}\)</span> RV <span class="math inline">\(X\)</span> with <span
+class="math inline">\(P(X=1)=p\)</span> is</p>
+<p><span class="math display">\[
+\mu = 2p-1\;\; \sigma^2=1-\mu^2 = 4p(1-p).
+\]</span></p>
+<p>Mean centering and pre-whitening yield</p>
+<p><span class="math display">\[
+\hat{X}:=\frac{X-\mu}{\sigma}=
+\begin{cases}
+    \sqrt{\frac{1-p}{p}} &amp; w/  \ prob=p \\
+    -\sqrt{\frac{p}{1-p}} &amp; w/ \ prob=1-p.
+\end{cases}
+\]</span> The fourth moment is</p>
+<p><span class="math display">\[
+\frac{1}{p(1-p)}-3,
+\]</span></p>
+<p>and kurtosis is</p>
+<p><span class="math display">\[
+\kappa = \frac{1}{p(1-p)}
+-6.
+\]</span></p>
+<p>We can solve</p>
+<p><span class="math display">\[
+p^2-p+1/6=0,
+\]</span></p>
+<p>to get <span class="math inline">\(p=0.79\text{ or }
+0.21\)</span>.</p>
+<pre class="r"><code>f &lt;- function(p) {1/p/(1-p)-6}
+rootSolve::uniroot.all(f, interval = c(0.1, 0.9))</code></pre>
+<pre><code>[1] 0.2113505 0.7886495</code></pre>
+<p>When <span class="math inline">\(p\)</span> is near the two
+thresholds, the pre-whitened source <span
+class="math inline">\(\hat{X}\)</span> has <span
+class="math inline">\(\kappa \approx 0\)</span>. That is, in terms of
+the objective, such source is not too different from a standard
+Gaussian, so it is not favored by the algorithm. Instead, the algorithm
+could find a source that is more symmetric, hence has higher objective,
+or lower kurtosis. One such example is the uniform distribution <span
+class="math inline">\(\text{unif}[-\sqrt{3}, \sqrt{3}]\)</span>, which
+has higher objective than <span class="math inline">\(\hat{X}\)</span>
+and a standard Gaussian.</p>
+<p>Whwn <span class="math inline">\(p\)</span> is far away from the two
+thresholds, the algorithm would happily pick up the pre-whiten binary
+source, as it’s far from Gaussian. Within <span
+class="math inline">\((0.21, 0.79)\)</span>, the <span
+class="math inline">\(\pm 1\)</span> source has negative kurtosis <span
+class="math inline">\(\kappa\)</span> and hence is sub-Gaussian, and
+vise versa.</p>
+<pre class="r"><code>p = 0.21
+y2 = -sqrt(p/(1-p))
+y1 = sqrt((1-p)/p)
+p* logb(cosh(y1)) + (1-p)* logb(cosh(y2))</code></pre>
+<pre><code>[1] 0.3666969</code></pre>
+<pre class="r"><code>mean(log(cosh( rnorm(100000) )))</code></pre>
+<pre><code>[1] 0.3759524</code></pre>
+<pre class="r"><code>integrand &lt;- function(x) {
+  log(cosh(x)) * (1 / (2 * sqrt(3)))
+}
+integrate(integrand, lower = -sqrt(3), upper = sqrt(3))</code></pre>
+<pre><code>0.4013379 with absolute error &lt; 1e-08</code></pre>
+<p>To demonstrate the phenomenon again, we consider the simple case
+where <span class="math inline">\(X\)</span> is rank 1 plus noise and
+the true sources <span class="math inline">\(\boldsymbol{\ell}\)</span>
+is asymmetric Rademacher with 20% 1’s. Rank-1 fastICA cannot uncover the
+true source (in the sense that the estimated source has low correlation
+with the true source) even though it is initialized from the ground
+truth. Indeed, in this case, it picks up a uniform distribution.</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.2)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+X1 = preprocess(X)
+w &lt;- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)</code></pre>
+<pre><code>           [,1]
+[1,] 0.06702229</code></pre>
+<pre class="r"><code>plot(t(X1) %*% w)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>compute_objective(X1, w)</code></pre>
+<pre><code>[1] 0.4053189</code></pre>
+<p>If instead we have 10% 1s, the objective is not close to that of a
+Gaussian, so the algorithm can pick up this source, and similarly for
+30% 1s.</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.1)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+X1 = preprocess(X)
+w &lt;- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)</code></pre>
+<pre><code>         [,1]
+[1,] 0.998208</code></pre>
+<pre class="r"><code>plot(t(X1) %*% w)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>compute_objective(X1, w)</code></pre>
+<pre><code>[1] 0.2807113</code></pre>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.3)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+X1 = preprocess(X)
+w &lt;- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)</code></pre>
+<pre><code>          [,1]
+[1,] 0.9994419</code></pre>
+<pre class="r"><code>plot(t(X1) %*% w)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>compute_objective(X1, w)</code></pre>
+<pre><code>[1] 0.4044505</code></pre>
+</div>
+<div id="flashier-with-rademacher-prior" class="section level2">
+<h2>flashier with Rademacher prior</h2>
+<p>It has previously been shown that adding an intercept solves the
+problem introduced by mean-centering and whitening. Here, we consider a
+different route—apply flashier with a Rademacher prior, which has been
+shown to be equivalent to fastICA if the data matrix is prewhitened and
+the prior probability is fixed to be 0.5.</p>
+<div id="some-derivations" class="section level3">
+<h3>Some derivations</h3>
+<p>For the sake of completeness, we first work out the posterior under
+such prior.</p>
+<div id="symmetric-rademacher" class="section level4">
+<h4>Symmetric Rademacher</h4>
+<p>Consider</p>
+<p><span class="math display">\[
+U \in \{-a, +a\}, \qquad P(U=a)=P(U=-a)=\tfrac12,
+\]</span></p>
+<p>and assume the observation <span class="math inline">\(X\)</span> is
+normally distributed around the true mean <span
+class="math inline">\(u\)</span> with known variance <span
+class="math inline">\(\sigma^2\)</span></p>
+<p><span class="math display">\[
+X \mid U=u \sim N(u,\sigma^2).
+\]</span></p>
+<p>The likelihoods for each possible state of <span
+class="math inline">\(u\)</span> are</p>
+<p><span class="math display">\[
+f(x\mid U=a) = \frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left(-\frac{(x-a)^2}{2\sigma^2}\right),
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+f(x\mid U=-a) = \frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\!\left(-\frac{(x+a)^2}{2\sigma^2}\right).
+\]</span></p>
+<p>Using Bayes’ rule:</p>
+<p><span class="math display">\[
+P(U=a\mid X=x)
+= \frac{f(x\mid U=a)\cdot \tfrac12}
+{f(x\mid U=a)\cdot \frac{1}{2} + f(x\mid U=-a)\cdot \frac{1}{2}}.
+\]</span></p>
+<p>Some algebra gives:</p>
+<p><span class="math display">\[
+P(U=a\mid x)
+= \frac{1}{1 + \exp\!\left(-\frac{4ax}{2\sigma^2}\right)}
+= \frac{1}{1 + \exp\!\left(-\frac{2ax}{\sigma^2}\right)}.
+\]</span></p>
+<p><span class="math display">\[
+P(U=-a\mid x)
+= 1 - P(U=a\mid x)
+= \frac{1}{1 + \exp\!\left(\frac{2ax}{\sigma^2}\right)},
+\]</span></p>
+<p><span class="math display">\[
+u\mid x \sim \text{Rademacher}(-a,+a;p(x)),
+\qquad p(x) = \frac{1}{1 + e^{-2ax/\sigma^2}}.
+\]</span> Posterior mean is given by</p>
+<p><span class="math display">\[
+\begin{align*}
+    \mathbb{E}[U\mid x]
+&amp;= a(2P(U=a \mid X=x) -1) \\
+&amp;= a \frac{2}{1+e^{-2ax/\sigma^2}}-a
+\frac{1+e^{-2ax/\sigma^2}}{1+e^{-2ax/\sigma^2}} \\
+&amp;=a \frac{1-e^{-2ax/\sigma^2}}{1+e^{-2ax/\sigma^2}} \\
+&amp;= a
+\frac{e^{ax/\sigma^2}-e^{-ax/\sigma^2}}{e^{ax/\sigma^2}+e^{-ax/\sigma^2}}\\
+&amp;=a\,\tanh\!\left(\frac{ax}{\sigma^2}\right).
+\end{align*}
+\]</span></p>
+</div>
+<div id="asymmetric-rademacher" class="section level4">
+<h4>Asymmetric Rademacher</h4>
+<p>Now consider</p>
+<p><span class="math display">\[
+U \in \{-a, +a\}, \qquad P(U=a)=w, \quad P(U=-a)=1-w
+\]</span></p>
+<p>Assume the observation <span class="math inline">\(X\)</span> is
+normally distributed around the true mean <span
+class="math inline">\(u\)</span> with known variance <span
+class="math inline">\(\sigma^2\)</span>:</p>
+<p><span class="math display">\[
+X \mid U=u \sim \mathcal{N}(u,\sigma^2).
+\]</span></p>
+<p>The likelihood for each possible state of <span
+class="math inline">\(U\)</span> is:</p>
+<p><span class="math display">\[
+\begin{align*}
+f(x\mid U=a) &amp;= \frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left(-\frac{(x-a)^2}{2\sigma^2}\right) \\
+f(x\mid U=-a) &amp;= \frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left(-\frac{(x+a)^2}{2\sigma^2}\right).
+\end{align*}
+\]</span></p>
+<p>Using Bayes’ rule, the posterior probability of <span
+class="math inline">\(U=a\)</span> is:</p>
+<p><span class="math display">\[
+P(U=a\mid X=x) = \frac{f(x\mid U=a)\cdot w}{f(x\mid U=a)\cdot w +
+f(x\mid U=-a)\cdot (1-w)}
+\]</span></p>
+<p>Some algebra gives</p>
+<p><span class="math display">\[
+P(U=a\mid X=x) = \frac{1}{1 + \frac{1-w}{w}
+\exp\left(-\frac{2ax}{\sigma^2}\right)}.
+\]</span></p>
+<p>The probability of the alternative state is <span
+class="math inline">\(1 - P(U=a \mid X=x)\)</span>:</p>
+<p><span class="math display">\[
+P(U=-a\mid x) = \frac{1}{1 + \frac{w}{1-w}
+\exp\left(\frac{2ax}{\sigma^2}\right)}
+\]</span></p>
+<p>We can express this more compactly:</p>
+<p><span class="math display">\[
+P(U=a \mid X=x) = \frac{1}{1 + \exp\left(-\frac{2ax}{\sigma^2} -
+\ln\frac{w}{1-w}\right)}.
+\]</span></p>
+<p>The posterior mean is given by:</p>
+<p><span class="math display">\[
+\mathbb{E}[U\mid X=x] = a(2P(U=a \mid X=x)
+-1)=a\tanh\left(\frac{ax}{\sigma^2} +
+\frac{1}{2}\ln\left(\frac{w}{1-w}\right)\right).
+\]</span></p>
+<p>We only need to implement an <code>ebnm</code> function for <span
+class="math inline">\(a=1\)</span>, since the scale could be captured by
+the factors.</p>
+<p>We implemented two versions:</p>
+<ul>
+<li><p><code>ebnm_symm_rademacher</code>: the prior probability <span
+class="math inline">\(w\)</span> is fixed to be 0.5, hence the prior is
+symmetric. We call flashier with such prior flashierSymmRad for short in
+later section.</p></li>
+<li><p><code>ebnm_rademacher</code>: the prior probability <span
+class="math inline">\(w\)</span> is estimated from the data, hence the
+prior could be asymmetric. We call flashier with such prior flashierRad
+for short in later section.</p></li>
+</ul>
+</div>
+</div>
+<div id="unbalanced-groups-example" class="section level3">
+<h3>Unbalanced groups example</h3>
+<p>We first goes back to the unbalanced 1 group example with 20 out of
+100 members (20% 1s). We first consider the flashierSymmRad. Initialized
+from the truth, the solution stays there and does not move. Initialized
+randomly from Gaussian, the algorithm still perfectly recover the true
+source. flashierRad also has the same performance, and the prior
+probability is estimated almost perfectly to be 0.2.</p>
+<p>Note that in both cases, the estimated sources are exactly <span
+class="math inline">\(\pm 1\)</span>, this is probably because the
+“observed” <span class="math inline">\(\hat{\boldsymbol{\ell}}\)</span>
+(i.e., <span class="math inline">\(Y \boldsymbol{f}\)</span> where <span
+class="math inline">\(\boldsymbol{f}\)</span> is the true factor)
+displays two clear “<span class="math inline">\(\pm 1\)</span>”
+clusters, dragging the posterior probability to either side. However,
+this also means that <span class="math inline">\(\log \cosh\)</span> of
+the estimated source will always be fixed due to its symmetry. This
+would not hold if the signal-to-noise ratio is too small. For
+example:</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, noise=30, percent_one = 0.5)
+X &lt;- sim_data$X
+FF &lt;- sim_data$FF
+plot(X %*% FF)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="unbalanced-1-group" class="section level4">
+<h4>Unbalanced 1 group</h4>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.2)
+X &lt;- sim_data$X
+L &lt;- sim_data$L</code></pre>
+<pre class="r"><code># symmetric Rad: init from truth
+l &lt;- matrix(L[,1], ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_true_L &lt;- flash_init(X) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+# correlation with the true source
+cor(L, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>     [,1]
+[1,]    1</code></pre>
+<pre class="r"><code># correlation with the initialization
+cor(l, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>     [,1]
+[1,]    1</code></pre>
+<pre class="r"><code>flash_res_init_from_true_L$elbo</code></pre>
+<pre><code>[1] -144615.9</code></pre>
+<pre class="r"><code># symmetric Rad: init from Gaussian
+n &lt;- nrow(X)
+l &lt;- matrix(rnorm(n), ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_random_K1 &lt;- flash_init(X) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+# correlation between estimated source and true L
+cor(L, flash_res_init_from_random_K1$L_pm)</code></pre>
+<pre><code>     [,1]
+[1,]   -1</code></pre>
+<pre class="r"><code># correlation between estimated source and init L
+cor(l, flash_res_init_from_random_K1$L_pm)</code></pre>
+<pre><code>          [,1]
+[1,] 0.2572059</code></pre>
+<pre class="r"><code>flash_res_init_from_random_K1$elbo</code></pre>
+<pre><code>[1] -144615.9</code></pre>
+<pre class="r"><code># Asymmetric Rad: init from Gaussian
+l &lt;- matrix(rnorm(nrow(X)), ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_random_K1 &lt;- flash_init(X) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+# correlation between estimated source and true L
+cor(L, flash_res_init_from_random_K1$L_pm)</code></pre>
+<pre><code>     [,1]
+[1,]   -1</code></pre>
+<pre class="r"><code># correlation between estimated source and init L
+cor(l, flash_res_init_from_random_K1$L_pm)</code></pre>
+<pre><code>           [,1]
+[1,] 0.01309708</code></pre>
+<pre class="r"><code>flash_res_init_from_random_K1$elbo</code></pre>
+<pre><code>[1] -144596.6</code></pre>
+<pre class="r"><code>flash_res_init_from_random_K1$L_ghat</code></pre>
+<pre><code>[[1]]
+          w a
+1 0.7999988 1</code></pre>
+<pre class="r"><code>flash_res_init_from_random_K1$residuals_sd</code></pre>
+<pre><code>[1] 1.003157</code></pre>
+</div>
+<div id="unbalanced-3-groups" class="section level4">
+<h4>Unbalanced 3 groups</h4>
+<p>The unbalanced 2 groups case is similar: both flashierSymmRad and
+flashierRad always find a true source. But for unbalanced 3 groups, it
+is not guaranteed that they will find one of the true sources if not
+initialized from them (if initialized from one of the true sources, they
+will stay there).</p>
+<p>In what follows, we computed 100 estimated sources from 100 random
+initializations. (with different seeds). More than half of them are
+perfect recovery of one of the true sources. We also examined the ELBOs
+and correlations with the true sources. The ELBOs are highly
+(negatively) correlated with the estimated source’s correlation with the
+true sources. Higher ELBO corresponds to lower correlation with one true
+source, specifically, solutions that perfectly recovered the source have
+the lowest ELBO. This suggests that the true sources correspond to some
+local maxima of the ELBO, and it is typically not the glocal maximum.
+flashier with Rademacher prior is still fundamentally different from
+fastICA, in that the former cares more about the fit.</p>
+<p>The estimated source is still <span class="math inline">\(\pm
+1\)</span> for all considered 100 random initializations, so looking at
+<span class="math inline">\(\log \cosh\)</span> is meaningless.</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=3, percent_one = 0.2)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+FF &lt;- sim_data$FF</code></pre>
+<pre class="r"><code># symmetric Rad: init from truth
+l &lt;- matrix(L[,1], ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_true_L &lt;- flash_init(X) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>              [,1]
+[1,]  1.000000e+00
+[2,]  5.724587e-17
+[3,] -6.250000e-02</code></pre>
+<pre class="r"><code>cor(l, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>     [,1]
+[1,]    1</code></pre>
+<pre class="r"><code>flash_res_init_from_true_L$elbo</code></pre>
+<pre><code>[1] -197669.8</code></pre>
+<div id="symm-rad" class="section level5">
+<h5>Symm Rad</h5>
+<pre class="r"><code>obj &lt;- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list &lt;- c() # final elbo of each solution
+cor_max &lt;- c() # maximum correlation between the estmate and a true source
+mse &lt;- c()
+est_L &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(n), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+table(obj)</code></pre>
+<pre><code>obj
+0.433780830483027 
+              100 </code></pre>
+<pre class="r"><code>table(cor_max)</code></pre>
+<pre><code>cor_max
+                -1 -0.454256762579497  0.454256762579497                  1 
+                27                 22                 20                 31 </code></pre>
+<pre class="r"><code>plot(elbo_list)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>min(elbo_list)</code></pre>
+<pre><code>[1] -197818.1</code></pre>
+<pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
+cor(cbind(mse, elbo_list, abs_cor_max))</code></pre>
+<pre><code>                   mse  elbo_list abs_cor_max
+mse          1.0000000 -0.9991268   0.9913309
+elbo_list   -0.9991268  1.0000000  -0.9959549
+abs_cor_max  0.9913309 -0.9959549   1.0000000</code></pre>
+<pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="asymm-rad" class="section level5">
+<h5>Asymm Rad</h5>
+<pre class="r"><code>obj &lt;- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list &lt;- c() # final elbo of each solution
+cor_max &lt;- c() # maximum correlation between the estmate and a true source
+mse &lt;- c()
+est_L &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(n), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+table(obj)</code></pre>
+<pre><code>obj
+0.433780830483027 
+              100 </code></pre>
+<pre class="r"><code>table(cor_max)</code></pre>
+<pre><code>cor_max
+                -1 -0.454256762579497  0.454256762579497                  1 
+                27                 22                 21                 30 </code></pre>
+<pre class="r"><code>plot(elbo_list)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>min(elbo_list)</code></pre>
+<pre><code>[1] -197798.9</code></pre>
+<pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
+cor(cbind(mse, elbo_list, abs_cor_max))</code></pre>
+<pre><code>                   mse  elbo_list abs_cor_max
+mse          1.0000000 -0.9991338   0.9916345
+elbo_list   -0.9991338  1.0000000  -0.9961468
+abs_cor_max  0.9916345 -0.9961468   1.0000000</code></pre>
+<pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="many-unbalanced-groups" class="section level4">
+<h4>Many unbalanced groups</h4>
+<p>As <span class="math inline">\(K\)</span> increases, both flashierRad
+and flashierSymmRad start to struggle. As we will see here (we only show
+flashierRad since the other is similar), once <span
+class="math inline">\(K\)</span> goes past 3, even if we initialize the
+algorithm from the truth, it moves away from it, and the correlation
+between the estimated source and the true sources decreases.</p>
+<pre class="r"><code>cor_max &lt;- c() # max correlation with one of the true sources
+cor_init &lt;- c() # correlation with initialization
+for (K in 1:9) {
+  sim_data &lt;- simulate_unbalanaced_rad_groups(K=K, percent_one = 0.2)
+  X &lt;- sim_data$X
+  L &lt;- sim_data$L
+  FF &lt;- sim_data$FF
+  l &lt;- matrix(L[,1], ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+  res_trueL &lt;- flash_init(X) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_max &lt;- c(cor_max, max(abs(cor(L, res_trueL$L_pm))))
+  cor_init &lt;- c(cor_init, cor(l, res_trueL$L_pm)[1])
+}
+cor_max</code></pre>
+<pre><code>[1] 1.0000000 1.0000000 1.0000000 0.6289709 0.4000222 0.4054654 0.2857143
+[8] 0.2806707 0.2010076</code></pre>
+<pre class="r"><code>cor_init</code></pre>
+<pre><code>[1] 1.00000000 1.00000000 1.00000000 0.62897090 0.18948418 0.03686049 0.10714286
+[8] 0.15309311 0.20100756</code></pre>
+</div>
+<div id="unbalanced-9-groups" class="section level4">
+<h4>Unbalanced 9 groups</h4>
+<p>We look closely at the unbalanced 9 groups example, with 20 members
+in each. All 100 random initializations result in the same solution, and
+it is far away from the truth.</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=9, percent_one = 0.2)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+FF &lt;- sim_data$FF
+plot(X %*% FF)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>obj &lt;- c()
+elbo_list &lt;- c()
+cor_max &lt;- c()
+mse &lt;- c()
+est_L &lt;- matrix(0, nrow = n, ncol = 100)
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(nrow(X)), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+plot(cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="further-exploration" class="section level3">
+<h3>Further exploration</h3>
+<p>Here we present some more miscellaneous simulation results</p>
+<div id="highly-unbalanced-groups-example" class="section level4">
+<h4>Highly unbalanced groups example</h4>
+<p>fastICA seems do well when <span class="math inline">\(p\)</span> is
+blow the lower thresold <span class="math inline">\(0.21\)</span> or
+above the upper threshold <span class="math inline">\(0.79\)</span> and
+<span class="math inline">\(K\)</span> is high (<span
+class="math inline">\(\ge 3\)</span>).</p>
+<p>For 4 unbalanced groups with 10 (out of 100) members in each, fastICA
+can recover one true sources if initialized from the truth, and can do
+so most of the time if initialized randomly. flashierRad does not do
+well in this case, probably because <span
+class="math inline">\(K\)</span> is high.</p>
+<p>Since fastICA seems to do better in this scenario, it makes sense to
+initialize flashierRad from fastICA solution, but it does not appear to
+help. Specifically, I initialized flashierRad from 100 randomly
+initialized fastICA solutions, and all of them reached to the same
+solution, even if the fastICA solutions are the good one.</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=4, percent_one = 0.1)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+FF &lt;- sim_data$FF</code></pre>
+<pre class="r"><code>X1 &lt;- preprocess(X)
+
+# fastICA init from truth
+init_w &lt;- X1 %*% L[,1]
+w &lt;- fastica_r1update(init_w, X1)
+max(abs(cor(L, t(X1) %*% w)))</code></pre>
+<pre><code>[1] 0.9985388</code></pre>
+<pre class="r"><code># fastICA init from random
+cor_max &lt;- c()
+for (i in 1:100) {
+  set.seed(i)
+  init_w &lt;- rnorm(nrow(X1))
+  w &lt;- fastica_r1update(init_w, X1)
+  cor_max &lt;- c(cor_max, max(abs(cor(L, t(X1) %*% w))))
+}
+table(cor_max &gt; 0.99)</code></pre>
+<pre><code>
+FALSE  TRUE 
+   19    81 </code></pre>
+<pre class="r"><code># flashierRad init from truth
+l &lt;- matrix(L[,1], ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_true_L &lt;- flash_init(X) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>            [,1]
+[1,] -0.06804138
+[2,]  0.61237244
+[3,]  0.27216553
+[4,]  0.27216553</code></pre>
+<pre class="r"><code>cor(l, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>            [,1]
+[1,] -0.06804138</code></pre>
+<pre class="r"><code># flashierRad init from random
+cor_max &lt;- c()
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(nrow(X)), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_max &lt;- c(cor_max, max(abs(cor(L, flash_res_init_from_random_K1$L_pm))))
+}
+table(cor_max &gt; 0.8)</code></pre>
+<pre><code>
+FALSE 
+  100 </code></pre>
+<pre class="r"><code># flashierRad init from fastICA solution
+cor_max_fastica &lt;- c()
+cor_max_flashierRad &lt;- c()
+est_L &lt;- matrix(0, nrow = n, ncol = 100)
+for (i in 1:100) {
+  set.seed(i)
+  init_w &lt;- rnorm(nrow(X1))
+  w &lt;- fastica_r1update(init_w, X1)
+  cor_max_fastica &lt;- c(cor_max_fastica, max(abs(cor(L, t(X1) %*% w))))
+  l &lt;- t(X1) %*% w
+  f &lt;- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_fastica &lt;- flash_init(X) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  est_L[,i] &lt;- flash_res_init_from_fastica$L_pm
+  cor_max_flashierRad &lt;- c(cor_max_flashierRad, max(abs(cor(L, flash_res_init_from_fastica$L_pm))))
+}
+table(cor_max_flashierRad)</code></pre>
+<pre><code>cor_max_flashierRad
+0.612372435695795 
+              100 </code></pre>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="whitening-flashier" class="section level4">
+<h4>whitening + flashier</h4>
+<p>Here we tried whitening before applying flashier</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=2, percent_one = 0.2)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+FF &lt;- sim_data$FF</code></pre>
+<pre class="r"><code>init_w &lt;- X1 %*% L[,1]
+w &lt;- fastica_r1update(init_w, X1)
+max(abs(cor(L, t(X1) %*% w)))</code></pre>
+<pre><code>[1] 0.6661797</code></pre>
+<pre class="r"><code>fastica_l &lt;- t(X1) %*% w</code></pre>
+<pre class="r"><code>X2 &lt;- t(preprocess2(X))
+
+# init from truth
+l &lt;- matrix(L[,1], ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
+flash_res_init_from_true_L &lt;- flash_init(X2) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>             [,1]
+[1,] 1.000000e+00
+[2,] 5.724587e-17</code></pre>
+<pre class="r"><code>obj &lt;- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list &lt;- c() # final elbo of each solution
+cor_max &lt;- c() # maximum correlation between the estmate and a true source
+mse &lt;- c()
+est_L &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(nrow(X2)), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X2) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+plot(obj)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(elbo_list, abs(cor_max))</code></pre>
+<pre><code>[1] 0.2879215</code></pre>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 26.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Los_Angeles
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] fastTopics_0.6-192 fastICA_1.2-7      Matrix_1.6-4       flashier_1.0.54   
+[5] ebnm_1.1-34        workflowr_1.7.1   
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1     rootSolve_1.8.2.4    viridisLite_0.4.2   
+ [4] dplyr_1.1.4          fastmap_1.2.0        lazyeval_0.2.2      
+ [7] promises_1.3.0       digest_0.6.37        lifecycle_1.0.4     
+[10] processx_3.8.2       invgamma_1.1         magrittr_2.0.3      
+[13] compiler_4.3.1       rlang_1.1.4          sass_0.4.9          
+[16] progress_1.2.3       tools_4.3.1          utf8_1.2.4          
+[19] yaml_2.3.10          data.table_1.16.2    knitr_1.48          
+[22] prettyunits_1.2.0    htmlwidgets_1.6.4    scatterplot3d_0.3-44
+[25] RColorBrewer_1.1-3   Rtsne_0.17           purrr_1.0.2         
+[28] grid_4.3.1           fansi_1.0.6          git2r_0.35.0        
+[31] colorspace_2.1-1     ggplot2_3.5.1        scales_1.3.0        
+[34] gtools_3.9.5         cli_3.6.3            rmarkdown_2.28      
+[37] crayon_1.5.3         generics_0.1.3       RcppParallel_5.1.9  
+[40] rstudioapi_0.15.0    httr_1.4.7           pbapply_1.7-2       
+[43] cachem_1.1.0         stringr_1.5.1        splines_4.3.1       
+[46] parallel_4.3.1       softImpute_1.4-1     matrixStats_1.3.0   
+[49] vctrs_0.6.5          jsonlite_1.8.9       callr_3.7.3         
+[52] hms_1.1.3            mixsqp_0.3-54        ggrepel_0.9.6       
+[55] irlba_2.3.5.1        horseshoe_0.2.0      trust_0.1-8         
+[58] plotly_4.10.4        jquerylib_0.1.4      tidyr_1.3.1         
+[61] glue_1.8.0           ps_1.7.5             uwot_0.1.16         
+[64] cowplot_1.1.3        stringi_1.8.4        Polychrome_1.5.1    
+[67] gtable_0.3.6         later_1.3.2          quadprog_1.5-8      
+[70] munsell_0.5.1        tibble_3.2.1         pillar_1.9.0        
+[73] htmltools_0.5.8.1    truncnorm_1.0-9      R6_2.5.1            
+[76] rprojroot_2.0.3      evaluate_1.0.1       lattice_0.21-8      
+[79] highr_0.11           RhpcBLASctl_0.23-42  SQUAREM_2021.1      
+[82] ashr_2.2-63          httpuv_1.6.14        bslib_0.8.0         
+[85] Rcpp_1.0.13          deconvolveR_1.2-1    whisker_0.4.1       
+[88] xfun_0.48            fs_1.6.4             getPass_0.2-4       
+[91] pkgconfig_2.0.3     </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
