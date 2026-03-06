@@ -1,0 +1,840 @@
+---
+title: "Rank-1 fastICA and flashier with Radmacher prior"
+author: "junmingguan"
+date: "2026-02-24"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(flashier)
+library(Matrix)
+library(fastICA)
+library(fastTopics)
+library(ebnm)
+source('code/ebcd_functions.R')
+source('code/ebnm_rademacher.R')
+```
+
+```{r}
+simulate_unbalanaced_rad_groups <- function(
+    K, n=100, p=1000, noise=1, percent_one=0.2) {
+  set.seed(1)
+  L = matrix(-1,nrow=n,ncol=K)
+  for(i in 1:K){L[sample(1:n,floor(percent_one*n)),i]=1}
+  FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+  X = L %*% t(FF) + rnorm(n*p, 0, noise)
+  return(list(X=X, L=L, FF=FF))
+}
+```
+
+## Summary
+
+In this exploration, we attempt to
+
+1.  understand why applying rank-1 fastICA to whitened $\pm 1$ sources might fail to recover one of the true sources when they are unbalanced;
+2.  examine whether rank-1 flashier with Rademacher prior on the loading (source) could solve the problem.
+
+rank-1 fastICA seems to fail when the proportion of 1s (say, $p$) in the true $\pm 1$ sources is close to 0.21 or 0.79. This is because in this case, whitening and centering forces these sources to have Gaussian-like fastICA objective values, and the algorithm tends to prefer other more non-Gaussian estimates, which might not be binary. Rank-1 flashier with Rademacher prior appears to do well in this case, but only when the true number of groups ($K$) is no more than 3. When $K$ is large, even initializing from one of the true sources does not help.
+
+Another finding is that when the $K=3$ groups are unbalanced, in which case flashier with Rademacher prior can still find a true source if properly initialized, flashier solutions that perfectly recover a true source have low ELBO (although not too far away from the highest ELBO). But when $K$ becomes larger, all flashier solutions (randomly initialzed or initialized from the truth) are effectively the same. One conjecture is that the true sources usually correspond to local maxima of the ELBO; when $K$ is relatively small, the local maxima are not too far away from the global maximum, so flashier can get stuck on one of the local ones. Specifically, when $K=1$, the corresponding local maximum of the true source might actually be global. When $K$ is large, the global maximum might be far above the local ones, so flashier is less likely to pick up the latter.
+
+Problems to consider next:
+
+Q: it there any relationship between $K$ and $p$ in the unbalanced groups examples?
+
+Q: Apparently, flashier with Rademacher prior on the loadings only cares about ELBO, not non-Gaussianity. We have theoretically established equivalence between fastICA and flashier with Rademacher prior for whitened data, so this is a better way to go. But it seems in practice they do not give similar solutions. Further exploration is needed to understand the link and characterize the solutions given by whitening + flashier with Rademacher.
+
+## Recap of rank-1 fastICA
+
+To recap, given a data matrix $Y \in \mathbb{R}^{n\times d}$, Rank-1 fastICA aims to find a direction of the dataset $Y = \begin{bmatrix}\boldsymbol{y}_1 & \dots & \boldsymbol{y}_n\end{bmatrix}^\top\in \mathbb{R}^{n\times d}$, $Y\boldsymbol{w}$, that is maximally non-Gaussian by optimizes the following objective: 
+
+$$
+    \max_{\boldsymbol{w}} \left(\mathbb{E} {G(\boldsymbol{w}^\top \boldsymbol{y})} - \mathbb{E} {G(Z)} \right)^2, \ \ s.t.\ \|\boldsymbol{w}\|=1.
+$$
+
+We assume that $Y$ has been column-centered, i.e., $Y=CY$ where $C=I_n=\frac{1}{n}\boldsymbol{11}^\top$, and whitened, i.e., $Y^\top=KY^\top$ where $K=D^{-1/2}U^\top$, eigen-decomposition of $Y^\top Y/n$. The empirical objective is
+
+$$
+    \max_{\boldsymbol{w}} \left(\frac{1}{n}\sum_{i=1}^n G(\boldsymbol{w}^\top \boldsymbol{y}_i) - \mathbb{E} {G(Z)} \right)^2=\max_{\boldsymbol{w}} \left( G(\boldsymbol{w}^\top Y)\boldsymbol{1} - \mathbb{E} {G(Z)} \right)^2, \ \ s.t.\ \|\boldsymbol{w}\|=1.
+$$
+
+We consider the contrast function given by
+
+$$
+G(x)=\log \cosh{x} = \log \frac{e^x+e^{-x}}{2}.
+$$
+
+with first derivative
+
+$$
+g(x)=G'(x)= \tanh{x}= \frac{e^x-e^{-x}}{e^x+e^{-x}}
+$$
+
+and second derivative
+
+$$
+g'(x)=G''(x) = 1-\tanh^2{x}.
+$$
+
+The maximum of the objective corresponds to some optima of $\mathbb{E}{G(\boldsymbol{w^\top y})}$, and the KKT conditions give the fixed point equation:
+
+$$
+\mathbb{E}{\boldsymbol{y} g(\boldsymbol{w^\top y})} - \beta \boldsymbol{w} = 0.
+$$
+
+The Jacobian matrix is then
+
+$$
+J(\boldsymbol{w}) = \mathbb{E}{\boldsymbol{yy^\top} g'(\boldsymbol{w^\top y})} - \beta I \approx \mathbb{E}{\boldsymbol{yy^\top}}\mathbb{E}{g'(\boldsymbol{w^\top y})} - \beta I = \mathbb{E}{g'(\boldsymbol{w^\top y})}I - \beta I.
+$$ 
+A newton update to solve the fixed point equation gives 
+
+$$
+\boldsymbol{w}^+ = \boldsymbol{w} - (\mathbb{E}{\boldsymbol{y} g(\boldsymbol{w^\top y})} - \beta \boldsymbol{w}) / (\mathbb{E}{g'(\boldsymbol{w^\top y})} - \beta).
+$$ 
+Multiply both sides by the denominator gives the rank-1 fastICA algorithm:
+
+$$
+\begin{align}\boldsymbol{w}^+ &= \mathbb{E}{\boldsymbol{y} g(\boldsymbol{w^\top y})} - \mathbb{E}{g'(\boldsymbol{w^\top y})} \boldsymbol{w} \\
+&  \boldsymbol{w}=\boldsymbol{w}^+/\|\boldsymbol{w}^+\|\end{align}
+$$
+
+The empirical version of the fixed point equation is
+
+$$
+\frac{1}{n}\sum_{i=1}^n \boldsymbol{y_i} g(\boldsymbol{w^\top y_i})=\frac{1}{n}Y^\top g(Y \boldsymbol{w}) = \frac{1}{n}Y^\top \tanh{Y \boldsymbol{w}} \propto \boldsymbol{w}.
+$$
+
+This gives rise to the following update:
+
+$$
+\begin{align*}
+    \boldsymbol{v} &\leftarrow \tanh(Yw) \\
+    \boldsymbol{w} & \leftarrow Y^\top \boldsymbol{v}/ \|Y^\top \boldsymbol{v}\|_2,
+\end{align*}
+$$
+
+or more succinctly,
+
+$$
+\begin{align*}
+    \boldsymbol{v} \leftarrow \tanh(S \boldsymbol{v / \sqrt{\boldsymbol{v}^\top S \boldsymbol{v}}}),
+\end{align*}
+$$
+
+where $S = Y Y^\top$.
+
+```{r}
+fastica_r1update_1iter = function(X,w){
+  w= w/sqrt(sum(w^2))
+  P = t(X) %*% w
+  G = tanh(P)
+  G2 = 1-tanh(P)^2
+  w = X %*% G - sum(G2) * w 
+  w = w/sqrt(sum(w^2))
+  return(w)
+}
+
+fastica_r1update = function(init_w, X1, n_iter = 100) {
+  w = init_w
+  for(i in 1:n_iter)
+    {
+    w = fastica_r1update_1iter(X1,w)
+  }
+  return(w)
+}
+
+preprocess = function(X, n.comp=10){
+  n <- nrow(X)
+  p <- ncol(X)
+  X <- scale(X, scale = FALSE)
+  X <- t(X)
+  
+  ## This appears to be equivalant to X1 = t(svd(X)$v[,1:n.comp])       
+  V <- X %*% t(X)/n
+  s <- La.svd(V)
+  D <- diag(c(1/sqrt(s$d)))
+  K <- D %*% t(s$u)
+  K <- matrix(K[1:n.comp, ], n.comp, p)
+  X1 <- K %*% X
+  return(X1)
+}
+
+preprocess2 = function(X, n.comp=10){
+  n <- nrow(X)
+  p <- ncol(X)
+  X <- scale(X, scale = FALSE)
+  X <- t(X)
+  
+  svd.X <- svd(X)
+  X1 <- svd.X$u[,1:n.comp] %*% diag(rep(1, n.comp)) %*% t(svd.X$v[,1:n.comp])
+  return(X1)
+}
+
+compute_objective = function(X,w){
+  P = t(X) %*% w
+  return(mean(log(cosh(P))))
+}
+
+compute_objective_s = function(s){
+  return(mean(log(cosh(s))))
+}
+```
+
+
+## Failure of rank-1 fastICA on unbalanced groups
+
+First we note that by a Taylor's expansion:
+
+$$
+\mathbb{E}[\log(\cosh(X))] \approx \frac{1}{2}\mathbb{E}[X^2] - \frac{1}{12}\mathbb{E}[X^4] = \frac{1}{2} - \frac{1}{12}\mathbb{E}[x^4]=\frac{1}{4}-\frac{1}{12}\kappa, \quad \kappa=\mathbb{E}{x^4}-3
+$$
+
+for a random variable $X$ with unit second moment, where $\kappa$ represents the kurtosis. So roughly, if we were to find a source that such that the objective is large, we would obtain something that has low kurtosis, and vise versa.
+
+To understand why rank-1 fastICA might have trouble uncovering unbalanced $\pm 1$ sources, note that the mean and variance of a $\{-1, 1\}$ RV $X$ with $P(X=1)=p$ is
+
+$$
+\mu = 2p-1\;\; \sigma^2=1-\mu^2 = 4p(1-p).
+$$
+
+Mean centering and pre-whitening yield 
+
+$$
+\hat{X}:=\frac{X-\mu}{\sigma}=
+\begin{cases}
+    \sqrt{\frac{1-p}{p}} & w/  \ prob=p \\
+    -\sqrt{\frac{p}{1-p}} & w/ \ prob=1-p.
+\end{cases}
+$$ 
+The fourth moment is 
+
+$$
+\frac{1}{p(1-p)}-3,
+$$ 
+
+and kurtosis is 
+
+$$
+\kappa = \frac{1}{p(1-p)}
+-6.
+$$
+
+We can solve 
+
+$$
+p^2-p+1/6=0,
+$$
+
+to get $p=0.79\text{ or } 0.21$.
+
+```{r}
+f <- function(p) {1/p/(1-p)-6}
+rootSolve::uniroot.all(f, interval = c(0.1, 0.9))
+```
+
+When $p$ is near the two thresholds, the pre-whitened source $\hat{X}$ has $\kappa \approx 0$. That is, in terms of the objective, such source is not too different from a standard Gaussian, so it is not favored by the algorithm. Instead, the algorithm could find a source that is more symmetric, hence has higher objective, or lower kurtosis. One such example is the uniform distribution $\text{unif}[-\sqrt{3}, \sqrt{3}]$, which has higher objective than $\hat{X}$ and a standard Gaussian.
+
+Whwn $p$ is far away from the two thresholds, the algorithm would happily pick up the pre-whiten binary source, as it's far from Gaussian. Within $(0.21, 0.79)$, the $\pm 1$ source has negative kurtosis $\kappa$ and hence is sub-Gaussian, and vise versa.
+
+```{r}
+p = 0.21
+y2 = -sqrt(p/(1-p))
+y1 = sqrt((1-p)/p)
+p* logb(cosh(y1)) + (1-p)* logb(cosh(y2))
+
+mean(log(cosh( rnorm(100000) )))
+
+integrand <- function(x) {
+  log(cosh(x)) * (1 / (2 * sqrt(3)))
+}
+integrate(integrand, lower = -sqrt(3), upper = sqrt(3))
+```
+
+To demonstrate the phenomenon again, we consider the simple case where $X$ is rank 1 plus noise and the true sources $\boldsymbol{\ell}$ is asymmetric Rademacher with 20% 1's. Rank-1 fastICA cannot uncover the true source (in the sense that the estimated source has low correlation with the true source) even though it is initialized from the ground truth. Indeed, in this case, it picks up a uniform distribution.
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.2)
+X <- sim_data$X
+L <- sim_data$L
+X1 = preprocess(X)
+w <- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)
+plot(t(X1) %*% w)
+compute_objective(X1, w)
+```
+
+If instead we have 10% 1s, the objective is not close to that of a Gaussian, so the algorithm can pick up this source, and similarly for 30% 1s.
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.1)
+X <- sim_data$X
+L <- sim_data$L
+X1 = preprocess(X)
+w <- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)
+plot(t(X1) %*% w)
+compute_objective(X1, w)
+```
+
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.3)
+X <- sim_data$X
+L <- sim_data$L
+X1 = preprocess(X)
+w <- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)
+plot(t(X1) %*% w)
+compute_objective(X1, w)
+```
+
+
+## flashier with Rademacher prior
+
+It has previously been shown that adding an intercept solves the problem introduced by mean-centering and whitening. Here, we consider a different route—apply flashier with a Rademacher prior, which has been shown to be equivalent to fastICA if the data matrix is prewhitened and the prior probability is fixed to be 0.5.
+
+### Some derivations
+
+For the sake of completeness, we first work out the posterior under such prior.
+
+#### Symmetric Rademacher
+
+Consider
+
+$$
+U \in \{-a, +a\}, \qquad P(U=a)=P(U=-a)=\tfrac12,
+$$
+
+and assume the observation $X$ is normally distributed around the true mean $u$ with known variance $\sigma^2$
+
+$$
+X \mid U=u \sim N(u,\sigma^2).
+$$
+
+The likelihoods for each possible state of $u$ are
+
+$$
+f(x\mid U=a) = \frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left(-\frac{(x-a)^2}{2\sigma^2}\right),
+$$
+
+and
+
+$$
+f(x\mid U=-a) = \frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\!\left(-\frac{(x+a)^2}{2\sigma^2}\right).
+$$
+
+Using Bayes’ rule:
+
+$$
+P(U=a\mid X=x)
+= \frac{f(x\mid U=a)\cdot \tfrac12}
+{f(x\mid U=a)\cdot \frac{1}{2} + f(x\mid U=-a)\cdot \frac{1}{2}}.
+$$
+
+Some algebra gives:
+
+$$
+P(U=a\mid x)
+= \frac{1}{1 + \exp\!\left(-\frac{4ax}{2\sigma^2}\right)}
+= \frac{1}{1 + \exp\!\left(-\frac{2ax}{\sigma^2}\right)}.
+$$
+
+$$
+P(U=-a\mid x)
+= 1 - P(U=a\mid x)
+= \frac{1}{1 + \exp\!\left(\frac{2ax}{\sigma^2}\right)},
+$$
+
+$$
+u\mid x \sim \text{Rademacher}(-a,+a;p(x)),
+\qquad p(x) = \frac{1}{1 + e^{-2ax/\sigma^2}}.
+$$ Posterior mean is given by
+
+$$
+ \begin{align*}
+    \mathbb{E}[U\mid x]
+&= a(2P(U=a \mid X=x) -1) \\
+&= a \frac{2}{1+e^{-2ax/\sigma^2}}-a \frac{1+e^{-2ax/\sigma^2}}{1+e^{-2ax/\sigma^2}} \\
+&=a \frac{1-e^{-2ax/\sigma^2}}{1+e^{-2ax/\sigma^2}} \\
+&= a \frac{e^{ax/\sigma^2}-e^{-ax/\sigma^2}}{e^{ax/\sigma^2}+e^{-ax/\sigma^2}}\\
+&=a\,\tanh\!\left(\frac{ax}{\sigma^2}\right).
+\end{align*}
+$$
+
+#### Asymmetric Rademacher
+
+Now consider 
+
+$$
+U \in \{-a, +a\}, \qquad P(U=a)=w, \quad P(U=-a)=1-w
+$$
+
+Assume the observation $X$ is normally distributed around the true mean $u$ with known variance $\sigma^2$:
+
+$$
+X \mid U=u \sim \mathcal{N}(u,\sigma^2).
+$$
+
+The likelihood for each possible state of $U$ is:
+
+$$
+\begin{align*}
+f(x\mid U=a) &= \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-a)^2}{2\sigma^2}\right) \\
+f(x\mid U=-a) &= \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x+a)^2}{2\sigma^2}\right).
+\end{align*}
+$$
+
+Using Bayes' rule, the posterior probability of $U=a$ is: 
+
+$$
+P(U=a\mid X=x) = \frac{f(x\mid U=a)\cdot w}{f(x\mid U=a)\cdot w + f(x\mid U=-a)\cdot (1-w)}
+$$
+
+Some algebra gives 
+
+$$
+P(U=a\mid X=x) = \frac{1}{1 + \frac{1-w}{w} \exp\left(-\frac{2ax}{\sigma^2}\right)}.
+$$
+
+The probability of the alternative state is $1 - P(U=a \mid X=x)$:
+
+$$
+P(U=-a\mid x) = \frac{1}{1 + \frac{w}{1-w} \exp\left(\frac{2ax}{\sigma^2}\right)}
+$$
+
+We can express this more compactly:
+
+$$
+P(U=a \mid X=x) = \frac{1}{1 + \exp\left(-\frac{2ax}{\sigma^2} - \ln\frac{w}{1-w}\right)}.
+$$
+
+The posterior mean is given by:
+
+$$
+\mathbb{E}[U\mid X=x] = a(2P(U=a \mid X=x) -1)=a\tanh\left(\frac{ax}{\sigma^2} + \frac{1}{2}\ln\left(\frac{w}{1-w}\right)\right).
+$$
+
+We only need to implement an `ebnm` function for $a=1$, since the scale could be captured by the factors.
+
+We implemented two versions:
+
+-   `ebnm_symm_rademacher`: the prior probability $w$ is fixed to be 0.5, hence the prior is symmetric. We call flashier with such prior flashierSymmRad for short in later section.
+
+-   `ebnm_rademacher`: the prior probability $w$ is estimated from the data, hence the prior could be asymmetric. We call flashier with such prior flashierRad for short in later section.
+
+### Unbalanced groups example
+
+We first goes back to the unbalanced 1 group example with 20 out of 100 members (20% 1s). We first consider the flashierSymmRad. Initialized from the truth, the solution stays there and does not move. Initialized randomly from Gaussian, the algorithm still perfectly recover the true source. flashierRad also has the same performance, and the prior probability is estimated almost perfectly to be 0.2.
+
+Note that in both cases, the estimated sources are exactly $\pm 1$, this is probably because the "observed" $\hat{\boldsymbol{\ell}}$ (i.e., $Y \boldsymbol{f}$ where $\boldsymbol{f}$ is the true factor) displays two clear "$\pm 1$" clusters, dragging the posterior probability to either side. However, this also means that $\log \cosh$ of the estimated source will always be fixed due to its symmetry. This would not hold if the signal-to-noise ratio is too small. For example:
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=1, noise=30, percent_one = 0.5)
+X <- sim_data$X
+FF <- sim_data$FF
+plot(X %*% FF)
+```
+
+
+#### Unbalanced 1 group
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.2)
+X <- sim_data$X
+L <- sim_data$L
+```
+
+
+```{r}
+# symmetric Rad: init from truth
+l <- matrix(L[,1], ncol = 1)
+f <- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_true_L <- flash_init(X) |>
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |>
+        flash_backfit(verbose = 0)
+# correlation with the true source
+cor(L, flash_res_init_from_true_L$L_pm)
+# correlation with the initialization
+cor(l, flash_res_init_from_true_L$L_pm)
+flash_res_init_from_true_L$elbo
+```
+
+
+```{r}
+# symmetric Rad: init from Gaussian
+n <- nrow(X)
+l <- matrix(rnorm(n), ncol = 1)
+f <- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_random_K1 <- flash_init(X) |>
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |>
+        flash_backfit(verbose = 0)
+# correlation between estimated source and true L
+cor(L, flash_res_init_from_random_K1$L_pm)
+# correlation between estimated source and init L
+cor(l, flash_res_init_from_random_K1$L_pm)
+flash_res_init_from_random_K1$elbo
+```
+
+
+```{r}
+# Asymmetric Rad: init from Gaussian
+l <- matrix(rnorm(nrow(X)), ncol = 1)
+f <- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_random_K1 <- flash_init(X) |>
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+        flash_backfit(verbose = 0)
+# correlation between estimated source and true L
+cor(L, flash_res_init_from_random_K1$L_pm)
+# correlation between estimated source and init L
+cor(l, flash_res_init_from_random_K1$L_pm)
+flash_res_init_from_random_K1$elbo
+flash_res_init_from_random_K1$L_ghat
+flash_res_init_from_random_K1$residuals_sd
+```
+
+#### Unbalanced 3 groups
+The unbalanced 2 groups case is similar: both flashierSymmRad and flashierRad always find a true source. But for unbalanced 3 groups, it is not guaranteed that they will find one of the true sources if not initialized from them (if initialized from one of the true sources, they will stay there). 
+
+In what follows, we computed 100 estimated sources from 100 random initializations. (with different seeds). More than half of them are perfect recovery of one of the true sources. We also examined the ELBOs and correlations with the true sources. The ELBOs are highly (negatively) correlated with the estimated source's correlation with the true sources. Higher ELBO corresponds to lower correlation with one true source, specifically, solutions that perfectly recovered the source have the lowest ELBO. This suggests that the true sources correspond to some local maxima of the ELBO, and it is typically not the glocal maximum.
+flashier with Rademacher prior is still fundamentally different from fastICA, in that the former cares more about the fit.
+
+The estimated source is still $\pm 1$ for all considered 100 random initializations, so looking at $\log \cosh$ is meaningless.
+
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=3, percent_one = 0.2)
+X <- sim_data$X
+L <- sim_data$L
+FF <- sim_data$FF
+```
+
+```{r}
+# symmetric Rad: init from truth
+l <- matrix(L[,1], ncol = 1)
+f <- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_true_L <- flash_init(X) |>
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)
+cor(l, flash_res_init_from_true_L$L_pm)
+flash_res_init_from_true_L$elbo
+```
+
+
+##### Symm Rad
+```{r}
+obj <- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list <- c() # final elbo of each solution
+cor_max <- c() # maximum correlation between the estmate and a true source
+mse <- c()
+est_L <- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l <- matrix(rnorm(n), ncol = 1)
+  f <- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 <- flash_init(X) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  cor_tmp <- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max <- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj <- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list <- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse <- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] <- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+table(obj)
+table(cor_max)
+```
+
+
+
+```{r}
+plot(elbo_list)
+min(elbo_list)
+abs_cor_max <- abs(cor_max)
+cor(cbind(mse, elbo_list, abs_cor_max))
+plot(elbo_list, cor_max)
+```
+
+```{r}
+image(t(est_L))
+image(t(est_L[, order(elbo_list)]))
+```
+
+
+##### Asymm Rad
+```{r}
+obj <- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list <- c() # final elbo of each solution
+cor_max <- c() # maximum correlation between the estmate and a true source
+mse <- c()
+est_L <- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l <- matrix(rnorm(n), ncol = 1)
+  f <- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 <- flash_init(X) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  cor_tmp <- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max <- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj <- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list <- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse <- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] <- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+table(obj)
+table(cor_max)
+```
+
+
+
+```{r}
+plot(elbo_list)
+min(elbo_list)
+abs_cor_max <- abs(cor_max)
+cor(cbind(mse, elbo_list, abs_cor_max))
+plot(elbo_list, cor_max)
+```
+
+```{r}
+image(t(est_L))
+image(t(est_L[, order(elbo_list)]))
+```
+
+
+#### Many unbalanced groups
+
+As $K$ increases, both flashierRad and flashierSymmRad start to struggle. As we will see here (we only show flashierRad since the other is similar), once $K$ goes past 3, even if we initialize the algorithm from the truth, it moves away from it, and the correlation between the estimated source and the true sources decreases.
+
+```{r}
+cor_max <- c() # max correlation with one of the true sources
+cor_init <- c() # correlation with initialization
+for (K in 1:9) {
+  sim_data <- simulate_unbalanaced_rad_groups(K=K, percent_one = 0.2)
+  X <- sim_data$X
+  L <- sim_data$L
+  FF <- sim_data$FF
+  l <- matrix(L[,1], ncol = 1)
+  f <- t(solve(crossprod(l), crossprod(l, X)))
+  res_trueL <- flash_init(X) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  cor_max <- c(cor_max, max(abs(cor(L, res_trueL$L_pm))))
+  cor_init <- c(cor_init, cor(l, res_trueL$L_pm)[1])
+}
+cor_max
+cor_init
+```
+
+#### Unbalanced 9 groups
+
+We look closely at the unbalanced 9 groups example, with 20 members in each. All 100 random initializations result in the same solution, and it is far away from the truth.
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=9, percent_one = 0.2)
+X <- sim_data$X
+L <- sim_data$L
+FF <- sim_data$FF
+plot(X %*% FF)
+```
+
+```{r}
+obj <- c()
+elbo_list <- c()
+cor_max <- c()
+mse <- c()
+est_L <- matrix(0, nrow = n, ncol = 100)
+for (i in 1:100) {
+  set.seed(i)
+  l <- matrix(rnorm(nrow(X)), ncol = 1)
+  f <- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 <- flash_init(X) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  cor_tmp <- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max <- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj <- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list <- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse <- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] <- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+plot(cor_max)
+```
+
+```{r}
+image(t(est_L))
+```
+
+
+### Further exploration
+
+Here we present some more miscellaneous simulation results
+
+#### Highly unbalanced groups example
+
+fastICA seems do well when $p$ is blow the lower thresold $0.21$ or above the upper threshold $0.79$ and $K$ is high ($\ge 3$). 
+
+For 4 unbalanced groups with 10 (out of 100) members in each, fastICA can recover one true sources if initialized from the truth, and can do so most of the time if initialized randomly. flashierRad does not do well in this case, probably because $K$ is high.
+
+Since fastICA seems to do better in this scenario, it makes sense to initialize flashierRad from fastICA solution, but it does not appear to help. Specifically, I initialized flashierRad from 100 randomly initialized fastICA solutions, and all of them reached to the same solution, even if the fastICA solutions are the good one.
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=4, percent_one = 0.1)
+X <- sim_data$X
+L <- sim_data$L
+FF <- sim_data$FF
+```
+
+```{r}
+X1 <- preprocess(X)
+
+# fastICA init from truth
+init_w <- X1 %*% L[,1]
+w <- fastica_r1update(init_w, X1)
+max(abs(cor(L, t(X1) %*% w)))
+
+
+# fastICA init from random
+cor_max <- c()
+for (i in 1:100) {
+  set.seed(i)
+  init_w <- rnorm(nrow(X1))
+  w <- fastica_r1update(init_w, X1)
+  cor_max <- c(cor_max, max(abs(cor(L, t(X1) %*% w))))
+}
+table(cor_max > 0.99)
+```
+
+
+```{r}
+# flashierRad init from truth
+l <- matrix(L[,1], ncol = 1)
+f <- t(solve(crossprod(l), crossprod(l, X)))
+flash_res_init_from_true_L <- flash_init(X) |>
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)
+cor(l, flash_res_init_from_true_L$L_pm)
+
+# flashierRad init from random
+cor_max <- c()
+for (i in 1:100) {
+  set.seed(i)
+  l <- matrix(rnorm(nrow(X)), ncol = 1)
+  f <- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_random_K1 <- flash_init(X) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_symm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  cor_max <- c(cor_max, max(abs(cor(L, flash_res_init_from_random_K1$L_pm))))
+}
+table(cor_max > 0.8)
+
+
+# flashierRad init from fastICA solution
+cor_max_fastica <- c()
+cor_max_flashierRad <- c()
+est_L <- matrix(0, nrow = n, ncol = 100)
+for (i in 1:100) {
+  set.seed(i)
+  init_w <- rnorm(nrow(X1))
+  w <- fastica_r1update(init_w, X1)
+  cor_max_fastica <- c(cor_max_fastica, max(abs(cor(L, t(X1) %*% w))))
+  l <- t(X1) %*% w
+  f <- t(solve(crossprod(l), crossprod(l, X)))
+  flash_res_init_from_fastica <- flash_init(X) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  est_L[,i] <- flash_res_init_from_fastica$L_pm
+  cor_max_flashierRad <- c(cor_max_flashierRad, max(abs(cor(L, flash_res_init_from_fastica$L_pm))))
+}
+table(cor_max_flashierRad)
+image(t(est_L))
+```
+
+
+#### whitening + flashier
+
+Here we tried whitening before applying flashier
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(K=2, percent_one = 0.2)
+X <- sim_data$X
+L <- sim_data$L
+FF <- sim_data$FF
+```
+
+```{r}
+init_w <- X1 %*% L[,1]
+w <- fastica_r1update(init_w, X1)
+max(abs(cor(L, t(X1) %*% w)))
+fastica_l <- t(X1) %*% w
+```
+
+```{r}
+X2 <- t(preprocess2(X))
+
+# init from truth
+l <- matrix(L[,1], ncol = 1)
+f <- t(solve(crossprod(l), crossprod(l, X2)))
+flash_res_init_from_true_L <- flash_init(X2) |>
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)
+```
+
+
+```{r}
+obj <- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list <- c() # final elbo of each solution
+cor_max <- c() # maximum correlation between the estmate and a true source
+mse <- c()
+est_L <- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l <- matrix(rnorm(nrow(X2)), ncol = 1)
+  f <- t(solve(crossprod(l), crossprod(l, X2)))
+  flash_res_init_from_random_K1 <- flash_init(X2) |>
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |>
+          flash_backfit(verbose = 0)
+  cor_tmp <- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max <- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj <- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list <- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse <- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] <- flash_res_init_from_random_K1$L_pm
+  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
+}
+plot(obj)
+plot(cor_max)
+```
+
+```{r}
+cor(elbo_list, abs(cor_max))
+```
+
+```{r}
+image(t(est_L))
+```
+
