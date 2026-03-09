@@ -29,29 +29,6 @@ simulate_unbalanaced_rad_groups <- function(
 }
 ```
 
-```{r}
-ebcd_rad_r1_power_update <- function(X, s=1,init=NULL) {
-  if (is.null(init)) {
-    v <- rnorm(nrow(X))
-    # v <- rep(1, nrow(X)) # rnorm(nrow(X)) 
-    # v[sample(1:nrow(X), nrow(X) %/% 2, replace = F)] <- -1
-  } else {
-    v <- init
-  }
-  S <- X %*% t(X)
-  diff <- c()
-  for (i in 1:100) {
-    # v1 <- ebnm_rademacher(x=S %*% v / sqrt(t(v) %*% S %*% v)[1,1], s=s)$posterior$mean
-    v_new <- tanh(S %*% v / sqrt(t(v) %*% S %*% v)[1,1] / s^2)
-    # diff <- c(diff, norm(v - v_new))
-    # diff <- c(diff, cor(v, v_new)[1])
-    v <- v_new
-  }
-  return(v)
-  # return(list(v_new, diff))
-}
-```
-
 ## Summary
 
 In this exploration, we attempt to
@@ -711,7 +688,7 @@ image(t(est_L))
 ```
 
 
-### Whitening + flashier {#whiten-flashier}
+### Whitening + flashier {#whitening-flashier}
 
 We have previously shown that applying centering and whitening + flashier with Rademacher prior is equivalent to fastICA. Here we want to examine the performance the former procedure in a $K=5$ unbalanced groups example (with $p=0.2$).
 
