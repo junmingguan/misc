@@ -391,7 +391,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-03-06
+<strong>Last updated:</strong> 2026-03-08
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree7d68aeb6b235cfdf8008c3b78db55e236036956btargetblank7d68aeba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreec56d09c6643bc2aca831dab11d5c4551bd61b619targetblankc56d09ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/7d68aeb6b235cfdf8008c3b78db55e236036956b" target="_blank">7d68aeb</a>
+<a href="https://github.com/junmingguan/misc/tree/c56d09c6643bc2aca831dab11d5c4551bd61b619" target="_blank">c56d09c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree7d68aeb6b235cfdf8008c3b78db55e236036956btargetblank7d68aeba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreec56d09c6643bc2aca831dab11d5c4551bd61b619targetblankc56d09ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/7d68aeb6b235cfdf8008c3b78db55e236036956b" target="_blank">7d68aeb</a>.
+<a href="https://github.com/junmingguan/misc/tree/c56d09c6643bc2aca831dab11d5c4551bd61b619" target="_blank">c56d09c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -618,6 +618,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/c56d09c6643bc2aca831dab11d5c4551bd61b619/analysis/ica_vs_flashier_r1_rad.Rmd" target="_blank">c56d09c</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+<td>
+wflow_publish(c("analysis/ica_vs_flashier_r1_rad.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/ica_vs_flashier_r1_rad.html" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/7d68aeb6b235cfdf8008c3b78db55e236036956b/analysis/ica_vs_flashier_r1_rad.Rmd" target="_blank">7d68aeb</a>
 </td>
 <td>
@@ -653,6 +687,26 @@ source(&#39;code/ebnm_rademacher.R&#39;)</code></pre>
   X = L %*% t(FF) + rnorm(n*p, 0, noise)
   return(list(X=X, L=L, FF=FF))
 }</code></pre>
+<pre class="r"><code>ebcd_rad_r1_power_update &lt;- function(X, s=1,init=NULL) {
+  if (is.null(init)) {
+    v &lt;- rnorm(nrow(X))
+    # v &lt;- rep(1, nrow(X)) # rnorm(nrow(X)) 
+    # v[sample(1:nrow(X), nrow(X) %/% 2, replace = F)] &lt;- -1
+  } else {
+    v &lt;- init
+  }
+  S &lt;- X %*% t(X)
+  diff &lt;- c()
+  for (i in 1:100) {
+    # v1 &lt;- ebnm_rademacher(x=S %*% v / sqrt(t(v) %*% S %*% v)[1,1], s=s)$posterior$mean
+    v_new &lt;- tanh(S %*% v / sqrt(t(v) %*% S %*% v)[1,1] / s^2)
+    # diff &lt;- c(diff, norm(v - v_new))
+    # diff &lt;- c(diff, cor(v, v_new)[1])
+    v &lt;- v_new
+  }
+  return(v)
+  # return(list(v_new, diff))
+}</code></pre>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
 <p>In this exploration, we attempt to</p>
@@ -680,7 +734,7 @@ flashier with Rademacher prior can still find a true source if properly
 initialized, flashier solutions that perfectly recover a true source
 have low ELBO (although not too far away from the highest ELBO). But
 when <span class="math inline">\(K\)</span> becomes larger, all flashier
-solutions (randomly initialzed or initialized from the truth) are
+solutions (randomly initialized or initialized from the truth) are
 effectively the same. One conjecture is that the true sources usually
 correspond to local maxima of the ELBO; when <span
 class="math inline">\(K\)</span> is relatively small, the local maxima
@@ -691,17 +745,18 @@ the true source might actually be global. When <span
 class="math inline">\(K\)</span> is large, the global maximum might be
 far above the local ones, so flashier is less likely to pick up the
 latter.</p>
+<p>We have theoretically established equivalence between fastICA and
+flashier with Rademacher prior for centered and whitened data. If we
+drop the centering step, this seems to work well on unbalanced groups
+with a reasonably good initialization. With this approach, solutions
+with higher ELBO appears to have higher correlation with one of the
+truth. See <a href="#whitening-flashier">here</a>.</p>
 <p>Problems to consider next:</p>
-<p>Q: it there any relationship between <span
+<p>Q: Is there any relationship between <span
 class="math inline">\(K\)</span> and <span
 class="math inline">\(p\)</span> in the unbalanced groups examples?</p>
-<p>Q: Apparently, flashier with Rademacher prior on the loadings only
-cares about ELBO, not non-Gaussianity. We have theoretically established
-equivalence between fastICA and flashier with Rademacher prior for
-whitened data, so this is a better way to go. But it seems in practice
-they do not give similar solutions. Further exploration is needed to
-understand the link and characterize the solutions given by whitening +
-flashier with Rademacher.</p>
+<p>Q: How to decide the number of singular values to keep while
+whitening the data matrix?</p>
 </div>
 <div id="recap-of-rank-1-fastica" class="section level2">
 <h2>Recap of rank-1 fastICA</h2>
@@ -720,7 +775,7 @@ non-Gaussian by optimizes the following objective:</p>
 <p>We assume that <span class="math inline">\(Y\)</span> has been
 column-centered, i.e., <span class="math inline">\(Y=CY\)</span> where
 <span
-class="math inline">\(C=I_n=\frac{1}{n}\boldsymbol{11}^\top\)</span>,
+class="math inline">\(C=I_n-\frac{1}{n}\boldsymbol{11}^\top\)</span>,
 and whitened, i.e., <span class="math inline">\(Y^\top=KY^\top\)</span>
 where <span class="math inline">\(K=D^{-1/2}U^\top\)</span>,
 eigen-decomposition of <span class="math inline">\(Y^\top Y/n\)</span>.
@@ -827,11 +882,11 @@ preprocess = function(X, n.comp=10){
   return(X1)
 }
 
-preprocess2 = function(X, n.comp=10){
+preprocess2 = function(X, n.comp=10, center = FALSE){
   n &lt;- nrow(X)
   p &lt;- ncol(X)
-  X &lt;- scale(X, scale = FALSE)
-  X &lt;- t(X)
+  if (center) X &lt;- scale(X, scale = FALSE)
+  # X &lt;- t(X)
   
   svd.X &lt;- svd(X)
   X1 &lt;- svd.X$u[,1:n.comp] %*% diag(rep(1, n.comp)) %*% t(svd.X$v[,1:n.comp])
@@ -941,7 +996,44 @@ cor(L, t(X1) %*% w)</code></pre>
 <pre><code>           [,1]
 [1,] 0.06702229</code></pre>
 <pre class="r"><code>plot(t(X1) %*% w)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>compute_objective(X1, w)</code></pre>
 <pre><code>[1] 0.4053189</code></pre>
 <p>If instead we have 10% 1s, the objective is not close to that of a
@@ -956,7 +1048,44 @@ cor(L, t(X1) %*% w)</code></pre>
 <pre><code>         [,1]
 [1,] 0.998208</code></pre>
 <pre class="r"><code>plot(t(X1) %*% w)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>compute_objective(X1, w)</code></pre>
 <pre><code>[1] 0.2807113</code></pre>
 <pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.3)
@@ -968,7 +1097,44 @@ cor(L, t(X1) %*% w)</code></pre>
 <pre><code>          [,1]
 [1,] 0.9994419</code></pre>
 <pre class="r"><code>plot(t(X1) %*% w)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>compute_objective(X1, w)</code></pre>
 <pre><code>[1] 0.4044505</code></pre>
 </div>
@@ -1131,7 +1297,7 @@ example:</p>
 X &lt;- sim_data$X
 FF &lt;- sim_data$FF
 plot(X %*% FF)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="unbalanced-1-group" class="section level4">
 <h4>Unbalanced 1 group</h4>
 <pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.2)
@@ -1270,7 +1436,44 @@ table(obj)</code></pre>
                 -1 -0.454256762579497  0.454256762579497                  1 
                 27                 22                 20                 31 </code></pre>
 <pre class="r"><code>plot(elbo_list)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>min(elbo_list)</code></pre>
 <pre><code>[1] -197818.1</code></pre>
 <pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
@@ -1280,11 +1483,48 @@ mse          1.0000000 -0.9991268   0.9913309
 elbo_list   -0.9991268  1.0000000  -0.9959549
 abs_cor_max  0.9913309 -0.9959549   1.0000000</code></pre>
 <pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-2">
+Past versions of unnamed-chunk-18-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-2.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="asymm-rad" class="section level5">
 <h5>Asymm Rad</h5>
@@ -1318,7 +1558,44 @@ table(obj)</code></pre>
                 -1 -0.454256762579497  0.454256762579497                  1 
                 27                 22                 21                 30 </code></pre>
 <pre class="r"><code>plot(elbo_list)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>min(elbo_list)</code></pre>
 <pre><code>[1] -197798.9</code></pre>
 <pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
@@ -1328,11 +1605,48 @@ mse          1.0000000 -0.9991338   0.9916345
 elbo_list   -0.9991338  1.0000000  -0.9961468
 abs_cor_max  0.9916345 -0.9961468   1.0000000</code></pre>
 <pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-2">
+Past versions of unnamed-chunk-21-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-2.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-22-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="many-unbalanced-groups" class="section level4">
@@ -1376,7 +1690,44 @@ X &lt;- sim_data$X
 L &lt;- sim_data$L
 FF &lt;- sim_data$FF
 plot(X %*% FF)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>obj &lt;- c()
 elbo_list &lt;- c()
 cor_max &lt;- c()
@@ -1399,10 +1750,198 @@ for (i in 1:100) {
   # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
 }
 plot(cor_max)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-25-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+<pre class="r"><code>image(t(est_L))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="whiten-flashier" class="section level3">
+<h3>Whitening + flashier</h3>
+<p>We have previously shown that applying centering and whitening +
+flashier with Rademacher prior is equivalent to fastICA. Here we want to
+examine the performance the former procedure in a <span
+class="math inline">\(K=5\)</span> unbalanced groups example (with <span
+class="math inline">\(p=0.2\)</span>).</p>
+<p>Formally, we apply the following transformation to the data matrix
+before applying flashier:</p>
+<p><span class="math display">\[
+\begin{align}
+\widehat{Y} &amp;=\left(I_n-\frac{1}{n}\boldsymbol{11}^\top\right)
+Y   \\
+\widehat{Y}_C &amp;= U_C V_C^\top,
+\end{align}
+\]</span> where <span class="math inline">\(U_K\)</span> and <span
+class="math inline">\(V_K\)</span> consist of the top <span
+class="math inline">\(C\)</span> left and right singular vectors of the
+column-centered data matrix <span
+class="math inline">\(\widehat{Y}\)</span>. However, it seems that when
+<span class="math inline">\(p\)</span> is near the thresholds, e.g.,
+<span class="math inline">\(p=0.2\)</span>, centering makes thing worse
+if the algorithm is not initialized from one of the true sources. As
+before, we initialized flashier from 100 random vectors with 100
+different seeds. If we look closely at the estimated sources, we can see
+that they are approximately balanced, i.e., the number of ones and the
+number of negative ones are approximately 1:1. A good news is that ELBO
+seems to be positively correlated with <span
+class="math inline">\(\hat{\ell}-\ell\)</span> correlation, so whitening
+seems to have de-emphasized the fit term in the ELBO objective.</p>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(
+  K=5, n=100, p=1000, percent_one = 0.2
+)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+FF &lt;- sim_data$FF
+X2 &lt;- preprocess2(X, n.comp = 10, center = T)</code></pre>
+<pre class="r"><code># init from truth
+l &lt;- matrix(L[,1], ncol = 1)
+f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
+flash_res_init_from_true_L &lt;- flash_init(X2) |&gt;
+        flash_factors_init(init = list(l, f),
+                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+        flash_backfit(verbose = 0)
+cor(L, flash_res_init_from_true_L$L_pm)</code></pre>
+<pre><code>              [,1]
+[1,]  1.000000e+00
+[2,]  5.724587e-17
+[3,] -6.250000e-02
+[4,]  3.469447e-17
+[5,]  6.250000e-02</code></pre>
+<pre class="r"><code>obj &lt;- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list &lt;- c() # final elbo of each solution
+cor_max &lt;- c() # maximum correlation between the estmate and a true source
+mse &lt;- c()
+est_L &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(nrow(X2)), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X2) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
+}
+
+# harmonize the signs for better visualization
+cors &lt;- cor(est_L[, 1], est_L)
+est_L[, cors &lt; 0] &lt;- -est_L[, cors &lt; 0]
+
+plot(cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(elbo_list, abs(cor_max))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(elbo_list, abs(cor_max))</code></pre>
+<pre><code>[1] 0.6173323</code></pre>
+<pre class="r"><code>n.ones &lt;- rep(0, 100)
+for (i in 1:100) {
+   n.ones[i] &lt;- (table(est_L[,i] &gt; 0) / 100)[1]
+}
+n.ones</code></pre>
+<pre><code>  [1] 0.46 0.52 0.51 0.52 0.48 0.50 0.47 0.36 0.46 0.50 0.50 0.49 0.50 0.50 0.45
+ [16] 0.63 0.64 0.49 0.50 0.48 0.44 0.44 0.50 0.50 0.47 0.50 0.44 0.52 0.50 0.52
+ [31] 0.48 0.53 0.48 0.51 0.46 0.64 0.48 0.48 0.48 0.50 0.48 0.52 0.51 0.49 0.46
+ [46] 0.46 0.43 0.47 0.47 0.53 0.51 0.41 0.51 0.47 0.48 0.50 0.45 0.50 0.51 0.37
+ [61] 0.50 0.64 0.48 0.50 0.49 0.50 0.48 0.47 0.49 0.41 0.48 0.50 0.54 0.50 0.48
+ [76] 0.57 0.50 0.37 0.50 0.51 0.58 0.47 0.64 0.47 0.51 0.54 0.46 0.50 0.49 0.47
+ [91] 0.47 0.49 0.52 0.64 0.53 0.50 0.45 0.50 0.48 0.49</code></pre>
+<pre class="r"><code>median(n.ones)</code></pre>
+<pre><code>[1] 0.495</code></pre>
+<p>What if we drop the centering step? With 100 random initializations,
+49 of them result in an estimate that is almost perfect recovery of one
+of the 5 true sources. Furthermore, these solutions have the highest
+ELBO.</p>
+<pre class="r"><code>X2 &lt;- preprocess2(X, center = F)
+
+obj &lt;- c() # fastICA objective of the solutions, should be the same for all solution
+elbo_list &lt;- c() # final elbo of each solution
+cor_max &lt;- c() # maximum correlation between the estmate and a true source
+mse &lt;- c()
+est_L &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+for (i in 1:100) {
+  set.seed(i)
+  l &lt;- matrix(rnorm(nrow(X2)), ncol = 1)
+  f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
+  flash_res_init_from_random_K1 &lt;- flash_init(X2) |&gt;
+          flash_factors_init(init = list(l, f),
+                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
+          flash_backfit(verbose = 0)
+  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
+  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
+  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
+  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
+  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
+  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
+}
+
+# harmonize the signs for better visualization
+cors &lt;- cor(est_L[, 1], est_L)
+est_L[, cors &lt; 0] &lt;- -est_L[, cors &lt; 0]
+
+plot(cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(elbo_list, abs(cor_max))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-30-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(elbo_list, abs(cor_max))</code></pre>
+<pre><code>[1] 0.9723073</code></pre>
+<pre class="r"><code>n.ones &lt;- rep(0, 100)
+for (i in 1:100) {
+   n.ones[i] &lt;- (table(est_L[,i] &gt; 0) / 100)[1]
+}
+sum(abs(cor_max)&gt;0.99)</code></pre>
+<pre><code>[1] 49</code></pre>
+<pre class="r"><code>n.ones</code></pre>
+<pre><code>  [1] 0.20 0.80 0.55 0.80 0.29 0.20 0.80 0.20 0.71 0.59 0.30 0.70 0.46 0.80 0.80
+ [16] 0.80 0.80 0.77 0.40 0.57 0.80 0.20 0.39 0.20 0.80 0.19 0.39 0.80 0.20 0.20
+ [31] 0.74 0.20 0.62 0.34 0.20 0.45 0.68 0.30 0.80 0.80 0.20 0.42 0.44 0.75 0.29
+ [46] 0.20 0.61 0.47 0.80 0.47 0.20 0.80 0.47 0.42 0.20 0.44 0.20 0.40 0.80 0.80
+ [61] 0.80 0.80 0.20 0.50 0.56 0.41 0.20 0.52 0.80 0.39 0.80 0.80 0.80 0.20 0.44
+ [76] 0.56 0.24 0.20 0.20 0.51 0.20 0.65 0.13 0.47 0.09 0.61 0.20 0.54 0.39 0.49
+ [91] 0.44 0.20 0.20 0.48 0.80 0.20 0.43 0.80 0.62 0.20</code></pre>
+<pre class="r"><code># 
+image(t(est_L[, order(elbo_list, decreasing = T)]))</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-30-3.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="further-exploration" class="section level3">
 <h3>Further exploration</h3>
@@ -1502,62 +2041,7 @@ table(cor_max_flashierRad)</code></pre>
 0.612372435695795 
               100 </code></pre>
 <pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="whitening-flashier" class="section level4">
-<h4>whitening + flashier</h4>
-<p>Here we tried whitening before applying flashier</p>
-<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=2, percent_one = 0.2)
-X &lt;- sim_data$X
-L &lt;- sim_data$L
-FF &lt;- sim_data$FF</code></pre>
-<pre class="r"><code>init_w &lt;- X1 %*% L[,1]
-w &lt;- fastica_r1update(init_w, X1)
-max(abs(cor(L, t(X1) %*% w)))</code></pre>
-<pre><code>[1] 0.6661797</code></pre>
-<pre class="r"><code>fastica_l &lt;- t(X1) %*% w</code></pre>
-<pre class="r"><code>X2 &lt;- t(preprocess2(X))
-
-# init from truth
-l &lt;- matrix(L[,1], ncol = 1)
-f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
-flash_res_init_from_true_L &lt;- flash_init(X2) |&gt;
-        flash_factors_init(init = list(l, f),
-                           ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
-        flash_backfit(verbose = 0)
-cor(L, flash_res_init_from_true_L$L_pm)</code></pre>
-<pre><code>             [,1]
-[1,] 1.000000e+00
-[2,] 5.724587e-17</code></pre>
-<pre class="r"><code>obj &lt;- c() # fastICA objective of the solutions, should be the same for all solution
-elbo_list &lt;- c() # final elbo of each solution
-cor_max &lt;- c() # maximum correlation between the estmate and a true source
-mse &lt;- c()
-est_L &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
-for (i in 1:100) {
-  set.seed(i)
-  l &lt;- matrix(rnorm(nrow(X2)), ncol = 1)
-  f &lt;- t(solve(crossprod(l), crossprod(l, X2)))
-  flash_res_init_from_random_K1 &lt;- flash_init(X2) |&gt;
-          flash_factors_init(init = list(l, f),
-                             ebnm_fn = c(ebnm_rademacher, ebnm_normal)) |&gt;
-          flash_backfit(verbose = 0)
-  cor_tmp &lt;- cor(L, flash_res_init_from_random_K1$L_pm)
-  cor_max &lt;- c(cor_max, cor_tmp[which.max(abs(cor_tmp)), ])
-  obj &lt;- c(obj, compute_objective_s(flash_res_init_from_random_K1$L_pm))
-  elbo_list &lt;- c(elbo_list, flash_res_init_from_random_K1$elbo)
-  mse &lt;- c(mse, mean((flash_res_init_from_random_K1$L_pm %*%  t(flash_res_init_from_random_K1$F_pm) - L %*% t(FF))^2))
-  est_L[,i] &lt;- flash_res_init_from_random_K1$L_pm
-  # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
-}
-plot(obj)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot(cor_max)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>cor(elbo_list, abs(cor_max))</code></pre>
-<pre><code>[1] 0.2879215</code></pre>
-<pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
