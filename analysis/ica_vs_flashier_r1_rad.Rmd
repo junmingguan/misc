@@ -700,7 +700,11 @@ $$
 \widehat{Y}_C &= U_C V_C^\top, 
 \end{align}
 $$
-where $U_K$ and $V_K$ consist of the top $C$ left and right singular vectors of the column-centered data matrix $\widehat{Y}$. However, it seems that when $p$ is near the thresholds, e.g., $p=0.2$, centering makes thing worse if the algorithm is not initialized from one of the true sources. As before, we initialized flashier from 100 random vectors with 100 different seeds. If we look closely at the estimated sources, we can see that they are approximately balanced, i.e., the number of ones and the number of negative ones are approximately 1:1. A good news is that ELBO seems to be positively correlated with $\hat{\ell}-\ell$ correlation, so whitening seems to have de-emphasized the fit term in the ELBO objective.
+where $U_K$ and $V_K$ consist of the top $C$ left and right singular vectors of the column-centered data matrix $\widehat{Y}$. 
+
+Now let $S=\widehat{Y}_C \widehat{Y}_C^\top=U_C U_C^\top$. So $S^2 = U_CU_C^\top = S$, i.e., $S$ is a projection matrix, spanning the principal $C$-dimensional subspace of $Y$. As long as $\mathbb{E}_q[\boldsymbol{\ell}]$ lies in this subspace, the fit term in the ELBO objective is constant.
+
+However, it seems that when $p$ is near the thresholds, e.g., $p=0.2$, centering makes thing worse if the algorithm is not initialized from one of the true sources. As before, we initialized flashier from 100 random vectors with 100 different seeds. If we look closely at the estimated sources, we can see that they are approximately balanced, i.e., the number of ones and the number of negative ones are approximately 1:1. A good news is that ELBO seems to be positively correlated with $\hat{\ell}-\ell$ correlation, so whitening seems to have de-emphasized the fit term in the ELBO objective.
 
 ```{r}
 sim_data <- simulate_unbalanaced_rad_groups(
