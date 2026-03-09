@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreec56d09c6643bc2aca831dab11d5c4551bd61b619targetblankc56d09ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree735cc7cfe708236fa2eb7863fa54521c82ba75f3targetblank735cc7ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/c56d09c6643bc2aca831dab11d5c4551bd61b619" target="_blank">c56d09c</a>
+<a href="https://github.com/junmingguan/misc/tree/735cc7cfe708236fa2eb7863fa54521c82ba75f3" target="_blank">735cc7c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreec56d09c6643bc2aca831dab11d5c4551bd61b619targetblankc56d09ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree735cc7cfe708236fa2eb7863fa54521c82ba75f3targetblank735cc7ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/c56d09c6643bc2aca831dab11d5c4551bd61b619" target="_blank">c56d09c</a>.
+<a href="https://github.com/junmingguan/misc/tree/735cc7cfe708236fa2eb7863fa54521c82ba75f3" target="_blank">735cc7c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -618,6 +618,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/735cc7cfe708236fa2eb7863fa54521c82ba75f3/analysis/ica_vs_flashier_r1_rad.Rmd" target="_blank">735cc7c</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+<td>
+wflow_publish(c("analysis/ica_vs_flashier_r1_rad.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/ica_vs_flashier_r1_rad.html" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/c56d09c6643bc2aca831dab11d5c4551bd61b619/analysis/ica_vs_flashier_r1_rad.Rmd" target="_blank">c56d09c</a>
 </td>
 <td>
@@ -686,26 +720,6 @@ source(&#39;code/ebnm_rademacher.R&#39;)</code></pre>
   FF = matrix(rnorm(p*K), nrow = p, ncol=K)
   X = L %*% t(FF) + rnorm(n*p, 0, noise)
   return(list(X=X, L=L, FF=FF))
-}</code></pre>
-<pre class="r"><code>ebcd_rad_r1_power_update &lt;- function(X, s=1,init=NULL) {
-  if (is.null(init)) {
-    v &lt;- rnorm(nrow(X))
-    # v &lt;- rep(1, nrow(X)) # rnorm(nrow(X)) 
-    # v[sample(1:nrow(X), nrow(X) %/% 2, replace = F)] &lt;- -1
-  } else {
-    v &lt;- init
-  }
-  S &lt;- X %*% t(X)
-  diff &lt;- c()
-  for (i in 1:100) {
-    # v1 &lt;- ebnm_rademacher(x=S %*% v / sqrt(t(v) %*% S %*% v)[1,1], s=s)$posterior$mean
-    v_new &lt;- tanh(S %*% v / sqrt(t(v) %*% S %*% v)[1,1] / s^2)
-    # diff &lt;- c(diff, norm(v - v_new))
-    # diff &lt;- c(diff, cor(v, v_new)[1])
-    v &lt;- v_new
-  }
-  return(v)
-  # return(list(v_new, diff))
 }</code></pre>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
@@ -996,13 +1010,13 @@ cor(L, t(X1) %*% w)</code></pre>
 <pre><code>           [,1]
 [1,] 0.06702229</code></pre>
 <pre class="r"><code>plot(t(X1) %*% w)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
-Past versions of unnamed-chunk-7-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div id="fig-unnamed-chunk-6-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1021,7 +1035,18 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" target="_blank">d868d80</a>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-6-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-6-1.png" target="_blank">d868d80</a>
 </td>
 <td>
 junmingguan
@@ -1048,6 +1073,66 @@ cor(L, t(X1) %*% w)</code></pre>
 <pre><code>         [,1]
 [1,] 0.998208</code></pre>
 <pre class="r"><code>plot(t(X1) %*% w)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-7-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>compute_objective(X1, w)</code></pre>
+<pre><code>[1] 0.2807113</code></pre>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.3)
+X &lt;- sim_data$X
+L &lt;- sim_data$L
+X1 = preprocess(X)
+w &lt;- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
+cor(L, t(X1) %*% w)</code></pre>
+<pre><code>          [,1]
+[1,] 0.9994419</code></pre>
+<pre class="r"><code>plot(t(X1) %*% w)</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
@@ -1073,56 +1158,18 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" target="_blank">d868d80</a>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" target="_blank">94bb2cd</a>
 </td>
 <td>
 junmingguan
 </td>
 <td>
-2026-03-06
+2026-03-08
 </td>
 </tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>compute_objective(X1, w)</code></pre>
-<pre><code>[1] 0.2807113</code></pre>
-<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.3)
-X &lt;- sim_data$X
-L &lt;- sim_data$L
-X1 = preprocess(X)
-w &lt;- fastica_r1update(init_w = X1 %*% L[,1], X1 = X1)
-cor(L, t(X1) %*% w)</code></pre>
-<pre><code>          [,1]
-[1,] 0.9994419</code></pre>
-<pre class="r"><code>plot(t(X1) %*% w)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
-Past versions of unnamed-chunk-9-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
 <tr>
 <td>
-<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" target="_blank">d868d80</a>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-8-1.png" target="_blank">d868d80</a>
 </td>
 <td>
 junmingguan
@@ -1297,7 +1344,55 @@ example:</p>
 X &lt;- sim_data$X
 FF &lt;- sim_data$FF
 plot(X %*% FF)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-9-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="unbalanced-1-group" class="section level4">
 <h4>Unbalanced 1 group</h4>
 <pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(K=1, percent_one = 0.2)
@@ -1436,6 +1531,114 @@ table(obj)</code></pre>
                 -1 -0.454256762579497  0.454256762579497                  1 
                 27                 22                 20                 31 </code></pre>
 <pre class="r"><code>plot(elbo_list)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>min(elbo_list)</code></pre>
+<pre><code>[1] -197818.1</code></pre>
+<pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
+cor(cbind(mse, elbo_list, abs_cor_max))</code></pre>
+<pre><code>                   mse  elbo_list abs_cor_max
+mse          1.0000000 -0.9991268   0.9913309
+elbo_list   -0.9991268  1.0000000  -0.9959549
+abs_cor_max  0.9913309 -0.9959549   1.0000000</code></pre>
+<pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-2">
+Past versions of unnamed-chunk-17-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-2.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-17-2.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>image(t(est_L))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
@@ -1461,6 +1664,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-1.png" target="_blank">d868d80</a>
 </td>
 <td>
@@ -1474,15 +1688,7 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>min(elbo_list)</code></pre>
-<pre><code>[1] -197818.1</code></pre>
-<pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
-cor(cbind(mse, elbo_list, abs_cor_max))</code></pre>
-<pre><code>                   mse  elbo_list abs_cor_max
-mse          1.0000000 -0.9991268   0.9913309
-elbo_list   -0.9991268  1.0000000  -0.9959549
-abs_cor_max  0.9913309 -0.9959549   1.0000000</code></pre>
-<pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
+<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-2">
@@ -1508,6 +1714,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-2.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-18-2.png" target="_blank">d868d80</a>
 </td>
 <td>
@@ -1521,10 +1738,6 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="asymm-rad" class="section level5">
 <h5>Asymm Rad</h5>
@@ -1558,6 +1771,114 @@ table(obj)</code></pre>
                 -1 -0.454256762579497  0.454256762579497                  1 
                 27                 22                 21                 30 </code></pre>
 <pre class="r"><code>plot(elbo_list)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>min(elbo_list)</code></pre>
+<pre><code>[1] -197798.9</code></pre>
+<pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
+cor(cbind(mse, elbo_list, abs_cor_max))</code></pre>
+<pre><code>                   mse  elbo_list abs_cor_max
+mse          1.0000000 -0.9991338   0.9916345
+elbo_list   -0.9991338  1.0000000  -0.9961468
+abs_cor_max  0.9916345 -0.9961468   1.0000000</code></pre>
+<pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-2">
+Past versions of unnamed-chunk-20-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-2.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-20-2.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>image(t(est_L))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
@@ -1583,6 +1904,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-1.png" target="_blank">d868d80</a>
 </td>
 <td>
@@ -1596,15 +1928,7 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>min(elbo_list)</code></pre>
-<pre><code>[1] -197798.9</code></pre>
-<pre class="r"><code>abs_cor_max &lt;- abs(cor_max)
-cor(cbind(mse, elbo_list, abs_cor_max))</code></pre>
-<pre><code>                   mse  elbo_list abs_cor_max
-mse          1.0000000 -0.9991338   0.9916345
-elbo_list   -0.9991338  1.0000000  -0.9961468
-abs_cor_max  0.9916345 -0.9961468   1.0000000</code></pre>
-<pre class="r"><code>plot(elbo_list, cor_max)</code></pre>
+<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-2">
@@ -1630,6 +1954,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-2.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-21-2.png" target="_blank">d868d80</a>
 </td>
 <td>
@@ -1643,10 +1978,6 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>image(t(est_L[, order(elbo_list)]))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-22-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="many-unbalanced-groups" class="section level4">
@@ -1690,13 +2021,13 @@ X &lt;- sim_data$X
 L &lt;- sim_data$L
 FF &lt;- sim_data$FF
 plot(X %*% FF)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
-Past versions of unnamed-chunk-24-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div id="fig-unnamed-chunk-23-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1715,7 +2046,18 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" target="_blank">d868d80</a>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-23-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-23-1.png" target="_blank">d868d80</a>
 </td>
 <td>
 junmingguan
@@ -1750,6 +2092,56 @@ for (i in 1:100) {
   # flash_res_init_from_random_K1$L_ghat[[1]][1,1]
 }
 plot(cor_max)</code></pre>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-24-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>image(t(est_L))</code></pre>
 <p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
@@ -1775,6 +2167,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-25-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-25-1.png" target="_blank">d868d80</a>
 </td>
 <td>
@@ -1788,11 +2191,9 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<div id="whiten-flashier" class="section level3">
+<div id="whitening-flashier" class="section level3">
 <h3>Whitening + flashier</h3>
 <p>We have previously shown that applying centering and whitening +
 flashier with Rademacher prior is equivalent to fastICA. Here we want to
@@ -1869,9 +2270,57 @@ cors &lt;- cor(est_L[, 1], est_L)
 est_L[, cors &lt; 0] &lt;- -est_L[, cors &lt; 0]
 
 plot(cor_max)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
+Past versions of unnamed-chunk-28-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-28-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-28-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-28-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(elbo_list, abs(cor_max))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>cor(elbo_list, abs(cor_max))</code></pre>
 <pre><code>[1] 0.6173323</code></pre>
 <pre class="r"><code>n.ones &lt;- rep(0, 100)
@@ -1920,9 +2369,83 @@ cors &lt;- cor(est_L[, 1], est_L)
 est_L[, cors &lt; 0] &lt;- -est_L[, cors &lt; 0]
 
 plot(cor_max)</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
+Past versions of unnamed-chunk-29-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(elbo_list, abs(cor_max))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-30-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-2">
+Past versions of unnamed-chunk-29-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-2.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cor(elbo_list, abs(cor_max))</code></pre>
 <pre><code>[1] 0.9723073</code></pre>
 <pre class="r"><code>n.ones &lt;- rep(0, 100)
@@ -1941,7 +2464,7 @@ sum(abs(cor_max)&gt;0.99)</code></pre>
  [91] 0.44 0.20 0.20 0.48 0.80 0.20 0.43 0.80 0.62 0.20</code></pre>
 <pre class="r"><code># 
 image(t(est_L[, order(elbo_list, decreasing = T)]))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-30-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-29-3.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="further-exploration" class="section level3">
 <h3>Further exploration</h3>
@@ -2041,7 +2564,55 @@ table(cor_max_flashierRad)</code></pre>
 0.612372435695795 
               100 </code></pre>
 <pre class="r"><code>image(t(est_L))</code></pre>
-<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
+Past versions of unnamed-chunk-32-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-32-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/94bb2cd11643dad04a67dfdaa33a29752f304f02/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-1.png" target="_blank">94bb2cd</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/d868d80343f126dd69324e4dd6808bd40cd6496f/docs/figure/ica_vs_flashier_r1_rad.Rmd/unnamed-chunk-32-1.png" target="_blank">d868d80</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
