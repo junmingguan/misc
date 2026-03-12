@@ -72,6 +72,29 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -386,7 +409,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-11-13
+<strong>Last updated:</strong> 2026-03-12
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -433,15 +456,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree65a5c9c907e98735bfe6d9b366a6993af4e56f7etargetblank65a5c9ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea5e2613a2992d075de2080e66a2008fd3a4c7139targetblanka5e2613a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/65a5c9c907e98735bfe6d9b366a6993af4e56f7e" target="_blank">65a5c9c</a>
+<a href="https://github.com/junmingguan/misc/tree/a5e2613a2992d075de2080e66a2008fd3a4c7139" target="_blank">a5e2613</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree65a5c9c907e98735bfe6d9b366a6993af4e56f7etargetblank65a5c9ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea5e2613a2992d075de2080e66a2008fd3a4c7139targetblanka5e2613a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -451,7 +474,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/65a5c9c907e98735bfe6d9b366a6993af4e56f7e" target="_blank">65a5c9c</a>.
+<a href="https://github.com/junmingguan/misc/tree/a5e2613a2992d075de2080e66a2008fd3a4c7139" target="_blank">a5e2613</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -466,12 +489,23 @@ were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
 Untracked files:
+    Untracked:  analysis/eb_ica.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
     Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
     Untracked:  analysis/preemble.tex
+    Untracked:  analysis/references.bib
+    Untracked:  code/ica_functions.R
+    Untracked:  code/references.bib
+
+Unstaged changes:
+    Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
+    Modified:   code/ebnm_rademacher.R
 
 </code></pre>
 <p>
@@ -515,6 +549,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/a5e2613a2992d075de2080e66a2008fd3a4c7139/analysis/index.Rmd" target="_blank">a5e2613</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-12
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/71e288edbcb53152802630e8725e6f1604331213/docs/index.html" target="_blank">71e288e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2025-11-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -630,7 +698,7 @@ Rmd
 junmingguan
 </td>
 <td>
-2025-11-08
+2025-11-07
 </td>
 <td>
 Start workflowr project.
@@ -653,9 +721,54 @@ where rank-1 fastICA almost perfectly picks up one column of the true
 mixing matrix, but flashier does not. Our conjecture is that flashier’s
 failure arises from an overemphasis on the <em>fit</em> term. We plan to
 investigate this further and potentially improve flashier’s rank-1
-update. More concretely, we posit this following model for an observed
-data matrix <span class="math inline">\(\boldsymbol{Y}\in
-\mathbb{R}^{n\times d}\)</span>:</p>
+update.</p>
+<div id="fastica-as-a-bayesian-ica-with-rademacher-prior-on-the-sources"
+class="section level2">
+<h2>fastICA as a Bayesian ICA with Rademacher prior on the sources</h2>
+<p>rank-1 FastICA can be considered as an EM algorithm with a Rademacher
+prior on the sources, with a spectral shift step to accelerate
+convergence <span class="citation">(Särelä and Valpola 2005)</span>.
+Therefore, it is also equivalent to rank-1 EBCD with Rademacher prior.
+Consider the model for <span class="math inline">\(Y\in
+\mathbb{R}^{n\times d}\)</span></p>
+<p><span class="math display">\[
+Y_{ij} \sim \mathcal{N}(a_i s_j, \sigma^2), \quad s_i \sim
+\text{Rad}(1/2),\quad \sum_{i}^n a_i^2=1.
+\]</span></p>
+<p>fastICA estimates <span
+class="math inline">\(\mathbf{s}=\begin{bmatrix}s_1 &amp; \dots
+s_d\end{bmatrix}^\top\)</span> by first estimating the “inverse” of
+<span class="math inline">\(\mathbf{a}\)</span>, via the following
+steps:</p>
+<ul>
+<li><p>Pick an initial <span
+class="math inline">\(\mathbf{w}\)</span></p></li>
+<li><p>Iterate</p>
+<ul>
+<li><p><span class="math inline">\(\mathbf{s}=Y^\top
+\mathbf{w}\)</span></p></li>
+<li><p>Denoising: <span
+class="math inline">\(\mathbf{s}^+=f(\mathbf{s})\)</span></p></li>
+<li><p><span class="math inline">\(\mathbf{w}^+=Y
+\mathbf{s}^+\)</span></p></li>
+<li><p><span class="math inline">\(\mathbf{w}=\mathbf{w}^+ /
+\|\mathbf{w}^+\|\)</span>.</p></li>
+</ul></li>
+</ul>
+<p>The first two steps are the E-step that constructs the estimated
+posterior mean <span class="math inline">\(\mathbb{E}[\mathbf{s} \mid Y,
+\mathbf{w}]\)</span>, and the last two steps are the M-step that
+maximize <span class="math inline">\(\mathbb{E}_q[\log p(\mathbf{s}, Y
+\mid \mathbf{w})]\)</span>.</p>
+<div id="analyses" class="section level3">
+<h3>Analyses</h3>
+</div>
+</div>
+<div id="rank-1-flashier-with-stand-in-matrix" class="section level2">
+<h2>Rank-1 flashier with stand-in matrix</h2>
+<p>Wwe posit this following model for an observed data matrix <span
+class="math inline">\(\boldsymbol{Y}\in \mathbb{R}^{n\times
+d}\)</span>:</p>
 <p><span class="math display">\[
 \begin{aligned}
 \boldsymbol{Y} &amp;= \boldsymbol{M}+ \boldsymbol{\ell f}^\top +
@@ -672,8 +785,8 @@ as a ‘stand-in’ matrix—if one chooses to fit a rank-1 model even if the
 true signals are of rank&gt;1, <span
 class="math inline">\(\boldsymbol{M}\)</span> will capture any remaining
 true signals without leaking any to the error term.</p>
-<div id="objectives" class="section level2">
-<h2>Objectives</h2>
+<div id="objective" class="section level3">
+<h3>Objective</h3>
 <ol style="list-style-type: decimal">
 <li><p>Find a small example in which fastICA works but PCA does
 not.</p></li>
@@ -696,14 +809,27 @@ truncated SVD on <span class="math inline">\(\boldsymbol{Y} -
 </ul></li>
 </ol>
 </div>
-<div id="analyses" class="section level2">
-<h2>Analyses</h2>
+<div id="anlayses" class="section level3">
+<h3>Anlayses</h3>
 <ul>
 <li><p><a href="ica_vs_flash_r1_update_1.html">Analysis 1</a></p>
 <ul>
 <li>exploration of 1, 3 and 4.</li>
 </ul></li>
 </ul>
+</div>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+<div id="ref-DSS" class="csl-entry">
+Särelä, Jaakko, and Harri Valpola. 2005. <span>“Denoising Source
+Separation.”</span> <em>Journal of Machine Learning Research</em> 6 (9):
+233–72. <a
+href="http://jmlr.org/papers/v6/sarela05a.html">http://jmlr.org/papers/v6/sarela05a.html</a>.
+</div>
 </div>
 </div>
 </div>
