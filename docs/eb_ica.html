@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="junmingguan" />
+
+<meta name="date" content="2026-03-03" />
+
+<title>eb_ica</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">misc</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/junmingguan/misc">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">eb_ica</h1>
+<h4 class="author">junmingguan</h4>
+<h4 class="date">2026-03-03</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-03-12
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>misc/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251108code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251108code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251108)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree1eb2758edcc8af25f38b4601de8b96dbcbc6eaectargetblank1eb2758a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/junmingguan/misc/tree/1eb2758edcc8af25f38b4601de8b96dbcbc6eaec" target="_blank">1eb2758</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree1eb2758edcc8af25f38b4601de8b96dbcbc6eaectargetblank1eb2758a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/junmingguan/misc/tree/1eb2758edcc8af25f38b4601de8b96dbcbc6eaec" target="_blank">1eb2758</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
+    Untracked:  analysis/preemble.tex
+    Untracked:  analysis/references.bib
+    Untracked:  code/ica_functions.R
+    Untracked:  code/references.bib
+
+Unstaged changes:
+    Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
+    Modified:   code/ebnm_rademacher.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/eb_ica.Rmd</code>) and HTML
+(<code>docs/eb_ica.html</code>) files. If you’ve configured a remote Git
+repository (see <code>?wflow_git_remote</code>), click on the hyperlinks
+in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/1eb2758edcc8af25f38b4601de8b96dbcbc6eaec/analysis/eb_ica.Rmd" target="_blank">1eb2758</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-12
+</td>
+<td>
+wflow_publish("analysis/eb_ica.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We examine an empirical Bayes version of ICA, where the prior <span
+class="math inline">\(p_\pi(s_i)=\text{Rad}(s_i;\ \pi)\)</span> is
+estimated from the data. The steps to find one source are as
+follows:</p>
+<ul>
+<li><p>M-step: <span class="math inline">\(\mathbf{w} = Y \mathbf{s}^+ /
+\| Y \mathbf{s}^+ \|\)</span></p></li>
+<li><p>E-step:</p>
+<p><span class="math display">\[
+\begin{align}
+(\hat{q}(\mathbf{s}), \hat{\pi}) &amp;=\arg \max_{q, \pi}
+\mathbb{E}_q\left[\log p(\mathbf{s}, Y \mid \mathbf{w})\right] \\
+\\
+&amp;= \arg \max_{q, \pi} \mathbb{E}_q\left[ \log p(Y \mid \mathbf{s},
+\mathbf{w}) + \sum \log p_\pi(s_i )\right] \\
+&amp;= \arg \max_{q, \pi}  \left\{-\frac{1}{2\sigma^2} (-2
+\text{tr}(\mathbb{E}_q[\mathbf{s}]^\top Y^\top \mathbf{w}) +
+\mathbb{E}_q\|\mathbf{s}\|^2) -\sum\text{KL}\Big(q(s_i)\ \|\
+p_\pi(s_i)\Big)\right\}
+\end{align}
+\]</span></p>
+<ul>
+<li>solved by <span class="math inline">\(\text{EBNM}(Y^\top\mathbf{w},
+\sigma)\)</span></li>
+<li><span
+class="math inline">\(\mathbf{s}^+=\mathbb{E}_\hat{q}[\mathbf{s}]\)</span>.</li>
+</ul></li>
+</ul>
+<p>For a rank-K fit, we proceed as follows:</p>
+<ul>
+<li><p>M-step:</p>
+<ul>
+<li><p><span class="math inline">\(W_+ = YS^+\)</span></p></li>
+<li><p>Orthogonalization: <span class="math inline">\(W = U_+
+V_+^\top\)</span>, where <span class="math inline">\(W^+=U_+
+DV_+^\top\)</span>, which is equivalent to <span
+class="math inline">\(W= (W_+W_+^\top)^{-1/2} W_+\)</span> proposed in
+<span class="citation">[@Karhunenetal]</span>.</p></li>
+</ul></li>
+<li><p>E-step: for <span class="math inline">\(k=1,\dots,
+K\)</span>,</p>
+<ul>
+<li><p>Obtain <span class="math inline">\(\hat{q}_k,
+\hat{\pi}_k\)</span> by <span
+class="math inline">\(\text{EBNM}(Y^\top\mathbf{w}_k,
+\sigma)\)</span></p></li>
+<li><p><span
+class="math inline">\(\mathbf{s}_k^+=\mathbb{E}_\hat{q}[\mathbf{s}_k]\)</span>.</p></li>
+</ul></li>
+</ul>
+<pre class="r"><code>library(flashier)
+library(Matrix)
+library(fastICA)
+library(fastTopics)
+library(ebnm)
+source(&#39;code/ebcd_functions.R&#39;)
+source(&#39;code/ica_functions.R&#39;)
+source(&#39;code/ebnm_rademacher.R&#39;)</code></pre>
+<pre class="r"><code>simulate_unbalanaced_rad_groups &lt;- function(
+    K, n=100, p=1000, noise=1, percent_one=0.2) {
+  set.seed(1)
+  L = matrix(-1,nrow=n,ncol=K)
+  for(i in 1:K){L[sample(1:n,floor(percent_one*n)),i]=1}
+  FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+  X = L %*% t(FF) + rnorm(n*p, 0, noise)
+  return(list(X=X, L=L, FF=FF))
+}</code></pre>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(
+  K=3, n=100, p=1000, percent_one = 0.2, noise = 1
+)
+X   &lt;- sim_data$X
+L   &lt;- sim_data$L
+FF  &lt;- sim_data$FF
+X1  &lt;- preprocess(X)</code></pre>
+</div>
+<div id="unbalanced-3-groups" class="section level2">
+<h2>Unbalanced 3 groups</h2>
+<div id="rank-1-fit" class="section level3">
+<h3>rank 1 fit</h3>
+<pre class="r"><code>cor_max_ebica   &lt;- c() # maximum correlation between the estmate and a true source
+cor_max_fastica &lt;- c() # maximum correlation between the estmate and a true source
+
+est_S_ebica   &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+est_S_fastica &lt;- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+
+for (i in 1:100) {
+  set.seed(i)
+  s &lt;- matrix(rnorm(nrow(X)), ncol = 1)
+  w &lt;- X1 %*% s
+  ebica_res &lt;- ebica(t(X), K=1, 
+                       S_init = s)
+  fastica_w &lt;- fastica_r1update(w, X1)
+  fastica_s &lt;- t(X1) %*% fastica_w
+  cor_max_ebica &lt;- c(cor_max_ebica, max(abs(cor(L, ebica_res$S_plus))))
+  est_S_ebica[,i] &lt;- ebica_res$S_plus
+  cor_max_fastica &lt;- c(cor_max_fastica, max(abs(cor(L, fastica_s))))
+  est_S_fastica[,i] &lt;- fastica_s
+  
+}</code></pre>
+<pre><code>Converged in 3 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303279.9 
+Converged in 3 iterations. Final ELBO: -303290.3 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 3 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 5 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 3 iterations. Final ELBO: -303259.2 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 5 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303279.9 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 3 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303279.9 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 3 iterations. Final ELBO: -303259.2 
+Converged in 4 iterations. Final ELBO: -303290.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303279.9 
+Converged in 3 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303290.3 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303290.3 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 3 iterations. Final ELBO: -303290.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 5 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303290.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303042.3 
+Converged in 6 iterations. Final ELBO: -303290.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 5 iterations. Final ELBO: -303042.3 
+Converged in 3 iterations. Final ELBO: -303290.3 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 5 iterations. Final ELBO: -303042.3 
+Converged in 2 iterations. Final ELBO: -303279.9 
+Converged in 3 iterations. Final ELBO: -303042.3 
+Converged in 4 iterations. Final ELBO: -303042.3 
+Converged in 5 iterations. Final ELBO: -303279.9 
+Converged in 2 iterations. Final ELBO: -303259.2 
+Converged in 3 iterations. Final ELBO: -303042.3 </code></pre>
+<pre class="r"><code>table(abs(cor_max_ebica) &gt; 0.99)</code></pre>
+<pre><code>
+FALSE  TRUE 
+   43    57 </code></pre>
+<pre class="r"><code>table(abs(cor_max_fastica) &gt; 0.99)</code></pre>
+<pre><code>
+FALSE 
+  100 </code></pre>
+<pre class="r"><code>image(t(est_S_ebica[, order((cor_max_ebica), decreasing = T)]))</code></pre>
+<p><img src="figure/eb_ica.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>image(t(est_S_fastica[, order((cor_max_fastica), decreasing = T)]))</code></pre>
+<p><img src="figure/eb_ica.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="rank-3-fit" class="section level3">
+<h3>rank 3 fit</h3>
+<pre class="r"><code>K &lt;- 3
+ebica_res &lt;- ebica(t(X), K=K, 
+             S_init = NULL)</code></pre>
+<pre><code>Converged in 3 iterations. Final ELBO: -297232.8 </code></pre>
+<pre class="r"><code>cor(L, ebica_res$S_plus)</code></pre>
+<pre><code>              [,1]          [,2]          [,3]
+[1,] -5.724587e-17 -6.250000e-02  1.000000e+00
+[2,] -1.000000e+00 -1.734723e-17  5.724587e-17
+[3,]  1.734723e-17  1.000000e+00 -6.250000e-02</code></pre>
+<pre class="r"><code>fastica_res &lt;- fastICA(X, n.comp = K, alg.typ = &quot;parallel&quot;)
+cor(L, fastica_res$S)</code></pre>
+<pre><code>          [,1]       [,2]       [,3]
+[1,] 0.5610073 -0.2071364  0.8004757
+[2,] 0.5797838 -0.5914011 -0.5590788
+[3,] 0.5534336  0.7897468 -0.2615436</code></pre>
+</div>
+<div id="rank-4-fit" class="section level3">
+<h3>rank 4 fit</h3>
+<pre class="r"><code>K &lt;- 4
+ebica_res &lt;- ebica(t(X), K=K, 
+             S_init = NULL)</code></pre>
+<pre><code>Converged in 4 iterations. Final ELBO: -296086.9 </code></pre>
+<pre class="r"><code>cor(L, ebica_res$S_plus)</code></pre>
+<pre><code>              [,1]       [,2]          [,3]          [,4]
+[1,] -5.724587e-17  0.5837923  6.250000e-02 -1.000000e+00
+[2,] -1.000000e+00 -0.2810852  1.734723e-17 -5.724587e-17
+[3,]  1.734723e-17  0.5837923 -1.000000e+00  6.250000e-02</code></pre>
+<pre class="r"><code>fastica_res &lt;- fastICA(X, n.comp = K, alg.typ = &quot;parallel&quot;)
+cor(L, fastica_res$S)</code></pre>
+<pre><code>            [,1]        [,2]        [,3]        [,4]
+[1,]  0.71950860 -0.08927415  0.12029707 -0.67695948
+[2,] -0.04814472 -0.94855271 -0.30994530  0.01850681
+[3,] -0.72395529  0.03350308 -0.03122539 -0.68715783</code></pre>
+</div>
+</div>
+<div id="unbalanced-9-groups" class="section level2">
+<h2>Unbalanced 9 groups</h2>
+<pre class="r"><code>sim_data &lt;- simulate_unbalanaced_rad_groups(
+  K=9, n=100, p=1000, percent_one = 0.2, noise = 1
+)
+X   &lt;- sim_data$X
+L   &lt;- sim_data$L
+FF  &lt;- sim_data$FF
+X1  &lt;- preprocess(X)</code></pre>
+<pre class="r"><code>K &lt;- 9
+ebica_res &lt;- ebica(t(X), K=K, 
+             S_init = NULL)</code></pre>
+<pre><code>Converged in 16 iterations. Final ELBO: -572191.6 </code></pre>
+<pre class="r"><code>cor(L, ebica_res$S_plus)</code></pre>
+<pre><code>              [,1]          [,2]        [,3]          [,4]          [,5]
+ [1,] -6.25000e-02 -6.250000e-02  0.03340765 -6.250000e-02  1.000000e+00
+ [2,] -6.25000e-02 -1.214306e-16 -0.57906604 -1.734723e-17  5.724587e-17
+ [3,] -5.89806e-17 -1.875000e-01 -0.18931005  1.000000e+00 -6.250000e-02
+ [4,]  6.25000e-02  1.250000e-01  0.31180478  6.250000e-02  3.469447e-17
+ [5,] -1.00000e+00 -6.250000e-02 -0.13363060  5.898060e-17  6.250000e-02
+ [6,]  6.25000e-02  6.250000e-02  0.03340765  5.030698e-17 -5.377643e-17
+ [7,] -6.25000e-02 -6.250000e-02 -0.52338659  1.875000e-01 -6.250000e-02
+ [8,] -6.25000e-02 -1.000000e+00 -0.18931005  1.875000e-01  6.250000e-02
+ [9,]  6.25000e-02  1.250000e-01  0.14476653 -2.500000e-01 -6.250000e-02
+               [,6]    [,7]          [,8]        [,9]
+ [1,] -1.048264e-01  0.0625 -5.377643e-17  0.02238551
+ [2,]  3.170035e-07  0.0625  6.250000e-02  0.63506661
+ [3,]  1.572469e-01  0.2500  5.030698e-17  0.07808380
+ [4,]  6.813812e-01 -0.0625  6.250000e-02  0.52313892
+ [5,] -9.548081e-06  0.0625 -6.250000e-02  0.02186438
+ [6,] -1.040346e-05 -0.0625  1.000000e+00  0.07756263
+ [7,]  6.813912e-01  0.0625 -6.250000e-02 -0.31180410
+ [8,]  2.932995e-06  0.1250 -6.250000e-02  0.02238552
+ [9,] -5.242434e-02 -1.0000  6.250000e-02 -0.03384371</code></pre>
+<pre class="r"><code>fastica_res &lt;- fastICA(X, n.comp = K, alg.typ = &quot;parallel&quot;)
+cor(L, fastica_res$S)</code></pre>
+<pre><code>             [,1]        [,2]        [,3]        [,4]        [,5]        [,6]
+ [1,]  0.01266385 -0.12360502  0.21550994  0.61493754 -0.09778762 -0.12018950
+ [2,]  0.21512020 -0.04789910 -0.28777603  0.27452589 -0.45819531  0.46578776
+ [3,]  0.11493562  0.48578339  0.02800915  0.09590862  0.45858479  0.44898289
+ [4,]  0.08202316  0.11822699  0.09854783 -0.03705956  0.42874365 -0.46658797
+ [5,]  0.13025949 -0.04518180 -0.22047010 -0.61628075 -0.11602071  0.23789488
+ [6,]  0.62387803 -0.01471223  0.12169720  0.13214526  0.37461126  0.22498648
+ [7,]  0.49920292  0.06348860 -0.60894900  0.02729623  0.09223617 -0.38166148
+ [8,]  0.49425877  0.05896283  0.59224129 -0.16451246 -0.37864899  0.01661035
+ [9,] -0.05642200  0.71903387 -0.04562637 -0.03314662 -0.31929668 -0.33972816
+             [,7]         [,8]        [,9]
+ [1,]  0.04943659 -0.539379426 -0.49077803
+ [2,]  0.16725648  0.490871802 -0.31028679
+ [3,] -0.54632858  0.043839780 -0.16447667
+ [4,]  0.18324213  0.498382769 -0.53195760
+ [5,]  0.09422399 -0.425729616 -0.53922928
+ [6,]  0.57210827 -0.061019137  0.23400377
+ [7,] -0.45840499 -0.093417343  0.02259182
+ [8,] -0.47650475 -0.006533553 -0.04461892
+ [9,]  0.47527765 -0.075946073  0.16097573</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 26.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Los_Angeles
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] fastTopics_0.6-192 fastICA_1.2-7      Matrix_1.6-4       flashier_1.0.54   
+[5] ebnm_1.1-34        workflowr_1.7.1   
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1     viridisLite_0.4.2    dplyr_1.1.4         
+ [4] fastmap_1.2.0        lazyeval_0.2.2       promises_1.3.0      
+ [7] digest_0.6.37        lifecycle_1.0.4      processx_3.8.2      
+[10] invgamma_1.1         magrittr_2.0.3       compiler_4.3.1      
+[13] rlang_1.1.4          sass_0.4.9           progress_1.2.3      
+[16] tools_4.3.1          utf8_1.2.4           yaml_2.3.10         
+[19] data.table_1.16.2    knitr_1.48           prettyunits_1.2.0   
+[22] htmlwidgets_1.6.4    scatterplot3d_0.3-44 RColorBrewer_1.1-3  
+[25] Rtsne_0.17           purrr_1.0.2          grid_4.3.1          
+[28] fansi_1.0.6          git2r_0.35.0         colorspace_2.1-1    
+[31] ggplot2_3.5.1        scales_1.3.0         gtools_3.9.5        
+[34] cli_3.6.3            rmarkdown_2.28       crayon_1.5.3        
+[37] generics_0.1.3       RcppParallel_5.1.9   rstudioapi_0.15.0   
+[40] httr_1.4.7           pbapply_1.7-2        cachem_1.1.0        
+[43] stringr_1.5.1        splines_4.3.1        parallel_4.3.1      
+[46] softImpute_1.4-1     matrixStats_1.3.0    vctrs_0.6.5         
+[49] jsonlite_1.8.9       callr_3.7.3          hms_1.1.3           
+[52] mixsqp_0.3-54        ggrepel_0.9.6        irlba_2.3.5.1       
+[55] horseshoe_0.2.0      trust_0.1-8          plotly_4.10.4       
+[58] jquerylib_0.1.4      tidyr_1.3.1          glue_1.8.0          
+[61] ps_1.7.5             uwot_0.1.16          cowplot_1.1.3       
+[64] stringi_1.8.4        Polychrome_1.5.1     gtable_0.3.6        
+[67] later_1.3.2          quadprog_1.5-8       munsell_0.5.1       
+[70] tibble_3.2.1         pillar_1.9.0         htmltools_0.5.8.1   
+[73] truncnorm_1.0-9      R6_2.5.1             rprojroot_2.0.3     
+[76] evaluate_1.0.1       lattice_0.21-8       highr_0.11          
+[79] RhpcBLASctl_0.23-42  SQUAREM_2021.1       ashr_2.2-63         
+[82] httpuv_1.6.14        bslib_0.8.0          Rcpp_1.0.13         
+[85] deconvolveR_1.2-1    whisker_0.4.1        xfun_0.48           
+[88] fs_1.6.4             getPass_0.2-4        pkgconfig_2.0.3     </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
