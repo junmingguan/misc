@@ -42,6 +42,13 @@ The first two steps are the E-step that constructs the estimated posterior mean 
 ### Analyses
 
 -   [Initial exploration of EB ICA](eb_ica.html)
+-   [Exploration of flashier with Rademacher prior](ica_vs_flashier_rad_r1.html)
+
+### Some observations
+
+-   It seems that in the unbalanced binary ($\pm 1$) groups case, As the number of groups increaes, it becomes more likely for a rank-1 EB ICA fit or flashier with Rademacher prior fit with a random initialization to converge to a same solution.
+
+-   Fitting a parallel ank-\$K_0\$ EB ICA model ($K_0 > 1$) is more likely to recover some of the true sources. However, a deflation scheme does not seem to work well, probably because of the initial poor rank-1 fit.
 
 ## Rank-1 flashier with stand-in matrix
 
