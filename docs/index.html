@@ -409,7 +409,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-03-12
+<strong>Last updated:</strong> 2026-03-13
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -456,15 +456,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree35f3d4427957e283303206098841d86f858e7087targetblank35f3d44a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree15704b735f35a1ea0079dfd991d74f2361d7e212targetblank15704b7a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/35f3d4427957e283303206098841d86f858e7087" target="_blank">35f3d44</a>
+<a href="https://github.com/junmingguan/misc/tree/15704b735f35a1ea0079dfd991d74f2361d7e212" target="_blank">15704b7</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree35f3d4427957e283303206098841d86f858e7087targetblank35f3d44a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree15704b735f35a1ea0079dfd991d74f2361d7e212targetblank15704b7a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -474,7 +474,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/35f3d4427957e283303206098841d86f858e7087" target="_blank">35f3d44</a>.
+<a href="https://github.com/junmingguan/misc/tree/15704b735f35a1ea0079dfd991d74f2361d7e212" target="_blank">15704b7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -502,6 +502,7 @@ Untracked files:
     Untracked:  code/references.bib
 
 Unstaged changes:
+    Modified:   analysis/eb_ica.Rmd
     Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
     Modified:   code/ebnm_rademacher.R
 
@@ -547,6 +548,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/15704b735f35a1ea0079dfd991d74f2361d7e212/analysis/index.Rmd" target="_blank">15704b7</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-13
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/c17b03e5b6bd7af5e181097fca95559a88787d42/docs/index.html" target="_blank">c17b03e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -796,6 +831,22 @@ maximize <span class="math inline">\(\mathbb{E}_q[\log p(\mathbf{s}, Y
 <h3>Analyses</h3>
 <ul>
 <li><a href="eb_ica.html">Initial exploration of EB ICA</a></li>
+<li><a href="ica_vs_flashier_rad_r1.html">Exploration of flashier with
+Rademacher prior</a></li>
+</ul>
+</div>
+<div id="some-observations" class="section level3">
+<h3>Some observations</h3>
+<ul>
+<li><p>It seems that in the unbalanced binary (<span
+class="math inline">\(\pm 1\)</span>) groups case, As the number of
+groups increaes, it becomes more likely for a rank-1 EB ICA fit or
+flashier with Rademacher prior fit with a random initialization to
+converge to a same solution.</p></li>
+<li><p>Fitting a parallel ank-$K_0$ EB ICA model (<span
+class="math inline">\(K_0 &gt; 1\)</span>) is more likely to recover
+some of the true sources. However, a deflation scheme does not seem to
+work well, probably because of the initial poor rank-1 fit.</p></li>
 </ul>
 </div>
 </div>
