@@ -1,0 +1,158 @@
+---
+title: "eb_ica"
+author: "junmingguan"
+date: "2026-03-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+We examine an empirical Bayes version of ICA, where the prior $p_\pi(s_i)=\text{Rad}(s_i;\ \pi)$ is estimated from the data. The steps to find one source are as follows:
+
+-   M-step: $\mathbf{w} = Y \mathbf{s}^+ / \| Y \mathbf{s}^+ \|$
+
+-   E-step:
+
+    $$
+    \begin{align}
+    (\hat{q}(\mathbf{s}), \hat{\pi}) &=\arg \max_{q, \pi} \mathbb{E}_q\left[\log p(\mathbf{s}, Y \mid \mathbf{w})\right] \\
+    \\
+    &= \arg \max_{q, \pi} \mathbb{E}_q\left[ \log p(Y \mid \mathbf{s}, \mathbf{w}) + \sum \log p_\pi(s_i )\right] \\
+    &= \arg \max_{q, \pi}  \left\{-\frac{1}{2\sigma^2} (-2 \text{tr}(\mathbb{E}_q[\mathbf{s}]^\top Y^\top \mathbf{w}) + \mathbb{E}_q\|\mathbf{s}\|^2) -\sum\text{KL}\Big(q(s_i)\ \|\ p_\pi(s_i)\Big)\right\} 
+    \end{align}
+    $$
+
+    -   solved by $\text{EBNM}(Y^\top\mathbf{w}, \sigma)$
+    -   $\mathbf{s}^+=\mathbb{E}_\hat{q}[\mathbf{s}]$.
+
+For a rank-K fit, we proceed as follows:
+
+-   M-step:
+
+    -   $W_+ = YS^+$
+
+    -   Orthogonalization: $W = U_+ V_+^\top$, where $W^+=U_+ DV_+^\top$, which is equivalent to $W= (W_+W_+^\top)^{-1/2} W_+$ proposed in [@Karhunenetal].
+
+-   E-step: for $k=1,\dots, K$,
+
+    -   Obtain $\hat{q}_k, \hat{\pi}_k$ by $\text{EBNM}(Y^\top\mathbf{w}_k, \sigma)$
+
+    -   $\mathbf{s}_k^+=\mathbb{E}_\hat{q}[\mathbf{s}_k]$.
+
+```{r, warning=FALSE, message=FALSE}
+library(flashier)
+library(Matrix)
+library(fastICA)
+library(fastTopics)
+library(ebnm)
+source('code/ebcd_functions.R')
+source('code/ica_functions.R')
+source('code/ebnm_rademacher.R')
+```
+
+```{r}
+simulate_unbalanaced_rad_groups <- function(
+    K, n=100, p=1000, noise=1, percent_one=0.2) {
+  set.seed(1)
+  L = matrix(-1,nrow=n,ncol=K)
+  for(i in 1:K){L[sample(1:n,floor(percent_one*n)),i]=1}
+  FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+  X = L %*% t(FF) + rnorm(n*p, 0, noise)
+  return(list(X=X, L=L, FF=FF))
+}
+```
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(
+  K=3, n=100, p=1000, percent_one = 0.2, noise = 1
+)
+X   <- sim_data$X
+L   <- sim_data$L
+FF  <- sim_data$FF
+X1  <- preprocess(X)
+```
+
+## Unbalanced 3 groups
+
+### rank 1 fit
+
+```{r}
+cor_max_ebica   <- c() # maximum correlation between the estmate and a true source
+cor_max_fastica <- c() # maximum correlation between the estmate and a true source
+
+est_S_ebica   <- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+est_S_fastica <- matrix(0, nrow = nrow(X), ncol = 100) # all 100 solutions
+
+for (i in 1:100) {
+  set.seed(i)
+  s <- matrix(rnorm(nrow(X)), ncol = 1)
+  w <- X1 %*% s
+  ebica_res <- ebica(t(X), K=1, 
+                       S_init = s)
+  fastica_w <- fastica_r1update(w, X1)
+  fastica_s <- t(X1) %*% fastica_w
+  cor_max_ebica <- c(cor_max_ebica, max(abs(cor(L, ebica_res$S_plus))))
+  est_S_ebica[,i] <- ebica_res$S_plus
+  cor_max_fastica <- c(cor_max_fastica, max(abs(cor(L, fastica_s))))
+  est_S_fastica[,i] <- fastica_s
+  
+}
+table(abs(cor_max_ebica) > 0.99)
+table(abs(cor_max_fastica) > 0.99)
+image(t(est_S_ebica[, order((cor_max_ebica), decreasing = T)]))
+image(t(est_S_fastica[, order((cor_max_fastica), decreasing = T)]))
+```
+
+### rank 3 fit
+
+```{r}
+K <- 3
+ebica_res <- ebica(t(X), K=K, 
+             S_init = NULL)
+cor(L, ebica_res$S_plus)
+
+
+
+fastica_res <- fastICA(X, n.comp = K, alg.typ = "parallel")
+cor(L, fastica_res$S)
+```
+
+### rank 4 fit
+
+```{r}
+K <- 4
+ebica_res <- ebica(t(X), K=K, 
+             S_init = NULL)
+cor(L, ebica_res$S_plus)
+
+
+
+fastica_res <- fastICA(X, n.comp = K, alg.typ = "parallel")
+cor(L, fastica_res$S)
+```
+
+## Unbalanced 9 groups
+
+```{r}
+sim_data <- simulate_unbalanaced_rad_groups(
+  K=9, n=100, p=1000, percent_one = 0.2, noise = 1
+)
+X   <- sim_data$X
+L   <- sim_data$L
+FF  <- sim_data$FF
+X1  <- preprocess(X)
+```
+
+```{r}
+K <- 9
+ebica_res <- ebica(t(X), K=K, 
+             S_init = NULL)
+cor(L, ebica_res$S_plus)
+
+
+
+fastica_res <- fastICA(X, n.comp = K, alg.typ = "parallel")
+cor(L, fastica_res$S)
+```
