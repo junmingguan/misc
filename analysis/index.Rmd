@@ -41,6 +41,8 @@ The first two steps are the E-step that constructs the estimated posterior mean 
 
 ### Analyses
 
+-   [Initial exploration of EB ICA](eb_ica.html)
+
 ## Rank-1 flashier with stand-in matrix
 
 Wwe posit this following model for an observed data matrix $\boldsymbol{Y}\in \mathbb{R}^{n\times d}$:

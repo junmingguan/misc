@@ -146,13 +146,15 @@ X1  <- preprocess(X)
 ```
 
 ```{r}
+set.seed(1)
 K <- 9
 ebica_res <- ebica(t(X), K=K, 
              S_init = NULL)
 cor(L, ebica_res$S_plus)
-
+apply(abs(cor(L, ebica_res$S_plus)), 1, max)
 
 
 fastica_res <- fastICA(X, n.comp = K, alg.typ = "parallel")
 cor(L, fastica_res$S)
+apply(abs(cor(L, fastica_res$S)), 1, max)
 ```
