@@ -42,13 +42,29 @@ The first two steps are the E-step that constructs the estimated posterior mean 
 ### Analyses
 
 -   [Initial exploration of EB ICA](eb_ica.html)
--   [Exploration of flashier with Rademacher prior](ica_vs_flashier_rad_r1.html)
+-   [Exploration of flashier with Rademacher prior](ica_vs_flashier_r1_rad.html)
 
 ### Some observations
 
 -   It seems that in the unbalanced binary ($\pm 1$) groups case, As the number of groups increaes, it becomes more likely for a rank-1 EB ICA fit or flashier with Rademacher prior fit with a random initialization to converge to a same solution.
 
 -   Fitting a parallel ank-\$K_0\$ EB ICA model ($K_0 > 1$) is more likely to recover some of the true sources. However, a deflation scheme does not seem to work well, probably because of the initial poor rank-1 fit.
+
+-   Sphering the data seems to work sometimes, but I am not sure what are the consequence. It feels like it is upweighting the noise. Perhaps we would need to denoise the data first.
+
+Future:
+
+-   ICA/EBMF with different types of source?
+
+-   Generalized EBMF? to different noise?
+
+-   Is fastICA inability in unbalanced group due to centering or a wrong contrast function (logcosh is essentially a super Gaussian prior)?
+
+-   fastICA seems to correspond to two different formulation of ICA: noiseless ICA with 1/cosh prior, and Bayesian ICA with rademacher prior and Gaussian noise.
+
+    -   It seems that 1/cosh can be somehow "separated" into a Gaussian part and a Rademacher part? Is it true?
+
+-   fastICA treats E in LFt+E as Gaussian signals, but it doesn't look for it in the first feel factors
 
 ## Rank-1 flashier with stand-in matrix
 
