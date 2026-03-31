@@ -409,7 +409,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-03-13
+<strong>Last updated:</strong> 2026-03-31
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -456,15 +456,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree15704b735f35a1ea0079dfd991d74f2361d7e212targetblank15704b7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree11adc57d0bfd3c256e16d37f3779bfb6f1b5a284targetblank11adc57a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/15704b735f35a1ea0079dfd991d74f2361d7e212" target="_blank">15704b7</a>
+<a href="https://github.com/junmingguan/misc/tree/11adc57d0bfd3c256e16d37f3779bfb6f1b5a284" target="_blank">11adc57</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree15704b735f35a1ea0079dfd991d74f2361d7e212targetblank15704b7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree11adc57d0bfd3c256e16d37f3779bfb6f1b5a284targetblank11adc57a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -474,7 +474,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/15704b735f35a1ea0079dfd991d74f2361d7e212" target="_blank">15704b7</a>.
+<a href="https://github.com/junmingguan/misc/tree/11adc57d0bfd3c256e16d37f3779bfb6f1b5a284" target="_blank">11adc57</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -548,6 +548,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/11adc57d0bfd3c256e16d37f3779bfb6f1b5a284/analysis/index.Rmd" target="_blank">11adc57</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-31
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/fab820927db361c13b980e081338d2154f810fc3/docs/index.html" target="_blank">fab8209</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-03-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -765,7 +799,7 @@ Rmd
 junmingguan
 </td>
 <td>
-2025-11-07
+2025-11-08
 </td>
 <td>
 Start workflowr project.
@@ -831,7 +865,7 @@ maximize <span class="math inline">\(\mathbb{E}_q[\log p(\mathbf{s}, Y
 <h3>Analyses</h3>
 <ul>
 <li><a href="eb_ica.html">Initial exploration of EB ICA</a></li>
-<li><a href="ica_vs_flashier_rad_r1.html">Exploration of flashier with
+<li><a href="ica_vs_flashier_r1_rad.html">Exploration of flashier with
 Rademacher prior</a></li>
 </ul>
 </div>
@@ -847,6 +881,26 @@ converge to a same solution.</p></li>
 class="math inline">\(K_0 &gt; 1\)</span>) is more likely to recover
 some of the true sources. However, a deflation scheme does not seem to
 work well, probably because of the initial poor rank-1 fit.</p></li>
+<li><p>Sphering the data seems to work sometimes, but I am not sure what
+are the consequence. It feels like it is upweighting the noise. Perhaps
+we would need to denoise the data first.</p></li>
+</ul>
+<p>Future:</p>
+<ul>
+<li><p>ICA/EBMF with different types of source?</p></li>
+<li><p>Generalized EBMF? to different noise?</p></li>
+<li><p>Is fastICA inability in unbalanced group due to centering or a
+wrong contrast function (logcosh is essentially a super Gaussian
+prior)?</p></li>
+<li><p>fastICA seems to correspond to two different formulation of ICA:
+noiseless ICA with 1/cosh prior, and Bayesian ICA with rademacher prior
+and Gaussian noise.</p>
+<ul>
+<li>It seems that 1/cosh can be somehow “separated” into a Gaussian part
+and a Rademacher part? Is it true?</li>
+</ul></li>
+<li><p>fastICA treats E in LFt+E as Gaussian signals, but it doesn’t
+look for it in the first feel factors</p></li>
 </ul>
 </div>
 </div>
