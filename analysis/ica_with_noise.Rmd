@@ -1,0 +1,417 @@
+---
+title: "fastica_with_noise"
+author: "junmingguan"
+date: "2026-05-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+Here we adopted the 9 overlapping groups simulation considered in [here](https://stephens999.github.io/misc/fastica_centered_02.html#Adding_noise). The takeaway from there is, rank-1 fastICA does not perform well if the data is not whitened (denoised) enough. Instead of generating $L$ from Bernoulli, we consider asymmetric Rademacher, so that `ebnm_rademacher` sets the correct prior.
+
+**Summary**
+
+- For extracting non-Gaussian sources, the whitening step seems to matter more than the G_2 term in the FastICA update.
+- This suggests that whitening can be helpful only when the effective rank is chosen reasonably well: if the rank is too low or too high, whitening may either discard signal or amplify noise. In such cases, it may be preferable to avoid whitening or to use a model-based alternative.
+- Fitting a higher-rank model may help recover one true source when the true rank is high, since it gives the algorithm more flexibility to separate the target source from the remaining structured variation.
+
+**Note**
+
+- deflation scheme without whitening: [paper](https://rjvak7.github.io/papers/structdeflation.pdf)
+  - some theory: [paper1](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2011/papers/1569423115.pdf) [paper2](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=5313959&casa_token=UymyvmFG-t4AAAAA:6LViCk14ynWlExAPC7ZFuKgpuxHZ7NbqInnoqJ2TRwm6ke9RLhFHqQy8IhBd6ElUWlsf6JZH&tag=1)
+- Symmetric orthogonalization without whitening: [paper](https://www.cs.helsinki.fi/u/ahyvarin/papers/TNN99new.pdf)
+  - some theory: [paper](https://arxiv.org/pdf/1408.0145)
+- Some remarks on noisy ICA: [Chapter 15](https://onlinelibrary.wiley.com/doi/book/10.1002/0471221317)
+
+
+
+```{r, warning=FALSE, message=FALSE}
+library(flashier)
+library(Matrix)
+library(fastICA)
+library(ebnm)
+source('code/ebcd_functions.R')
+source('code/ica_functions.R')
+source('code/ebnm_rademacher.R')
+source('code/ebnm_point_rademacher.R')
+```
+
+```{r}
+K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])
+```
+
+```{r}
+X1 = preprocess(X,n.comp=20)
+X1 = rbind(rep(1,ncol(X1)), X1)
+```
+
+```{r}
+flash_x_rademacher <- function(X, w, ebnm_fn = ebnm_rademacher) {
+  if (is.vector(w)) w <- matrix(w, ncol = 1)
+
+  l_init = X %*% w
+  f_init = t(solve(crossprod(l_init), crossprod(l_init, X)))
+
+  flash_init(X) |>
+    flash_factors_init(
+      init = list(l_init, f_init),
+      ebnm_fn = list(ebnm_fn, ebnm_normal)
+    ) |>
+    flash_backfit(verbose = 0)
+}
+```
+
+## Rank-1 fit
+
+I tried non-centered rank-1 fastICA, with and without the G2 term. Both struggle to find one of the true sources. 
+
+```{r}
+cor_with_L_G2 <- c()
+cor_with_PC_G2 <- c()
+cor_with_L_no_G2 <- c()
+cor_with_PC_no_G2 <- c()
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X1)[1]) # X1 %*% L[,1]
+
+  w <- fastica_rank_one_update(X1, init_w,  include_G2 = FALSE)
+  cor_with_L_G2[i] = max(abs(cor(L, t(X1) %*% w)))
+  cor_with_PC_G2[i] = abs(cor(t(X1) %*% w, svd(X1)$v[,1]))
+
+  w <- fastica_rank_one_update(X1, init_w,  include_G2 = TRUE)
+  cor_with_L_no_G2[i] = max(abs(cor(L, t(X1) %*% w)))
+  cor_with_PC_no_G2[i] = abs(cor(t(X1) %*% w, svd(X1)$v[,1]))
+}
+sum(cor_with_L_G2 > 0.9)
+sum(cor_with_L_no_G2 > 0.9)
+# correlation with first PC
+max(cor_with_PC_G2)
+# correlation with first PC
+max(cor_with_PC_no_G2)
+```
+
+Matthew tried applying rank-1 FastICA without the G2 term, i.e. EBCD, directly to the original data, and found that it simply recovers the first PC. Including the G2 term does not seem to help either. This suggests that, at least in this setting, the G2 term may mainly affect convergence rather than the direction being targeted, while proper whitening plays a more important role in enabling recovery of non-Gaussian sources.
+
+```{r}
+X2 = t(scale(X,center=FALSE))
+# svd.X = svd(X)
+# X2 = t(svd.X$u[,1:10] %*% t(svd.X$v[,1:10]))
+set.seed(100)
+w = rnorm(nrow(X2))
+for(i in 1:100)
+  w = fastica_rank_one_update(X2,w,include_G2=TRUE)
+cor(L,t(X2) %*% w)
+plot(t(X2) %*% w)
+plot(svd(X2)$u[,1],w)
+```
+
+I tried rank-1 flashierRad and EBICA with 100 random initilization. As expected, all of them converge to the same solution corresponding to the first PC.
+
+```{r}
+cor_list <- c()
+
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X)[2]) # w is p by K here K = 1
+
+  flash_res = flash_x_rademacher(X, w = init_w, ebnm_fn = ebnm_rademacher)
+  cor_list[i] <- max(abs(cor(L, flash_res$L_pm)))
+}
+
+sum(cor_list > 0.9)
+plot(svd(X)$u[,1], X %*% flash_res$F_pm)
+
+```
+
+```{r}
+cor_list <- c()
+
+for (i in 1:100) {
+  set.seed(i)
+
+  res = ebica(t(X), K = 1, symmetric_rademacher = TRUE)
+  cor_list[i] <- max(abs(cor(L, res$S)))
+}
+
+sum(cor_list > 0.9)
+plot(svd(X)$u[,1], res$S)
+```
+
+## Higher-rank fit
+
+Next, I tried fitting rank-3 FastICA with symmetric orthogonalization (instead of the deflation scheme). The idea was that, by fitting multiple components, some components could absorb the noise and residual structured variation, thereby making it easier for another component to align with one true source. Empirically, this appears to be more successful at recovering one true source than the rank-1 approach.
+
+```{r}
+X1 = preprocess(X,n.comp=20)
+X1 = rbind(rep(1,ncol(X1)), X1)
+K0 = 3
+cor_list_G2 <- rep(0, 100)
+cor_list_no_G2 <- rep(0, 100)
+# cor_list_G2_fastICA <- rep(0, 100)
+for (i in 1:100) {
+  set.seed(i)
+  init_W = matrix(rnorm(dim(X1)[1] * K0), ncol = K0) # X1 %*% L[,1]
+
+  W <- fastica_rank_K_update(X1, init_W,  include_G2 = FALSE)
+  cor_list_no_G2[i] = max(abs(cor(L, t(X1) %*% W)))
+
+  W <- fastica_rank_K_update(X1, init_W,  include_G2 = TRUE)
+  # cor(L,ebnm_rademacher(t(X1) %*% w, s=0.01)$posterior$mean)
+  cor_list_G2[i] <- max(abs(cor(L, t(X1) %*% W)))
+
+  # cor_list_G2_fastICA[i] = max(abs(cor(L, fastICA(X, K0, 'parallel')$S)))
+}
+sum(cor_list_no_G2 > 0.9) / 100
+sum(cor_list_G2 > 0.9) / 100
+```
+
+As expected, restricting the analysis to the subspace spanned by the top 9 eigenvectors improves performance.
+
+```{r}
+X1 = preprocess(X,n.comp=9)
+X1 = rbind(rep(1,ncol(X1)), X1)
+K0 = 3
+cor_list_G2 <- rep(0, 100)
+cor_list_no_G2 <- rep(0, 100)
+# cor_list_G2_fastICA <- rep(0, 100)
+for (i in 1:100) {
+  set.seed(i)
+  init_W = matrix(rnorm(dim(X1)[1] * K0), ncol = K0) # X1 %*% L[,1]
+
+  W <- fastica_rank_K_update(X1, init_W,  include_G2 = FALSE)
+  cor_list_no_G2[i] = max(abs(cor(L, t(X1) %*% W)))
+
+  W <- fastica_rank_K_update(X1, init_W,  include_G2 = TRUE)
+  # cor(L,ebnm_rademacher(t(X1) %*% w, s=0.01)$posterior$mean)
+  cor_list_G2[i] <- max(abs(cor(L, t(X1) %*% W)))
+
+  # cor_list_G2_fastICA[i] = max(abs(cor(L, fastICA(X, K0, 'parallel')$S)))
+}
+sum(cor_list_no_G2 > 0.9) / 100
+sum(cor_list_G2 > 0.9) / 100
+```
+
+
+
+Surprisingly, when applied directly to the original data, a rank-3 fit almost always recovers one of the true sources, and performs much better than when applied to whitened or denoised data.
+
+```{r}
+X2 = t(scale(X,center=FALSE))
+K0 = 3
+# svd.X = svd(X)
+# X2 = t(svd.X$u[,1:10] %*% t(svd.X$v[,1:10]))
+
+cor_list_G2 <- rep(0, 100)
+cor_list_no_G2 <- rep(0, 100)
+
+for (i in 1:100) {
+  set.seed(i)
+  init_W = matrix(rnorm(dim(X2)[1] * K0), ncol = K0) # X1 %*% L[,1]
+
+  W <- fastica_rank_K_update(X2, init_W,  include_G2 = FALSE)
+  cor_list_no_G2[i] = max(abs(cor(L, t(X2) %*% W)))
+
+  W <- fastica_rank_K_update(X2, init_W,  include_G2 = TRUE)
+
+  cor_list_G2[i] <- max(abs(cor(L, t(X2) %*% W)))
+
+}
+sum(cor_list_no_G2 > 0.9) / 100
+sum(cor_list_G2 > 0.9) / 100
+
+```
+
+Examining the one case where it fails:
+
+```{r}
+seed = which(cor_list_no_G2 < 0.9)
+cor_list_no_G2[seed]
+set.seed(2)
+init_W = matrix(rnorm(dim(X2)[1] * K0), ncol = K0) # X1 %*% L[,1]
+W <- fastica_rank_K_update(X2, init_W,  include_G2 = TRUE, n_iter = 1000)
+plot(t(X2) %*% W)
+
+compute_objective_s(scale(t(X2) %*% W, center = FALSE))
+```
+
+
+
+
+Now we run EBICA, and it extracts one of the true sources with all 100 random initialization.
+
+```{r}
+cor_list = c()
+for (i in 1:100) {
+  set.seed(i)
+  res = ebica(t(X), K = 3, symmetric_rademacher = TRUE)
+  # cor(L, res$S_plus)
+  cor_list[i] = max(abs(cor(L, res$S)))
+}
+sum(cor_list > 0.9)
+```
+
+Examining the first seed: the first extracted source corresponds to the first PC, while the second and third recover one of the true sources.
+
+```{r}
+set.seed(i)
+res = ebica(t(X), K = 3, symmetric_rademacher = TRUE)
+cor(L, res$S)
+
+compute_objective_s(scale(t(X) %*% res$S[,1]))
+
+
+plot(svd(X)$v[,1], t(X) %*% res$S[,1])
+
+```
+
+We also tried rank-3 EBCD and successfully extracted one true source. The second extracted source is near Gaussian and is highly correlated with the first PC.
+
+```{r}
+res = ebcd(t(X), Kmax = 3, ebnm_fn = ebnm_rademacher)
+cor(L, res$EL)
+
+compute_objective_s(scale(t(X) %*% res$Z[,2]))
+plot(t(X) %*% res$Z[,2])
+plot(svd(X)$v[,1], t(X) %*% res$Z[,2])
+
+compute_objective_s(scale(t(X) %*% res$Z[,1]))
+plot(t(X) %*% res$Z[,1])
+plot(svd(X)$v[,2], t(X) %*% res$Z[,2])
+```
+
+Rank-3 flashierRad with random initialization sometimes fails to recover a true source, potentially because it does not impose an orthogonality constraint.
+
+
+```{r}
+cor_list <- c()
+
+for (i in 1:100) {
+  set.seed(i)
+  init_w = matrix(rnorm(dim(X)[2] * 3), ncol = 3) # w is p by K here K = 3
+
+  flash_res = flash_x_rademacher(X, w = init_w, ebnm_fn = ebnm_rademacher)
+  cor_list[i] <- max(abs(cor(L, flash_res$L_pm)))
+}
+
+sum(cor_list > 0.9)
+plot(svd(X)$u[,1], X %*% flash_res$F_pm)
+
+```
+
+
+## Rank-3 fit with different priors
+
+Perhaps we can specify one additional non-Rademacher factor to capture noise, and one additional Rademacher (or point Rademacher) factor to capture the remaining true non-Gaussian sources?
+
+Some initial exploration:
+
+```{r}
+
+l_init_1 = matrix(rnorm(dim(X)[1] * 1), ncol = 1)
+f_init_1 = t(solve(crossprod(l_init_1), crossprod(l_init_1, X)))
+
+l_init_2 = matrix(rnorm(dim(X)[1] * 1), ncol = 1)
+f_init_2 = t(solve(crossprod(l_init_2), crossprod(l_init_2, X)))
+
+l_init_3 = matrix(rnorm(dim(X)[1] * 1), ncol = 1)
+f_init_3 = t(solve(crossprod(l_init_3), crossprod(l_init_3, X)))
+
+
+fl <- flash_init(X, var_type = 0) |>
+  flash_factors_init(
+    init = list(l_init_1, f_init_1),
+    ebnm_fn = list(ebnm_point_laplace, ebnm_normal)
+  ) |>
+  flash_factors_init(
+    init = list(l_init_2, f_init_2),
+    ebnm_fn = list(ebnm_point_rademacher, ebnm_normal)
+  ) |>
+  flash_factors_init(
+    init = list(l_init_3, f_init_3),
+    ebnm_fn = list(ebnm_rademacher, ebnm_normal)
+  ) |>
+  flash_backfit()
+
+cor(L, fl$L_pm)
+```
+
+
+```{r}
+
+ebica_parallel1 <- function(
+  X, ebnm_fns, ebnm_fn = ebnm_rademacher,
+  max_iter = 1000, tol = 1e-6, s = NULL,
+  S_init = NULL, W_init = NULL,
+  conv_crit = "elbo", verbose = 0) {
+  ebica_generalized_parallel(
+    X = X,
+    K = length(ebnm_fns) + 1,
+    ebnm_fn = c(unlist(ebnm_fns), ebnm_fn),
+    max_iter = max_iter,
+    tol = tol,
+    s = s,
+    S_init = S_init,
+    W_init = W_init,
+    conv_crit = conv_crit,
+    verbose = verbose
+  )
+}
+res = ebica_parallel1(t(X), ebnm_fns = c(ebnm_point_laplace, ebnm_point_rademacher))
+cor(L,res$S)
+```
+
+
+## Denoising using flashier followed by fastICA
+
+```{r}
+fit_init <- flash(X, ebnm_fn = ebnm_point_normal, greedy_Kmax = 30, backfit = T)
+```
+
+```{r}
+
+X2 = t(scale(fit_init$L_pm %*% t(fit_init$F_pm),center=FALSE))
+# svd.X = svd(fit_init$L_pm %*% t(fit_init$F_pm))
+# X2 = t(svd.X$u[,1:10] %*% t(svd.X$v[,1:10]))
+set.seed(2)
+w = rnorm(nrow(X2))
+for(i in 1:100)
+  w = fastica_rank_one_update(X2,w,include_G2=TRUE)
+cor(L,t(X2) %*% w)
+plot(t(X2) %*% w)
+plot(svd(X2)$u[,1],w)
+```
+
+
+## Misc
+
+Vectorized experiments:
+
+```{r, eval = FALSE}
+obj = rep(0,100)
+W = sapply(1:100, function(seed) {
+  set.seed(seed)
+  rnorm(nrow(X1))
+})
+W = sweep(W, 2, sqrt(colSums(W^2)), "/")
+
+for(i in 1:100) {
+  P = t(X1) %*% W
+  G = tanh(P)
+  G2 = 1 - tanh(P)^2
+  W = X1 %*% G - sweep(W, 2, colSums(G2), "*")
+  W = sweep(W, 2, sqrt(colSums(W^2)), "/")
+}
+obj = colMeans(log(cosh(t(X1) %*% W)))
+plot(obj)
+```
