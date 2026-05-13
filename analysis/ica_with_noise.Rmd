@@ -13,9 +13,15 @@ Here we adopted the 9 overlapping groups simulation considered in [here](https:/
 
 **Summary**
 
-- For extracting non-Gaussian sources, the whitening step seems to matter more than the G_2 term in the FastICA update.
+- For extracting non-Gaussian sources, the whitening step seems to matter more than the G2 term in the FastICA update.
 - This suggests that whitening can be helpful only when the effective rank is chosen reasonably well: if the rank is too low or too high, whitening may either discard signal or amplify noise. In such cases, it may be preferable to avoid whitening or to use a model-based alternative.
-- Fitting a higher-rank model may help recover one true source when the true rank is high, since it gives the algorithm more flexibility to separate the target source from the remaining structured variation.
+- Fitting a higher-rank model with parallel update may help recover one true source when the true rank is high, since it gives the algorithm more flexibility to separate the target source from the remaining structured variation.
+
+**Things to investigate further**
+
+- Understand the tiny differences in the FastICA objectives
+- (Theoretically?) understand why parallel rank-$K_0$ updates (with Rademacher priors) allow exact extraction of one true source
+
 
 **Note**
 
