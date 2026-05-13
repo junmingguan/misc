@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="junmingguan" />
+
+<meta name="date" content="2026-05-07" />
+
+<title>fastica_with_noise</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">misc</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/junmingguan/misc">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">fastica_with_noise</h1>
+<h4 class="author">junmingguan</h4>
+<h4 class="date">2026-05-07</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-05-13
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>misc/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251108code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251108code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251108)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree044f50ba870d23cbde5fe14b2d9855e27726fe95targetblank044f50ba">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/junmingguan/misc/tree/044f50ba870d23cbde5fe14b2d9855e27726fe95" target="_blank">044f50b</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree044f50ba870d23cbde5fe14b2d9855e27726fe95targetblank044f50ba"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/junmingguan/misc/tree/044f50ba870d23cbde5fe14b2d9855e27726fe95" target="_blank">044f50b</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/presentation.html
+
+Untracked files:
+    Untracked:  analysis/eb_ica_backup.Rmd
+    Untracked:  analysis/ebica_math.md
+    Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
+    Untracked:  analysis/index_bacup.Rmd
+    Untracked:  analysis/preemble.tex
+    Untracked:  analysis/presentation.qmd
+    Untracked:  analysis/presentation_files/
+    Untracked:  analysis/references.bib
+    Untracked:  code/references.bib
+
+Unstaged changes:
+    Modified:   analysis/eb_ica.Rmd
+    Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
+    Modified:   analysis/ica_vs_flashier_r1_rad.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/ica_with_noise.Rmd</code>) and
+HTML (<code>docs/ica_with_noise.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/044f50ba870d23cbde5fe14b2d9855e27726fe95/analysis/ica_with_noise.Rmd" target="_blank">044f50b</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd", "analysis/ica_with_noise.Rmd"))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Here we adopted the 9 overlapping groups simulation considered in <a
+href="https://stephens999.github.io/misc/fastica_centered_02.html#Adding_noise">here</a>.
+The takeaway from there is, rank-1 fastICA does not perform well if the
+data is not whitened (denoised) enough. Instead of generating <span
+class="math inline">\(L\)</span> from Bernoulli, we consider asymmetric
+Rademacher, so that <code>ebnm_rademacher</code> sets the correct
+prior.</p>
+<p><strong>Summary</strong></p>
+<ul>
+<li>For extracting non-Gaussian sources, the whitening step seems to
+matter more than the G_2 term in the FastICA update.</li>
+<li>This suggests that whitening can be helpful only when the effective
+rank is chosen reasonably well: if the rank is too low or too high,
+whitening may either discard signal or amplify noise. In such cases, it
+may be preferable to avoid whitening or to use a model-based
+alternative.</li>
+<li>Fitting a higher-rank model may help recover one true source when
+the true rank is high, since it gives the algorithm more flexibility to
+separate the target source from the remaining structured variation.</li>
+</ul>
+<p><strong>Note</strong></p>
+<ul>
+<li>deflation scheme without whitening: <a
+href="https://rjvak7.github.io/papers/structdeflation.pdf">paper</a>
+<ul>
+<li>some theory: <a
+href="https://www.eurasip.org/Proceedings/Eusipco/Eusipco2011/papers/1569423115.pdf">paper1</a>
+<a
+href="https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=5313959&amp;casa_token=UymyvmFG-t4AAAAA:6LViCk14ynWlExAPC7ZFuKgpuxHZ7NbqInnoqJ2TRwm6ke9RLhFHqQy8IhBd6ElUWlsf6JZH&amp;tag=1">paper2</a></li>
+</ul></li>
+<li>Symmetric orthogonalization without whitening: <a
+href="https://www.cs.helsinki.fi/u/ahyvarin/papers/TNN99new.pdf">paper</a>
+<ul>
+<li>some theory: <a
+href="https://arxiv.org/pdf/1408.0145">paper</a></li>
+</ul></li>
+<li>Some remarks on noisy ICA: <a
+href="https://onlinelibrary.wiley.com/doi/book/10.1002/0471221317">Chapter
+15</a></li>
+</ul>
+<pre class="r"><code>library(flashier)
+library(Matrix)
+library(fastICA)
+library(ebnm)
+source(&#39;code/ebcd_functions.R&#39;)
+source(&#39;code/ica_functions.R&#39;)
+source(&#39;code/ebnm_rademacher.R&#39;)
+source(&#39;code/ebnm_point_rademacher.R&#39;)</code></pre>
+<pre class="r"><code>K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-2-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>X1 = preprocess(X,n.comp=20)
+X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
+<pre class="r"><code>flash_x_rademacher &lt;- function(X, w, ebnm_fn = ebnm_rademacher) {
+  if (is.vector(w)) w &lt;- matrix(w, ncol = 1)
+
+  l_init = X %*% w
+  f_init = t(solve(crossprod(l_init), crossprod(l_init, X)))
+
+  flash_init(X) |&gt;
+    flash_factors_init(
+      init = list(l_init, f_init),
+      ebnm_fn = list(ebnm_fn, ebnm_normal)
+    ) |&gt;
+    flash_backfit(verbose = 0)
+}</code></pre>
+</div>
+<div id="rank-1-fit" class="section level2">
+<h2>Rank-1 fit</h2>
+<p>I tried non-centered rank-1 fastICA, with and without the G2 term.
+Both struggle to find one of the true sources.</p>
+<pre class="r"><code>cor_with_L_G2 &lt;- c()
+cor_with_PC_G2 &lt;- c()
+cor_with_L_no_G2 &lt;- c()
+cor_with_PC_no_G2 &lt;- c()
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X1)[1]) # X1 %*% L[,1]
+
+  w &lt;- fastica_rank_one_update(X1, init_w,  include_G2 = FALSE)
+  cor_with_L_G2[i] = max(abs(cor(L, t(X1) %*% w)))
+  cor_with_PC_G2[i] = abs(cor(t(X1) %*% w, svd(X1)$v[,1]))
+
+  w &lt;- fastica_rank_one_update(X1, init_w,  include_G2 = TRUE)
+  cor_with_L_no_G2[i] = max(abs(cor(L, t(X1) %*% w)))
+  cor_with_PC_no_G2[i] = abs(cor(t(X1) %*% w, svd(X1)$v[,1]))
+}
+sum(cor_with_L_G2 &gt; 0.9)</code></pre>
+<pre><code>[1] 16</code></pre>
+<pre class="r"><code>sum(cor_with_L_no_G2 &gt; 0.9)</code></pre>
+<pre><code>[1] 17</code></pre>
+<pre class="r"><code># correlation with first PC
+max(cor_with_PC_G2)</code></pre>
+<pre><code>[1] 0.4993287</code></pre>
+<pre class="r"><code># correlation with first PC
+max(cor_with_PC_no_G2)</code></pre>
+<pre><code>[1] 0.4778801</code></pre>
+<p>Matthew tried applying rank-1 FastICA without the G2 term, i.e. EBCD,
+directly to the original data, and found that it simply recovers the
+first PC. Including the G2 term does not seem to help either. This
+suggests that, at least in this setting, the G2 term may mainly affect
+convergence rather than the direction being targeted, while proper
+whitening plays a more important role in enabling recovery of
+non-Gaussian sources.</p>
+<pre class="r"><code>X2 = t(scale(X,center=FALSE))
+# svd.X = svd(X)
+# X2 = t(svd.X$u[,1:10] %*% t(svd.X$v[,1:10]))
+set.seed(100)
+w = rnorm(nrow(X2))
+for(i in 1:100)
+  w = fastica_rank_one_update(X2,w,include_G2=TRUE)
+cor(L,t(X2) %*% w)</code></pre>
+<pre><code>           [,1]
+ [1,] 0.3691843
+ [2,] 0.3539475
+ [3,] 0.3800907
+ [4,] 0.3837124
+ [5,] 0.2699964
+ [6,] 0.3725444
+ [7,] 0.3816918
+ [8,] 0.3128227
+ [9,] 0.1301153</code></pre>
+<pre class="r"><code>plot(t(X2) %*% w)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-6-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(svd(X2)$u[,1],w)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-6-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>I tried rank-1 flashierRad and EBICA with 100 random initilization.
+As expected, all of them converge to the same solution corresponding to
+the first PC.</p>
+<pre class="r"><code>cor_list &lt;- c()
+
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X)[2]) # w is p by K here K = 1
+
+  flash_res = flash_x_rademacher(X, w = init_w, ebnm_fn = ebnm_rademacher)
+  cor_list[i] &lt;- max(abs(cor(L, flash_res$L_pm)))
+}
+
+sum(cor_list &gt; 0.9)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>plot(svd(X)$u[,1], X %*% flash_res$F_pm)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor_list &lt;- c()
+
+for (i in 1:100) {
+  set.seed(i)
+
+  res = ebica(t(X), K = 1, symmetric_rademacher = TRUE)
+  cor_list[i] &lt;- max(abs(cor(L, res$S)))
+}
+
+sum(cor_list &gt; 0.9)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>plot(svd(X)$u[,1], res$S)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-8-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="higher-rank-fit" class="section level2">
+<h2>Higher-rank fit</h2>
+<p>Next, I tried fitting rank-3 FastICA with symmetric orthogonalization
+(instead of the deflation scheme). The idea was that, by fitting
+multiple components, some components could absorb the noise and residual
+structured variation, thereby making it easier for another component to
+align with one true source. Empirically, this appears to be more
+successful at recovering one true source than the rank-1 approach.</p>
+<pre class="r"><code>X1 = preprocess(X,n.comp=20)
+X1 = rbind(rep(1,ncol(X1)), X1)
+K0 = 3
+cor_list_G2 &lt;- rep(0, 100)
+cor_list_no_G2 &lt;- rep(0, 100)
+# cor_list_G2_fastICA &lt;- rep(0, 100)
+for (i in 1:100) {
+  set.seed(i)
+  init_W = matrix(rnorm(dim(X1)[1] * K0), ncol = K0) # X1 %*% L[,1]
+
+  W &lt;- fastica_rank_K_update(X1, init_W,  include_G2 = FALSE)
+  cor_list_no_G2[i] = max(abs(cor(L, t(X1) %*% W)))
+
+  W &lt;- fastica_rank_K_update(X1, init_W,  include_G2 = TRUE)
+  # cor(L,ebnm_rademacher(t(X1) %*% w, s=0.01)$posterior$mean)
+  cor_list_G2[i] &lt;- max(abs(cor(L, t(X1) %*% W)))
+
+  # cor_list_G2_fastICA[i] = max(abs(cor(L, fastICA(X, K0, &#39;parallel&#39;)$S)))
+}
+sum(cor_list_no_G2 &gt; 0.9) / 100</code></pre>
+<pre><code>[1] 0.35</code></pre>
+<pre class="r"><code>sum(cor_list_G2 &gt; 0.9) / 100</code></pre>
+<pre><code>[1] 0.42</code></pre>
+<p>As expected, restricting the analysis to the subspace spanned by the
+top 9 eigenvectors improves performance.</p>
+<pre class="r"><code>X1 = preprocess(X,n.comp=9)
+X1 = rbind(rep(1,ncol(X1)), X1)
+K0 = 3
+cor_list_G2 &lt;- rep(0, 100)
+cor_list_no_G2 &lt;- rep(0, 100)
+# cor_list_G2_fastICA &lt;- rep(0, 100)
+for (i in 1:100) {
+  set.seed(i)
+  init_W = matrix(rnorm(dim(X1)[1] * K0), ncol = K0) # X1 %*% L[,1]
+
+  W &lt;- fastica_rank_K_update(X1, init_W,  include_G2 = FALSE)
+  cor_list_no_G2[i] = max(abs(cor(L, t(X1) %*% W)))
+
+  W &lt;- fastica_rank_K_update(X1, init_W,  include_G2 = TRUE)
+  # cor(L,ebnm_rademacher(t(X1) %*% w, s=0.01)$posterior$mean)
+  cor_list_G2[i] &lt;- max(abs(cor(L, t(X1) %*% W)))
+
+  # cor_list_G2_fastICA[i] = max(abs(cor(L, fastICA(X, K0, &#39;parallel&#39;)$S)))
+}
+sum(cor_list_no_G2 &gt; 0.9) / 100</code></pre>
+<pre><code>[1] 0.95</code></pre>
+<pre class="r"><code>sum(cor_list_G2 &gt; 0.9) / 100</code></pre>
+<pre><code>[1] 0.98</code></pre>
+<p>Surprisingly, when applied directly to the original data, a rank-3
+fit almost always recovers one of the true sources, and performs much
+better than when applied to whitened or denoised data.</p>
+<pre class="r"><code>X2 = t(scale(X,center=FALSE))
+K0 = 3
+# svd.X = svd(X)
+# X2 = t(svd.X$u[,1:10] %*% t(svd.X$v[,1:10]))
+
+cor_list_G2 &lt;- rep(0, 100)
+cor_list_no_G2 &lt;- rep(0, 100)
+
+for (i in 1:100) {
+  set.seed(i)
+  init_W = matrix(rnorm(dim(X2)[1] * K0), ncol = K0) # X1 %*% L[,1]
+
+  W &lt;- fastica_rank_K_update(X2, init_W,  include_G2 = FALSE)
+  cor_list_no_G2[i] = max(abs(cor(L, t(X2) %*% W)))
+
+  W &lt;- fastica_rank_K_update(X2, init_W,  include_G2 = TRUE)
+
+  cor_list_G2[i] &lt;- max(abs(cor(L, t(X2) %*% W)))
+
+}
+sum(cor_list_no_G2 &gt; 0.9) / 100</code></pre>
+<pre><code>[1] 0.99</code></pre>
+<pre class="r"><code>sum(cor_list_G2 &gt; 0.9) / 100</code></pre>
+<pre><code>[1] 0.99</code></pre>
+<p>Examining the one case where it fails:</p>
+<pre class="r"><code>seed = which(cor_list_no_G2 &lt; 0.9)
+cor_list_no_G2[seed]</code></pre>
+<pre><code>[1] 0.7503576</code></pre>
+<pre class="r"><code>set.seed(2)
+init_W = matrix(rnorm(dim(X2)[1] * K0), ncol = K0) # X1 %*% L[,1]
+W &lt;- fastica_rank_K_update(X2, init_W,  include_G2 = TRUE, n_iter = 1000)
+plot(t(X2) %*% W)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-12-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>compute_objective_s(scale(t(X2) %*% W, center = FALSE))</code></pre>
+<pre><code>[1] 0.4175796</code></pre>
+<p>Now we run EBICA, and it extracts one of the true sources with all
+100 random initialization.</p>
+<pre class="r"><code>cor_list = c()
+for (i in 1:100) {
+  set.seed(i)
+  res = ebica(t(X), K = 3, symmetric_rademacher = TRUE)
+  # cor(L, res$S_plus)
+  cor_list[i] = max(abs(cor(L, res$S)))
+}
+sum(cor_list &gt; 0.9)</code></pre>
+<pre><code>[1] 100</code></pre>
+<p>Examining the first seed: the first extracted source corresponds to
+the first PC, while the second and third recover one of the true
+sources.</p>
+<pre class="r"><code>set.seed(i)
+res = ebica(t(X), K = 3, symmetric_rademacher = TRUE)
+cor(L, res$S)</code></pre>
+<pre><code>             [,1]        [,2]         [,3]
+ [1,] -0.28841649 -0.08327265  0.130200193
+ [2,]  0.12193576  0.02395989  0.963472618
+ [3,] -0.60089641 -0.05197261 -0.026742095
+ [4,]  0.09327325 -0.96290146 -0.037504695
+ [5,] -0.26219284  0.06781176  0.195654871
+ [6,] -0.06956752 -0.15832861  0.238766171
+ [7,] -0.54375245 -0.12664618 -0.075639636
+ [8,] -0.62731414  0.19957134 -0.004075457
+ [9,]  0.10964312 -0.26242903 -0.029122899</code></pre>
+<pre class="r"><code>compute_objective_s(scale(t(X) %*% res$S[,1]))</code></pre>
+<pre><code>[1] 0.3712458</code></pre>
+<pre class="r"><code>plot(svd(X)$v[,1], t(X) %*% res$S[,1])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-14-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>We also tried rank-3 EBCD and successfully extracted one true source.
+The second extracted source is near Gaussian and is highly correlated
+with the first PC.</p>
+<pre class="r"><code>res = ebcd(t(X), Kmax = 3, ebnm_fn = ebnm_rademacher)
+cor(L, res$EL)</code></pre>
+<pre><code>               [,1]        [,2]          [,3]
+ [1,]  8.333333e-02 -0.10407264  5.724587e-17
+ [2,] -8.333333e-02 -0.02973501  1.000000e+00
+ [3,]  8.557969e-17 -0.62443613 -1.734723e-17
+ [4,]  5.000000e-01  0.04460257 -2.341877e-17
+ [5,]  1.666667e-01 -0.10407264  6.250000e-02
+ [6,]  8.333333e-02  0.11894020  6.250000e-02
+ [7,]  3.333333e-01 -0.40142323 -6.250000e-02
+ [8,] -1.666667e-01 -0.47576081  1.214306e-16
+ [9,]  4.166667e-01  0.19327784 -6.250000e-02</code></pre>
+<pre class="r"><code>compute_objective_s(scale(t(X) %*% res$Z[,2]))</code></pre>
+<pre><code>[1] 0.3718188</code></pre>
+<pre class="r"><code>plot(t(X) %*% res$Z[,2])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(svd(X)$v[,1], t(X) %*% res$Z[,2])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>compute_objective_s(scale(t(X) %*% res$Z[,1]))</code></pre>
+<pre><code>[1] 0.3719597</code></pre>
+<pre class="r"><code>plot(t(X) %*% res$Z[,1])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(svd(X)$v[,2], t(X) %*% res$Z[,2])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>Rank-3 flashierRad with random initialization sometimes fails to
+recover a true source, potentially because it does not impose an
+orthogonality constraint.</p>
+<pre class="r"><code>cor_list &lt;- c()
+
+for (i in 1:100) {
+  set.seed(i)
+  init_w = matrix(rnorm(dim(X)[2] * 3), ncol = 3) # w is p by K here K = 3
+
+  flash_res = flash_x_rademacher(X, w = init_w, ebnm_fn = ebnm_rademacher)
+  cor_list[i] &lt;- max(abs(cor(L, flash_res$L_pm)))
+}
+
+sum(cor_list &gt; 0.9)</code></pre>
+<pre><code>[1] 44</code></pre>
+<pre class="r"><code>plot(svd(X)$u[,1], X %*% flash_res$F_pm[,1])</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-16-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="rank-3-fit-with-different-priors" class="section level2">
+<h2>Rank-3 fit with different priors</h2>
+<p>Perhaps we can specify one additional non-Rademacher factor to
+capture noise, and one additional Rademacher (or point Rademacher)
+factor to capture the remaining true non-Gaussian sources?</p>
+<p>Some initial exploration:</p>
+<pre class="r"><code>l_init_1 = matrix(rnorm(dim(X)[1] * 1), ncol = 1)
+f_init_1 = t(solve(crossprod(l_init_1), crossprod(l_init_1, X)))
+
+l_init_2 = matrix(rnorm(dim(X)[1] * 1), ncol = 1)
+f_init_2 = t(solve(crossprod(l_init_2), crossprod(l_init_2, X)))
+
+l_init_3 = matrix(rnorm(dim(X)[1] * 1), ncol = 1)
+f_init_3 = t(solve(crossprod(l_init_3), crossprod(l_init_3, X)))
+
+
+fl &lt;- flash_init(X, var_type = 0) |&gt;
+  flash_factors_init(
+    init = list(l_init_1, f_init_1),
+    ebnm_fn = list(ebnm_point_laplace, ebnm_normal)
+  ) |&gt;
+  flash_factors_init(
+    init = list(l_init_2, f_init_2),
+    ebnm_fn = list(ebnm_point_rademacher, ebnm_normal)
+  ) |&gt;
+  flash_factors_init(
+    init = list(l_init_3, f_init_3),
+    ebnm_fn = list(ebnm_rademacher, ebnm_normal)
+  ) |&gt;
+  flash_backfit()</code></pre>
+<pre><code>Backfitting 3 factors (tolerance: 1.49e-03)...
+  Difference between iterations is within 1.0e+03...
+  Difference between iterations is within 1.0e+02...
+  Difference between iterations is within 1.0e+01...
+  Difference between iterations is within 1.0e+00...
+  Difference between iterations is within 1.0e-01...
+  Difference between iterations is within 1.0e-02...
+  Difference between iterations is within 1.0e-03...
+Wrapping up...
+Done.</code></pre>
+<pre class="r"><code>cor(L, fl$L_pm)</code></pre>
+<pre><code>             [,1]        [,2]    [,3]
+ [1,]  0.47599561 -0.06757374 -0.0625
+ [2,] -0.07232082 -0.81088485 -0.0625
+ [3,]  0.30810801  0.10136061  0.1875
+ [4,]  0.51717884  0.16893434  0.0625
+ [5,] -0.05563884 -0.40544243  0.0625
+ [6,]  0.26415964 -0.27029495 -0.0625
+ [7,] -0.27671986  0.03378687  1.0000
+ [8,]  0.27489577 -0.03378687  0.0625
+ [9,]  0.30510617  0.13514748 -0.0625</code></pre>
+<pre class="r"><code>ebica_parallel1 &lt;- function(
+  X, ebnm_fns, ebnm_fn = ebnm_rademacher,
+  max_iter = 1000, tol = 1e-6, s = NULL,
+  S_init = NULL, W_init = NULL,
+  conv_crit = &quot;elbo&quot;, verbose = 0) {
+  ebica_generalized_parallel(
+    X = X,
+    K = length(ebnm_fns) + 1,
+    ebnm_fn = c(unlist(ebnm_fns), ebnm_fn),
+    max_iter = max_iter,
+    tol = tol,
+    s = s,
+    S_init = S_init,
+    W_init = W_init,
+    conv_crit = conv_crit,
+    verbose = verbose
+  )
+}
+res = ebica_parallel1(t(X), ebnm_fns = c(ebnm_point_laplace, ebnm_point_rademacher))
+cor(L,res$S)</code></pre>
+<pre><code>            [,1]       [,2]       [,3]
+ [1,] -0.3653362 -0.2330746  0.6206392
+ [2,] -0.3905970  0.1657538  0.3507482
+ [3,] -0.4050064  0.6248399 -0.3120996
+ [4,] -0.3784956 -0.2884205 -0.2669501
+ [5,] -0.2832079  0.1962121  0.4513960
+ [6,] -0.2955334 -0.1657489 -0.2738048
+ [7,] -0.4037851  0.3651846 -0.3490339
+ [8,] -0.3411918  0.3439790  0.0900015
+ [9,] -0.0811607 -0.7238564 -0.2878268</code></pre>
+</div>
+<div id="denoising-using-flashier-followed-by-fastica"
+class="section level2">
+<h2>Denoising using flashier followed by fastICA</h2>
+<pre class="r"><code>fit_init &lt;- flash(X, ebnm_fn = ebnm_point_normal, greedy_Kmax = 30, backfit = T)</code></pre>
+<pre><code>Adding factor 1 to flash object...
+Adding factor 2 to flash object...
+Adding factor 3 to flash object...
+Adding factor 4 to flash object...
+Adding factor 5 to flash object...
+Adding factor 6 to flash object...
+Adding factor 7 to flash object...
+Adding factor 8 to flash object...
+Adding factor 9 to flash object...
+Adding factor 10 to flash object...
+Factor doesn&#39;t significantly increase objective and won&#39;t be added.
+Wrapping up...
+Done.
+Backfitting 9 factors (tolerance: 1.49e-03)...
+  Difference between iterations is within 1.0e+05...
+  Difference between iterations is within 1.0e+04...
+  Difference between iterations is within 1.0e+03...
+  Difference between iterations is within 1.0e+02...
+  Difference between iterations is within 1.0e+01...
+  Difference between iterations is within 1.0e+00...
+  Difference between iterations is within 1.0e-01...
+  Difference between iterations is within 1.0e-02...
+  Difference between iterations is within 1.0e-03...
+Wrapping up...
+Done.
+Nullchecking 9 factors...
+Done.</code></pre>
+<pre class="r"><code>X2 = t(scale(fit_init$L_pm %*% t(fit_init$F_pm),center=FALSE))
+# svd.X = svd(fit_init$L_pm %*% t(fit_init$F_pm))
+# X2 = t(svd.X$u[,1:10] %*% t(svd.X$v[,1:10]))
+set.seed(2)
+w = rnorm(nrow(X2))
+for(i in 1:100)
+  w = fastica_rank_one_update(X2,w,include_G2=TRUE)
+cor(L,t(X2) %*% w)</code></pre>
+<pre><code>           [,1]
+ [1,] 0.3691770
+ [2,] 0.3539477
+ [3,] 0.3800873
+ [4,] 0.3837125
+ [5,] 0.2700003
+ [6,] 0.3725415
+ [7,] 0.3816924
+ [8,] 0.3128346
+ [9,] 0.1301166</code></pre>
+<pre class="r"><code>plot(t(X2) %*% w)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-20-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(svd(X2)$u[,1],w)</code></pre>
+<p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-20-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="misc" class="section level2">
+<h2>Misc</h2>
+<p>Vectorized experiments:</p>
+<pre class="r"><code>obj = rep(0,100)
+W = sapply(1:100, function(seed) {
+  set.seed(seed)
+  rnorm(nrow(X1))
+})
+W = sweep(W, 2, sqrt(colSums(W^2)), &quot;/&quot;)
+
+for(i in 1:100) {
+  P = t(X1) %*% W
+  G = tanh(P)
+  G2 = 1 - tanh(P)^2
+  W = X1 %*% G - sweep(W, 2, colSums(G2), &quot;*&quot;)
+  W = sweep(W, 2, sqrt(colSums(W^2)), &quot;/&quot;)
+}
+obj = colMeans(log(cosh(t(X1) %*% W)))
+plot(obj)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 26.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] fastICA_1.2-7   Matrix_1.6-4    flashier_1.0.59 ebnm_1.1-42    
+[5] workflowr_1.7.2
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1      viridisLite_0.4.3     dplyr_1.1.4          
+ [4] farver_2.1.2          fastmap_1.2.0         lazyeval_0.2.3       
+ [7] promises_1.5.0        digest_0.6.37         lifecycle_1.0.5      
+[10] processx_3.8.7        invgamma_1.2          magrittr_2.0.5       
+[13] compiler_4.3.1        rlang_1.1.6           sass_0.4.10          
+[16] progress_1.2.3        tools_4.3.1           yaml_2.3.12          
+[19] data.table_1.17.8     knitr_1.51            prettyunits_1.2.0    
+[22] htmlwidgets_1.6.4     scatterplot3d_0.3-45  plyr_1.8.9           
+[25] RColorBrewer_1.1-3    Rtsne_0.17            purrr_1.0.4          
+[28] grid_4.3.1            git2r_0.36.2          fastTopics_0.7-44    
+[31] colorspace_2.1-2      ggplot2_3.5.2         scales_1.4.0         
+[34] gtools_3.9.5          cli_3.6.5             rmarkdown_2.31       
+[37] crayon_1.5.3          generics_0.1.4        otel_0.2.0           
+[40] RcppParallel_5.1.11-2 rstudioapi_0.18.0     httr_1.4.8           
+[43] reshape2_1.4.5        pbapply_1.7-4         cachem_1.1.0         
+[46] stringr_1.6.0         splines_4.3.1         parallel_4.3.1       
+[49] softImpute_1.4-3      matrixStats_1.5.0     vctrs_0.6.5          
+[52] jsonlite_2.0.0        callr_3.7.6           hms_1.1.4            
+[55] mixsqp_0.3-54         ggrepel_0.9.6         irlba_2.3.7          
+[58] trust_0.1-9           plotly_4.12.0         jquerylib_0.1.4      
+[61] tidyr_1.3.2           glue_1.8.0            cowplot_1.2.0        
+[64] uwot_0.2.4            stringi_1.8.7         Polychrome_1.5.1     
+[67] gtable_0.3.6          later_1.4.8           quadprog_1.5-8       
+[70] tibble_3.3.1          pillar_1.11.1         htmltools_0.5.9      
+[73] truncnorm_1.0-9       R6_2.6.1              rprojroot_2.1.1      
+[76] evaluate_1.0.5        lattice_0.22-9        RhpcBLASctl_0.23-42  
+[79] SQUAREM_2026.1        ashr_2.2-63           httpuv_1.6.17        
+[82] bslib_0.10.0          Rcpp_1.1.0            deconvolveR_1.2-1    
+[85] whisker_0.4.1         xfun_0.57             fs_1.6.6             
+[88] getPass_0.2-4         pkgconfig_2.0.3      </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
