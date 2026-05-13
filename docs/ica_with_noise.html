@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree044f50ba870d23cbde5fe14b2d9855e27726fe95targetblank044f50ba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreef5f43f7f815949f516110aa56227b2193e5a3459targetblankf5f43f7a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/044f50ba870d23cbde5fe14b2d9855e27726fe95" target="_blank">044f50b</a>
+<a href="https://github.com/junmingguan/misc/tree/f5f43f7f815949f516110aa56227b2193e5a3459" target="_blank">f5f43f7</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree044f50ba870d23cbde5fe14b2d9855e27726fe95targetblank044f50ba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreef5f43f7f815949f516110aa56227b2193e5a3459targetblankf5f43f7a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/044f50ba870d23cbde5fe14b2d9855e27726fe95" target="_blank">044f50b</a>.
+<a href="https://github.com/junmingguan/misc/tree/f5f43f7f815949f516110aa56227b2193e5a3459" target="_blank">f5f43f7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -625,6 +625,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/f5f43f7f815949f516110aa56227b2193e5a3459/analysis/ica_with_noise.Rmd" target="_blank">f5f43f7</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd", "analysis/ica_with_noise.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/ica_with_noise.html" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/044f50ba870d23cbde5fe14b2d9855e27726fe95/analysis/ica_with_noise.Rmd" target="_blank">044f50b</a>
 </td>
 <td>
@@ -656,15 +690,23 @@ prior.</p>
 <p><strong>Summary</strong></p>
 <ul>
 <li>For extracting non-Gaussian sources, the whitening step seems to
-matter more than the G_2 term in the FastICA update.</li>
+matter more than the G2 term in the FastICA update.</li>
 <li>This suggests that whitening can be helpful only when the effective
 rank is chosen reasonably well: if the rank is too low or too high,
 whitening may either discard signal or amplify noise. In such cases, it
 may be preferable to avoid whitening or to use a model-based
 alternative.</li>
-<li>Fitting a higher-rank model may help recover one true source when
-the true rank is high, since it gives the algorithm more flexibility to
-separate the target source from the remaining structured variation.</li>
+<li>Fitting a higher-rank model with parallel update may help recover
+one true source when the true rank is high, since it gives the algorithm
+more flexibility to separate the target source from the remaining
+structured variation.</li>
+</ul>
+<p><strong>Things to investigate further</strong></p>
+<ul>
+<li>Understand the tiny differences in the FastICA objectives</li>
+<li>(Theoretically?) understand why parallel rank-<span
+class="math inline">\(K_0\)</span> updates (with Rademacher priors)
+allow exact extraction of one true source</li>
 </ul>
 <p><strong>Note</strong></p>
 <ul>
@@ -705,6 +747,43 @@ FF = matrix(rnorm(p*K), nrow = p, ncol=K)
 X = L %*% t(FF) + rnorm(n*p,0,0.01)
 plot(X %*% FF[,1])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-2-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-2-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>X1 = preprocess(X,n.comp=20)
 X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
 <pre class="r"><code>flash_x_rademacher &lt;- function(X, w, ebnm_fn = ebnm_rademacher) {
@@ -778,8 +857,82 @@ cor(L,t(X2) %*% w)</code></pre>
  [9,] 0.1301153</code></pre>
 <pre class="r"><code>plot(t(X2) %*% w)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-6-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-6-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(svd(X2)$u[,1],w)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-6-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-2">
+Past versions of unnamed-chunk-6-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-6-2.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>I tried rank-1 flashierRad and EBICA with 100 random initilization.
 As expected, all of them converge to the same solution corresponding to
 the first PC.</p>
@@ -797,6 +950,43 @@ sum(cor_list &gt; 0.9)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>plot(svd(X)$u[,1], X %*% flash_res$F_pm)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-7-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cor_list &lt;- c()
 
 for (i in 1:100) {
@@ -810,6 +1000,43 @@ sum(cor_list &gt; 0.9)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>plot(svd(X)$u[,1], res$S)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-8-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-8-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="higher-rank-fit" class="section level2">
 <h2>Higher-rank fit</h2>
@@ -903,6 +1130,43 @@ init_W = matrix(rnorm(dim(X2)[1] * K0), ncol = K0) # X1 %*% L[,1]
 W &lt;- fastica_rank_K_update(X2, init_W,  include_G2 = TRUE, n_iter = 1000)
 plot(t(X2) %*% W)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-12-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-12-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>compute_objective_s(scale(t(X2) %*% W, center = FALSE))</code></pre>
 <pre><code>[1] 0.4175796</code></pre>
 <p>Now we run EBICA, and it extracts one of the true sources with all
@@ -936,6 +1200,43 @@ cor(L, res$S)</code></pre>
 <pre><code>[1] 0.3712458</code></pre>
 <pre class="r"><code>plot(svd(X)$v[,1], t(X) %*% res$S[,1])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-14-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-14-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>We also tried rank-3 EBCD and successfully extracted one true source.
 The second extracted source is near Gaussian and is highly correlated
 with the first PC.</p>
@@ -955,14 +1256,162 @@ cor(L, res$EL)</code></pre>
 <pre><code>[1] 0.3718188</code></pre>
 <pre class="r"><code>plot(t(X) %*% res$Z[,2])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-15-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(svd(X)$v[,1], t(X) %*% res$Z[,2])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-2">
+Past versions of unnamed-chunk-15-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-15-2.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>compute_objective_s(scale(t(X) %*% res$Z[,1]))</code></pre>
 <pre><code>[1] 0.3719597</code></pre>
 <pre class="r"><code>plot(t(X) %*% res$Z[,1])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-3">
+Past versions of unnamed-chunk-15-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-15-3.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(svd(X)$v[,2], t(X) %*% res$Z[,2])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-15-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-4">
+Past versions of unnamed-chunk-15-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-15-4.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Rank-3 flashierRad with random initialization sometimes fails to
 recover a true source, potentially because it does not impose an
 orthogonality constraint.</p>
@@ -980,6 +1429,43 @@ sum(cor_list &gt; 0.9)</code></pre>
 <pre><code>[1] 44</code></pre>
 <pre class="r"><code>plot(svd(X)$u[,1], X %*% flash_res$F_pm[,1])</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-16-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-16-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="rank-3-fit-with-different-priors" class="section level2">
 <h2>Rank-3 fit with different priors</h2>
@@ -1114,8 +1600,82 @@ cor(L,t(X2) %*% w)</code></pre>
  [9,] 0.1301166</code></pre>
 <pre class="r"><code>plot(t(X2) %*% w)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-20-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-20-1.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(svd(X2)$u[,1],w)</code></pre>
 <p><img src="figure/ica_with_noise.Rmd/unnamed-chunk-20-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-2">
+Past versions of unnamed-chunk-20-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/88dccc28bcb4320785d6a72f451a16b73e453a25/docs/figure/ica_with_noise.Rmd/unnamed-chunk-20-2.png" target="_blank">88dccc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="misc" class="section level2">
 <h2>Misc</h2>
