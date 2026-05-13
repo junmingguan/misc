@@ -305,7 +305,7 @@ for (i in 1:100) {
 }
 
 sum(cor_list > 0.9)
-plot(svd(X)$u[,1], X %*% flash_res$F_pm)
+plot(svd(X)$u[,1], X %*% flash_res$F_pm[,1])
 
 ```
 
