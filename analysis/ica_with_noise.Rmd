@@ -1,5 +1,5 @@
 ---
-title: "fastica_with_noise"
+title: "fastICA with noise"
 author: "junmingguan"
 date: "2026-05-07"
 output: workflowr::wflow_html
@@ -421,3 +421,4 @@ for(i in 1:100) {
 obj = colMeans(log(cosh(t(X1) %*% W)))
 plot(obj)
 ```
+
