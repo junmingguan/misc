@@ -1,5 +1,5 @@
 ---
-title: "Flashier on whitened data, and the tree example"
+title: "Flashier on whitened data + intercept, and the tree example"
 author: "junmingguan"
 date: "2026-05-14"
 output: workflowr::wflow_html
@@ -11,14 +11,18 @@ editor_options:
 
 In this analysis, we want to understand two things:
 
-1. whether **applying whitening, centering, and intercept augmentation can also help rank-1 flashierRad find a true source**.
-  - We have previously shown that adding an intercept to centered and whitened data helps rank-1 fastICA identify a true source. Therefore, it is reasonable to conjecture that applying the same preprocessing to flashier will also help.
+1. whether **applying whitening, centering, and intercept augmentation can also help rank-1 flashierRad find a true source**. We have previously shown that adding an intercept to centered and whitened data helps rank-1 fastICA identify a true source. Therefore, it is reasonable to conjecture that applying the same preprocessing to flashier will also help.
 2. why there are **tiny differences between objectives in the tree example**.
 
-For the first question, we again look at the 9-overlapping-group example. The answer seems to depend on how many factors we keep in the whitening step. When we keep the correct number of factors, rank-1 flashierRad is more likely to find a true source, but it still does not perform as well as fastICA. This is probably due to the choice of noise variance. If we let flashier estimate the variance, it backfits everything to zero. If we fix the variance instead, we may need to run flashier on the whitened data first to estimate the noise, but flashier may again treat everything as noise. For now, I set it to the true noise level of the data matrix, which is not ideal.
+For the first question, we again look at the 9-overlapping-group example. I think the answer is yes. flashierRad also seems to be less sensitive to the rank specification in the prewhitening step. However, we do need to specify and fix the residual variance structure, which, based on our data-generating model, seems to be row-specific (see [here](#derivation-var)). Although I set the noise variance to the truth, it can in principle be estimated accurately using, for example, RMT-based estimators. The difficult part is that we also need to set the residual variances for the intercept row. For now, I set it to $\min{S_{ik}}$ (the minimum residual variance among the non-intercept entries), which works well in our example but does seem a bit arbitrary.
+
+Observations:
+
+- When rank-1 fastICA is applied to whitened data plus an intercept, it can find a solution that maximizes the objective but does not correspond to a true source.
+- On the other hand, for both fastICA and flashierRad, it is possible to find binary-like solutions that are highly correlated with one true source, even though the objective is not maximized.
 
 
-For the second question, the tiny objective differences in the tree example appear to come from how directly each candidate contrast is represented in the whitened data with the intercept. Although all solutions have objectives very close to the maximum, they form distinct plateaus: the highest plateau corresponds to the trivial solution, the next to the 2-vs-2 top split, and the lower plateaus to different 1-vs-3 contrasts. The trivial and top-split solutions can be recovered directly from individual rows of the whitened-plus-intercept matrix, while the 1-vs-3 contrasts require combinations of several factors. These combinations are more error-prone, so their fitted values are slightly farther from exact +/-1 vectors, which lowers the log-cosh objective.
+For the second question, my understanding is that the tiny objective differences in the tree example probably come from how directly each tree split is represented in the whitened data with the intercept. Although all solutions have objectives very close to the maximum, they form distinct plateaus: the highest plateau corresponds to the trivial solution, the next to the 2-vs-2 top split, and the lower plateaus to different 1-vs-3 contrasts. The trivial and top-split solutions can be recovered directly from individual rows of the whitened-plus-intercept matrix, while the 1-vs-3 contrasts require combinations of several factors. These combinations are more error-prone, so their fitted values are slightly farther from exact +/-1 vectors, which lowers the log-cosh objective.
 
 ```{r}
 library(ebnm)
@@ -38,17 +42,17 @@ source('code/utils.R')
 
 
 ```{r}
-flash_x_rademacher <- function(X, w, ebnm_fn = ebnm_normal, s = NULL) {
+flash_x_rademacher <- function(X, w, ebnm_fn = ebnm_normal, S = NULL, var_type = 1) {
   if (is.vector(w)) w <- matrix(w, ncol = 1)
 
   S_init = t(X) %*% w
   A_init = t(solve(crossprod(S_init), crossprod(S_init, t(X))))
-  if (is.null(s)) {
-    var_type = 0
-  }  else {
+  if (!is.null(S)) {
     var_type = NULL
   }
-  res <- flash_init(X, var_type = var_type, S = s) |>
+  res <- flash_init(X, var_type = var_type, S = S) |>
+    # flash_set_verbose(0) |>
+    # flash_add_intercept(rowwise = TRUE) |>
     flash_factors_init(
       init = list(A_init, S_init),
       ebnm_fn = list(ebnm_fn, ebnm_rademacher)
@@ -75,9 +79,9 @@ plot(X %*% FF[,1])
 ```
 
 
-### The noisy case
+### Noisy case
 
-Here we keep more factors than the true rank, so the whitened data still contain substantial noise.
+In this case, we keep more factors than the true rank, so the whitened data still contain substantial noise.
 
 ```{r}
 X1 = preprocess(X,n.comp=20)
@@ -85,7 +89,7 @@ X1 = rbind(rep(1,ncol(X1)), X1)
 ```
 
 
-#### vectorized rank-1 fastICA
+#### Vectorized rank-1 fastICA
 
 ```{r}
 init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
@@ -134,94 +138,106 @@ plot(t(X1) %*% w)
 
 #### Whitening + flashierRad
 
-##### Fixed noise level
+For flashier, we need either to specify the residual variances or to estimate them. Since we apply flashier to the whitened data $X_1$, I think the correct residual variances are row-specific: for the $(k,i)$th entry of $X_1$, the residual SD is
 
-Rank-1 flashierRad applied to whitened data plus an intercept can sometimes find a true source, although not very often. The encouraging result is that solutions corresponding to a true source have the largest objectives, while solutions that do not correspond to a true source appear far from binary.
+$$
+S_{ki} = \sqrt{\frac{\sigma^2(1-1/n)}{d_k}},
+$$
+See the derivation [here](#derivation-var). Since we add an intercept to $X_1$, we also need to specify the residual SD for that row. Since the intercept entries are deterministic, ideally their residual SD should be 0; however, this would prioritize these entries when maximizing the ELBO, so we would only get the trivial solution. For now, I set them to $\min{S_{ki}}$.
+
+flashierRad can now more easily identify a true source. There are cases where the trivial solutions are obtained. Also, for seeds 29, 52, 69, and 90, the solutions are near binary and are highly correlated with one true source, but they do not have the maximum objective values. For example, the objective is 0.3890151 for seed 52.
 
 ```{r}
-# ebnm_normal_fixed <- flash_ebnm(
-#   prior_family = "normal",
-#   mode = 0,
-#   scale = 1
-# )
+S = compute_whitened_residual_sd(X, 20, center = TRUE, sigma = 0.01)
+S = rbind(rep(min(S), ncol(S)), S)
 obj = c()
 cor_max = c()
 Lhat = matrix(0, nrow = 100, ncol = dim(X1)[2])
 for (i in 1:100) {
   set.seed(i)
   init_w = rnorm(dim(X1)[1])
-  res = flash_x_rademacher(X1, init_w, s=0.01, ebnm_fn = ebnm_normal)
-  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
-  obj[i] = compute_objective(X1, res$L_pm)
-  Lhat[i,] = as.vector(t(X1) %*% res$L_pm)
+  res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+  obj[i] = compute_objective(X1, res$L_pm[,1])
+  Lhat[i,] = as.vector(t(X1) %*% res$L_pm[,1])
 }
 # sum(cor_max > 0.9)
 plot(sort(obj))
 which(obj > 0.43)
-which(cor_max > 0.9)
-# Lhat_harm = harminize_L_sign(Lhat, obj)
+cor_max_indx = which(cor_max > 0.9)
+length(cor_max_indx)
+cor_max_indx
 obj_ = obj[obj>0.43]
 Lhat_ = Lhat[obj>0.43, ]
 plot_heatmap(t(Lhat_[order(obj_),]))
 ```
 
-For comparison, applying rank-1 flashierRad to the original data fails to recover a true source. As we have shown before, the solution is essentially the first PC.
+
 
 ```{r}
-obj = c()
-cor_max = c()
-X2 = t(scale(X,center=FALSE))
-Lhat = matrix(0, nrow = 100, ncol = dim(X1)[2])
-for (i in 1:100) {
-  set.seed(i)
-  init_w = rnorm(dim(X2)[1])
-  res = flash_x_rademacher(X2, init_w, s=0.01, ebnm_fn = ebnm_normal)
-  cor_max[i] = max(abs(cor(L, t(X2) %*% res$L_pm)))
-  obj[i] = compute_objective(X2, res$L_pm)
-  Lhat[i,] = as.vector(t(X2) %*% res$L_pm)
-}
-# sum(cor_max > 0.9)
-plot(sort(obj))
-which(obj > 0.43)
-which(cor_max > 0.9)
+setdiff(which(obj > 0.43), which(cor_max > 0.9))
+setdiff(which(cor_max > 0.9), which(obj > 0.43))
 ```
 
-Examining the solution with seed 2:
+
+Solutions that maximize the objective but are not highly correlated with a true source are trivial solutions.
 
 ```{r}
-set.seed(2)
+plot_heatmap(t(Lhat[setdiff(which(obj > 0.43), which(cor_max > 0.9)),]))
+```
+
+
+Examining seed 4:
+
+```{r}
+set.seed(4)
 init_w = rnorm(dim(X1)[1])
-res = flash_x_rademacher(X1, init_w, s=0.01, ebnm_fn = ebnm_normal)
-max(abs(cor(L, t(X1) %*% res$L_pm)))
-compute_objective(X1, res$L_pm)
-plot(t(X1) %*% res$L_pm)
-plot(svd(X1)$u[,1], res$L_pm)
+res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+compute_objective(X1, res$L_pm[,1])
+plot(as.vector(t(X1) %*% res$L_pm[,1]))
 ```
+
+Examining seed 52:
+
+```{r}
+set.seed(52)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+compute_objective(X1, res$L_pm[,1])
+plot(as.vector(t(X1) %*% res$L_pm[,1]))
+```
+
+Examining seed 80:
+
+```{r}
+set.seed(80)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+compute_objective(X1, res$L_pm[,1])
+plot(as.vector(t(X1) %*% res$L_pm[,1]))
+```
+
 
 
 ##### Noise level not fixed
 
-Here we also consider estimating the noise variance, but the fit is numerically zero.
+Here, we also consider estimating the noise variance, but the fit is numerically zero.
 
 ```{r}
-obj = c()
-cor_max = c()
-for (i in 1:5) {
-  set.seed(i)
-  init_w = rnorm(dim(X1)[1])
-  res = flash_x_rademacher(X1, init_w, s=NULL, ebnm_fn = ebnm_normal)
-  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
-  obj[i] = compute_objective(X1, res$L_pm)
-}
-sum(cor_max > 0.9)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=NULL, ebnm_fn = ebnm_normal, var_type = 1)
+sum(abs(res$L_pm))
 ```
 
 
 
 
-### The almost noise-free case
+### Almost noise-free case
 
-Here we keep the correct number of factors, so the whitened data can be thought of as noise-free.
+In this case, we keep the correct number of factors, so the whitened data can be thought of as noise-free.
 
 ```{r}
 X1 = preprocess(X,n.comp=9)
@@ -229,7 +245,7 @@ X1 = rbind(rep(1,ncol(X1)), X1)
 ```
 
 
-#### vectorized rank-1 fastICA
+#### Vectorized rank-1 fastICA
 
 ```{r}
 init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
@@ -277,7 +293,7 @@ compute_objective(X1, w)
 plot(t(X1) %*% w)
 ```
 
-For seed 23:
+For seed 23, fastICA finds a binary solution that maximizes the objective, but it does not correspond to a true source.
 
 ```{r}
 set.seed(23)
@@ -291,26 +307,22 @@ plot(t(X1) %*% w)
 
 #### Whitening + flashierRad
 
-##### Fixed noise level
+The results are surprisingly similar to the noisy case. There are 46 solutions that are highly correlated with a true source, almost the same number as in the noisy case, but here we have an additional solution, corresponding to seed 80, that finds a true source.
 
-Rank-1 flashierRad applied to whitened data plus an intercept is more likely to find a true source with the "correct" whitening.
 
 ```{r}
-# ebnm_normal_fixed <- flash_ebnm(
-#   prior_family = "normal",
-#   mode = 0,
-#   scale = 1
-# )
+S = compute_whitened_residual_sd(X, 9, center = TRUE, sigma = 0.01)
+S = rbind(rep(min(S), ncol(S)), S)
 obj = c()
 cor_max = c()
 Lhat = matrix(0, nrow = 100, ncol = dim(X1)[2])
 for (i in 1:100) {
   set.seed(i)
   init_w = rnorm(dim(X1)[1])
-  res = flash_x_rademacher(X1, init_w, s=0.01, ebnm_fn = ebnm_normal)
-  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
-  obj[i] = compute_objective(X1, res$L_pm)
-  Lhat[i,] = as.vector(t(X1) %*% res$L_pm)
+  res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+  obj[i] = compute_objective(X1, res$L_pm[,1])
+  Lhat[i,] = as.vector(t(X1) %*% res$L_pm[,1])
 }
 # sum(cor_max > 0.9)
 plot(sort(obj))
@@ -321,7 +333,57 @@ Lhat_ = Lhat[obj>0.43, ]
 plot_heatmap(t(Lhat_[order(obj_),]))
 ```
 
+```{r}
+setdiff(which(cor_max > 0.9), cor_max_indx)
+```
 
+
+```{r}
+setdiff(which(obj > 0.43), which(cor_max > 0.9))
+setdiff(which(cor_max > 0.9), which(obj > 0.43))
+```
+
+
+Solutions that maximize the objective but are not highly correlated with a true source are trivial solutions.
+
+```{r}
+plot_heatmap(t(Lhat[setdiff(which(obj > 0.43), which(cor_max > 0.9)),]))
+```
+
+
+
+Examining seed 4:
+
+```{r}
+set.seed(4)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+compute_objective(X1, res$L_pm[,1])
+plot(as.vector(t(X1) %*% res$L_pm[,1]))
+```
+
+Examining seed 52:
+
+```{r}
+set.seed(52)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+compute_objective(X1, res$L_pm[,1])
+plot(as.vector(t(X1) %*% res$L_pm[,1]))
+```
+
+Examining seed 80:
+
+```{r}
+set.seed(80)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=S, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm[,1])))
+compute_objective(X1, res$L_pm[,1])
+plot(as.vector(t(X1) %*% res$L_pm[,1]))
+```
 
 
 
@@ -330,16 +392,10 @@ plot_heatmap(t(Lhat_[order(obj_),]))
 Similarly, if we estimate the noise variance, the fit is numerically zero.
 
 ```{r}
-obj = c()
-cor_max = c()
-for (i in 1:100) {
-  set.seed(i)
-  init_w = rnorm(dim(X1)[1])
-  res = flash_x_rademacher(X1, init_w, s=NULL, ebnm_fn = ebnm_normal)
-  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
-  obj[i] = compute_objective(X1, res$L_pm)
-}
-sum(cor_max > 0.9)
+set.seed(1)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, S=NULL, ebnm_fn = ebnm_normal, var_type = 1)
+sum(abs(res$L_pm))
 ```
 
 
@@ -371,7 +427,7 @@ X1 = rbind(rep(1,ncol(X1)), X1)
 ```
 
 
-Here we examine the bifurcating tree example and try to understand why there are tiny differences between the objectives of the different solutions.
+Here, we examine the bifurcating tree example and try to understand why there are tiny differences between the objectives of the different solutions.
 
 To illustrate the phenomenon, we see that although the objectives of all 100 solutions are very close to the maximum, there appear to be several plateaus, each corresponding to one class of solutions. For example, the highest plateau corresponds to the trivial solution, the second corresponds to the 2-vs-2 top-split solutions, and the lower plateaus correspond to different types of 1-vs-3 solutions.
 
@@ -446,3 +502,214 @@ Recall that in rank-1 fastICA, we seek $\mathbf{w}$ such that $\log \cosh (X_1^\
 ```{r}
 plot_heatmap(t(X1))
 ```
+
+
+## Derivation of the residual variance structure after whitening {#derivation-var}
+
+Let the original data be
+
+$$
+X = M + E, \qquad E_{ij} \sim N(0,\sigma^2),
+$$
+
+where $X \in \mathbb{R}^{n \times p}$. Ignoring centering for the moment, preprocessing first transposes the data:
+
+$$
+X^\top = M^\top + E^\top.
+$$
+
+Then compute
+
+$$
+V = \frac{1}{n} X^\top X,
+$$
+
+and take the eigendecomposition
+
+$$
+V = U \operatorname{diag}(d_1,\ldots,d_p) U^\top.
+$$
+
+Let $q = \texttt{n.comp}$. The whitening matrix is
+
+$$
+K =
+\operatorname{diag}\left(
+\frac{1}{\sqrt{d_1}},\ldots,\frac{1}{\sqrt{d_q}}
+\right)
+U_q^\top,
+$$
+
+where $U_q$ contains the first $q$ eigenvectors. The whitened data are
+
+$$
+X_1 = K X^\top.
+$$
+
+Plugging in the signal-plus-noise model gives
+
+$$
+X_1
+=
+K M^\top + K E^\top.
+$$
+
+Therefore the whitened noise is
+
+$$
+\widetilde E = K E^\top.
+$$
+
+Now consider one sample $i$. Let
+
+$$
+e_i \in \mathbb{R}^p, \qquad e_i \sim N(0,\sigma^2 I_p)
+$$
+
+be the original noise vector for sample $i$. The whitened noise vector is
+
+$$
+\widetilde e_i = K e_i.
+$$
+
+Thus
+
+$$
+\operatorname{Cov}(\widetilde e_i)
+=
+K \operatorname{Cov}(e_i) K^\top
+=
+K(\sigma^2 I_p)K^\top
+=
+\sigma^2 K K^\top.
+$$
+
+Since
+
+$$
+K K^\top
+=
+\operatorname{diag}\left(
+\frac{1}{d_1},\ldots,\frac{1}{d_q}
+\right),
+$$
+
+we have
+
+$$
+\operatorname{Cov}(\widetilde e_i)
+=
+\sigma^2
+\operatorname{diag}\left(
+\frac{1}{d_1},\ldots,\frac{1}{d_q}
+\right).
+$$
+
+Therefore, for component $k$,
+
+$$
+S_{ki}
+=
+\sqrt{\frac{\sigma^2}{d_k}},
+$$
+
+and $S$ is row-specific.
+
+
+With centering, define the centering matrix
+
+$$
+H = I_n - \frac{1}{n}\mathbf{1}\mathbf{1}^\top.
+$$
+
+The centered data are
+
+$$
+X_c = H X.
+$$
+
+If the original model is
+
+$$
+X = M + E,
+\qquad
+E_{ij} \sim N(0,\sigma^2),
+$$
+
+then the centered noise is
+
+$$
+E_c = H E.
+$$
+
+After transposing,
+
+$$
+E_c^\top = E^\top H.
+$$
+
+The whitened noise is therefore
+
+$$
+\widetilde E = K E^\top H.
+$$
+
+For sample $i$, let $h_i$ be the $i$-th column of $H$. Then
+
+$$
+\widetilde e_i = K E^\top h_i.
+$$
+
+Since
+
+$$
+\|h_i\|^2 = 1 - \frac{1}{n},
+$$
+
+we have
+
+$$
+\operatorname{Cov}(E^\top h_i)
+=
+\sigma^2 \left(1-\frac{1}{n}\right) I_p.
+$$
+
+Therefore,
+
+$$
+\operatorname{Cov}(\widetilde e_i)
+=
+K \operatorname{Cov}(E^\top h_i) K^\top
+=
+\sigma^2\left(1-\frac{1}{n}\right) K K^\top.
+$$
+
+Using
+
+$$
+K K^\top
+=
+\operatorname{diag}\left(
+\frac{1}{d_1},\ldots,\frac{1}{d_q}
+\right),
+$$
+
+we get
+
+$$
+\operatorname{Cov}(\widetilde e_i)
+=
+\sigma^2\left(1-\frac{1}{n}\right)
+\operatorname{diag}\left(
+\frac{1}{d_1},\ldots,\frac{1}{d_q}
+\right).
+$$
+Thus
+
+$$
+S_{ki}
+=
+\sqrt{
+\frac{\sigma^2(1-1/n)}{d_k}
+}.
+$$
