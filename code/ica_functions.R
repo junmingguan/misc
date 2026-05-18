@@ -19,6 +19,32 @@ fastica_rank_one_update = function(X1, init_w, include_G2 = TRUE, n_iter = 100) 
   return(w)
 }
 
+fastica_vectorized_rank_one_update = function(X1, init_W = NULL, seeds = 1:100,
+                                              include_G2 = TRUE, n_iter = 100) {
+
+  if (is.null(init_W)) {
+    init_W = sapply(seeds, function(seed) {
+      set.seed(seed)
+      rnorm(nrow(X1))
+    })
+  }
+
+  W = sweep(init_W, 2, sqrt(colSums(init_W^2)), "/")
+
+  for(i in 1:n_iter) {
+    P = t(X1) %*% W
+    G = tanh(P)
+    if (include_G2) {
+      G2 = 1 - tanh(P)^2
+      W = X1 %*% G - sweep(W, 2, colSums(G2), "*")
+    } else {
+      W = X1 %*% G
+    }
+    W = sweep(W, 2, sqrt(colSums(W^2)), "/")
+  }
+  W
+}
+
 fastica_rank_K_update_1iter = function(X, W, include_G2 = TRUE) {
   W <- orthonormalize_W(W)
   P <- t(X) %*% W
@@ -98,6 +124,36 @@ preprocess2 = function(X, n.comp=10, center = FALSE){
   svd.X <- svd(X)
   X1 <- svd.X$u[,1:n.comp] %*% t(svd.X$v[,1:n.comp])
   return(X1)
+}
+
+
+compute_whitened_residual_sd <- function(X, n.comp = 10, sigma, center = TRUE) {
+  n <- nrow(X)
+  p <- ncol(X)
+  sigma2 <- sigma^2
+
+  if (center) {
+    X <- scale(X, scale = FALSE)
+  }
+
+  Xt <- t(X)
+
+  V <- Xt %*% t(Xt) / n
+
+  s <- La.svd(V)
+
+  # Finite-sample correction due to centering
+  sigma2_eff <- if (center) sigma2 * (1 - 1 / n) else sigma2
+
+  se <- sqrt(sigma2_eff / s$d[1:n.comp])
+
+  S <- matrix(
+    rep(se, times = n),
+    nrow = n.comp,
+    ncol = n
+  )
+
+  return(S)
 }
 
 
