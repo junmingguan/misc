@@ -1,0 +1,448 @@
+---
+title: "Flashier on whitened data, and the tree example"
+author: "junmingguan"
+date: "2026-05-14"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction and summary
+
+In this analysis, we want to understand two things:
+
+1. whether **applying whitening, centering, and intercept augmentation can also help rank-1 flashierRad find a true source**.
+  - We have previously shown that adding an intercept to centered and whitened data helps rank-1 fastICA identify a true source. Therefore, it is reasonable to conjecture that applying the same preprocessing to flashier will also help.
+2. why there are **tiny differences between objectives in the tree example**.
+
+For the first question, we again look at the 9-overlapping-group example. The answer seems to depend on how many factors we keep in the whitening step. When we keep the correct number of factors, rank-1 flashierRad is more likely to find a true source, but it still does not perform as well as fastICA. This is probably due to the choice of noise variance. If we let flashier estimate the variance, it backfits everything to zero. If we fix the variance instead, we may need to run flashier on the whitened data first to estimate the noise, but flashier may again treat everything as noise. For now, I set it to the true noise level of the data matrix, which is not ideal.
+
+
+For the second question, the tiny objective differences in the tree example appear to come from how directly each candidate contrast is represented in the whitened data with the intercept. Although all solutions have objectives very close to the maximum, they form distinct plateaus: the highest plateau corresponds to the trivial solution, the next to the 2-vs-2 top split, and the lower plateaus to different 1-vs-3 contrasts. The trivial and top-split solutions can be recovered directly from individual rows of the whitened-plus-intercept matrix, while the 1-vs-3 contrasts require combinations of several factors. These combinations are more error-prone, so their fitted values are slightly farther from exact +/-1 vectors, which lowers the log-cosh objective.
+
+```{r}
+library(ebnm)
+library(flashier)
+library(Matrix)
+library(fastICA)
+library(fastTopics)
+library(proxy)
+library(pheatmap)
+source('code/ebcd_functions.R')
+source('code/ica_functions.R')
+source('code/ebnm_rademacher.R')
+source('code/ebnm_point_rademacher.R')
+source('code/utils.R')
+```
+
+
+
+```{r}
+flash_x_rademacher <- function(X, w, ebnm_fn = ebnm_normal, s = NULL) {
+  if (is.vector(w)) w <- matrix(w, ncol = 1)
+
+  S_init = t(X) %*% w
+  A_init = t(solve(crossprod(S_init), crossprod(S_init, t(X))))
+  if (is.null(s)) {
+    var_type = 0
+  }  else {
+    var_type = NULL
+  }
+  res <- flash_init(X, var_type = var_type, S = s) |>
+    flash_factors_init(
+      init = list(A_init, S_init),
+      ebnm_fn = list(ebnm_fn, ebnm_rademacher)
+    ) |>
+    flash_backfit(verbose = 0)
+  return(res)
+}
+```
+
+
+## Rank-1 fastICA vs flashierRad on whitened data with an intercept
+
+```{r}
+K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])
+```
+
+
+### The noisy case
+
+Here we keep more factors than the true rank, so the whitened data still contain substantial noise.
+
+```{r}
+X1 = preprocess(X,n.comp=20)
+X1 = rbind(rep(1,ncol(X1)), X1)
+```
+
+
+#### vectorized rank-1 fastICA
+
+```{r}
+init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+for (j in 1:100) {
+  set.seed(j)
+  init_W[,j] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
+
+obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+cor_max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+sum(cor_max > 0.9)
+plot(sort(obj))
+which(obj > 0.43)
+which(cor_max > 0.9)
+
+Lhat = t(t(X1) %*% W)
+obj_ = obj[obj>0.43]
+Lhat_ = Lhat[obj>0.43, ]
+plot_heatmap(t(Lhat_[order(obj_),]))
+```
+
+
+For seed 12, fastICA finds a Bernoulli-type solution that is highly correlated with a true source, but it does not maximize the objective.
+
+```{r}
+set.seed(12)
+init_w = rnorm(dim(X1)[1])
+w = fastica_rank_one_update(X1, init_w)
+max(abs(cor(L, t(X1) %*% w)))
+compute_objective(X1, w)
+plot(t(X1) %*% w)
+```
+
+For seed 65, fastICA finds a binary solution with the maximum objective, but it does not correspond to any true source.
+
+```{r}
+set.seed(65)
+init_w = rnorm(dim(X1)[1])
+w = fastica_rank_one_update(X1, init_w)
+max(abs(cor(L, t(X1) %*% w)))
+compute_objective(X1, w)
+plot(t(X1) %*% w)
+```
+
+
+#### Whitening + flashierRad
+
+##### Fixed noise level
+
+Rank-1 flashierRad applied to whitened data plus an intercept can sometimes find a true source, although not very often. The encouraging result is that solutions corresponding to a true source have the largest objectives, while solutions that do not correspond to a true source appear far from binary.
+
+```{r}
+# ebnm_normal_fixed <- flash_ebnm(
+#   prior_family = "normal",
+#   mode = 0,
+#   scale = 1
+# )
+obj = c()
+cor_max = c()
+Lhat = matrix(0, nrow = 100, ncol = dim(X1)[2])
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X1)[1])
+  res = flash_x_rademacher(X1, init_w, s=0.01, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
+  obj[i] = compute_objective(X1, res$L_pm)
+  Lhat[i,] = as.vector(t(X1) %*% res$L_pm)
+}
+# sum(cor_max > 0.9)
+plot(sort(obj))
+which(obj > 0.43)
+which(cor_max > 0.9)
+# Lhat_harm = harminize_L_sign(Lhat, obj)
+obj_ = obj[obj>0.43]
+Lhat_ = Lhat[obj>0.43, ]
+plot_heatmap(t(Lhat_[order(obj_),]))
+```
+
+For comparison, applying rank-1 flashierRad to the original data fails to recover a true source. As we have shown before, the solution is essentially the first PC.
+
+```{r}
+obj = c()
+cor_max = c()
+X2 = t(scale(X,center=FALSE))
+Lhat = matrix(0, nrow = 100, ncol = dim(X1)[2])
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X2)[1])
+  res = flash_x_rademacher(X2, init_w, s=0.01, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X2) %*% res$L_pm)))
+  obj[i] = compute_objective(X2, res$L_pm)
+  Lhat[i,] = as.vector(t(X2) %*% res$L_pm)
+}
+# sum(cor_max > 0.9)
+plot(sort(obj))
+which(obj > 0.43)
+which(cor_max > 0.9)
+```
+
+Examining the solution with seed 2:
+
+```{r}
+set.seed(2)
+init_w = rnorm(dim(X1)[1])
+res = flash_x_rademacher(X1, init_w, s=0.01, ebnm_fn = ebnm_normal)
+max(abs(cor(L, t(X1) %*% res$L_pm)))
+compute_objective(X1, res$L_pm)
+plot(t(X1) %*% res$L_pm)
+plot(svd(X1)$u[,1], res$L_pm)
+```
+
+
+##### Noise level not fixed
+
+Here we also consider estimating the noise variance, but the fit is numerically zero.
+
+```{r}
+obj = c()
+cor_max = c()
+for (i in 1:5) {
+  set.seed(i)
+  init_w = rnorm(dim(X1)[1])
+  res = flash_x_rademacher(X1, init_w, s=NULL, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
+  obj[i] = compute_objective(X1, res$L_pm)
+}
+sum(cor_max > 0.9)
+```
+
+
+
+
+### The almost noise-free case
+
+Here we keep the correct number of factors, so the whitened data can be thought of as noise-free.
+
+```{r}
+X1 = preprocess(X,n.comp=9)
+X1 = rbind(rep(1,ncol(X1)), X1)
+```
+
+
+#### vectorized rank-1 fastICA
+
+```{r}
+init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+for (j in 1:100) {
+  set.seed(j)
+  init_W[,j] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
+
+obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+cor_max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+sum(cor_max > 0.9)
+plot(sort(obj))
+which(obj > 0.43)
+which(cor_max > 0.9)
+Lhat = t(t(X1) %*% W)
+obj_ = obj[obj>0.43]
+Lhat_ = Lhat[obj>0.43, ]
+plot_heatmap(t(Lhat_[order(obj_),]))
+```
+
+
+Seeds with solutions that are highly correlated with one true source but have small objectives:
+
+```{r}
+setdiff(which(cor_max > 0.9), which(obj > 0.425))
+```
+
+Seeds with high objective values that do not correspond to any true source. Some of them correspond to the trivial solution.
+
+```{r}
+setdiff(which(obj > 0.425), which(cor_max > 0.9))
+```
+
+
+
+For seed 11, fastICA finds a Bernoulli-type solution that is highly correlated with a true source, but it does not maximize the objective.
+
+```{r}
+set.seed(11)
+init_w = rnorm(dim(X1)[1])
+w = fastica_rank_one_update(X1, init_w)
+max(abs(cor(L, t(X1) %*% w)))
+compute_objective(X1, w)
+plot(t(X1) %*% w)
+```
+
+For seed 23:
+
+```{r}
+set.seed(23)
+init_w = rnorm(dim(X1)[1])
+w = fastica_rank_one_update(X1, init_w)
+max(abs(cor(L, t(X1) %*% w)))
+compute_objective(X1, w)
+plot(t(X1) %*% w)
+```
+
+
+#### Whitening + flashierRad
+
+##### Fixed noise level
+
+Rank-1 flashierRad applied to whitened data plus an intercept is more likely to find a true source with the "correct" whitening.
+
+```{r}
+# ebnm_normal_fixed <- flash_ebnm(
+#   prior_family = "normal",
+#   mode = 0,
+#   scale = 1
+# )
+obj = c()
+cor_max = c()
+Lhat = matrix(0, nrow = 100, ncol = dim(X1)[2])
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X1)[1])
+  res = flash_x_rademacher(X1, init_w, s=0.01, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
+  obj[i] = compute_objective(X1, res$L_pm)
+  Lhat[i,] = as.vector(t(X1) %*% res$L_pm)
+}
+# sum(cor_max > 0.9)
+plot(sort(obj))
+which(obj > 0.43)
+which(cor_max > 0.9)
+obj_ = obj[obj>0.43]
+Lhat_ = Lhat[obj>0.43, ]
+plot_heatmap(t(Lhat_[order(obj_),]))
+```
+
+
+
+
+
+##### Noise level not fixed
+
+Similarly, if we estimate the noise variance, the fit is numerically zero.
+
+```{r}
+obj = c()
+cor_max = c()
+for (i in 1:100) {
+  set.seed(i)
+  init_w = rnorm(dim(X1)[1])
+  res = flash_x_rademacher(X1, init_w, s=NULL, ebnm_fn = ebnm_normal)
+  cor_max[i] = max(abs(cor(L, t(X1) %*% res$L_pm)))
+  obj[i] = compute_objective(X1, res$L_pm)
+}
+sum(cor_max > 0.9)
+```
+
+
+## Tree example
+
+### Bifurcating tree
+
+```{r}
+# set up L to be a tree with 4 tips and 7 branches (including top shared branch)
+set.seed(1)
+n = 100
+p = 1000
+L = matrix(0,nrow=n,ncol=6)
+L[1:50,1] = 1 #top split L
+L[51:100,2] = 1 # top split R
+L[1:25,3]  = 1
+L[26:50,4] = 1
+L[51:75,5] = 1
+L[76:100,6] = 1
+FF = matrix(rnorm(p*6),nrow=p) 
+# FF <- qr.Q(qr(FF))
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+image(X%*% t(X))
+```
+
+```{r}
+X1 = preprocess(X,n.comp=4)
+X1 = rbind(rep(1,ncol(X1)), X1)
+```
+
+
+Here we examine the bifurcating tree example and try to understand why there are tiny differences between the objectives of the different solutions.
+
+To illustrate the phenomenon, we see that although the objectives of all 100 solutions are very close to the maximum, there appear to be several plateaus, each corresponding to one class of solutions. For example, the highest plateau corresponds to the trivial solution, the second corresponds to the 2-vs-2 top-split solutions, and the lower plateaus correspond to different types of 1-vs-3 solutions.
+
+
+```{r}
+init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+for (j in 1:100) {
+  set.seed(j)
+  init_W[,j] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
+
+obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+cor_max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+plot(sort(obj))
+
+Lhat = t(t(X1) %*% W)
+Lhat_harm = harminize_L_sign(Lhat, obj)
+plot_heatmap(t(Lhat_harm))
+```
+
+
+If we look at the MSE of each solution relative to its closest population solution (an exact +/-1 vector), we see that the trend is opposite to what we see in the objective values. We know that log-cosh is maximized at the exact +/-1 solutions. Any slight perturbation from these exact solutions, due to the unit variance constraint and the geometry of the log-cosh function, results in a lower objective than the maximum.
+
+```{r, echo=FALSE}
+grp <- rep(1:4, each = 25)
+
+contrasts4 <- rbind(
+  "1:1:1:1"     = c( 1,  1,  1,  1),
+  "1:1:-1:-1"   = c( 1,  1, -1, -1),
+  "1:-1:1:-1"   = c( 1, -1,  1, -1),
+  "1:-1:-1:1"   = c( 1, -1, -1,  1),
+  "1:-1:-1:-1"  = c( 1, -1, -1, -1),
+  "-1:1:-1:-1"  = c(-1,  1, -1, -1),
+  "-1:-1:1:-1"  = c(-1, -1,  1, -1),
+  "-1:-1:-1:1"  = c(-1, -1, -1,  1)
+)
+
+# Expand group-level contrasts to length n
+C <- t(apply(contrasts4, 1, function(v) v[grp]))
+rownames(C) <- rownames(contrasts4)
+
+# MSE from one estimated source s to each contrast, allowing global sign flip
+mse_to_contrasts <- function(s, C) {
+  apply(C, 1, function(c0) {
+    min(mean((s - c0)^2), mean((s + c0)^2))
+  })
+}
+
+# Optional: sort by objective first
+ord <- order(obj)
+Lhat_ord <- Lhat[ord, ]
+obj_ord <- obj[ord]
+
+mse_mat <- t(apply(Lhat_ord, 1, mse_to_contrasts, C = C))
+
+best_contrast <- colnames(mse_mat)[max.col(-mse_mat)]  # smallest MSE
+best_mse <- apply(mse_mat, 1, min)
+
+df <- data.frame(
+  run = ord,
+  obj = obj_ord,
+  best_contrast = best_contrast,
+  best_mse = best_mse
+)
+
+plot(df$best_mse, ylab = "MSE")
+```
+
+Recall that in rank-1 fastICA, we seek $\mathbf{w}$ such that $\log \cosh (X_1^\top \mathbf{w})$ is maximized. Therefore, the columns of the whitened data with intercept, $X_1$, are crucial for understanding this phenomenon. Indeed, the trivial solution and the top-split solution can be recovered directly from $X_1$ using $\mathbf{w}=(1,0,0,0)$ and $\mathbf{w}=(0,1,0,0)$, while the 1-vs-3 contrasts require several factors and are therefore more error-prone.
+
+```{r}
+plot_heatmap(t(X1))
+```

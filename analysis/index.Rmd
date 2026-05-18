@@ -25,42 +25,43 @@ $$
 
 fastICA estimates $\mathbf{s}=\begin{bmatrix}s_1 & \dots s_d\end{bmatrix}^\top$ by first estimating the "inverse" of $\mathbf{a}$, via the following steps:
 
--   Pick an initial $\mathbf{w}$
+- Pick an initial $\mathbf{w}$
 
--   Iterate
+- Iterate
 
-    -   $\mathbf{s}=Y^\top \mathbf{w}$
+  - $\mathbf{s}=Y^\top \mathbf{w}$
 
-    -   Denoising: $\mathbf{s}^+=f(\mathbf{s})$
+  - Denoising: $\mathbf{s}^+=f(\mathbf{s})$
 
-    -   $\mathbf{w}^+=Y \mathbf{s}^+$
+  - $\mathbf{w}^+=Y \mathbf{s}^+$
 
-    -   $\mathbf{w}=\mathbf{w}^+ / \|\mathbf{w}^+\|$.
+  - $\mathbf{w}=\mathbf{w}^+ / \|\mathbf{w}^+\|$.
 
 The first two steps are the E-step that constructs the estimated posterior mean $\mathbb{E}[\mathbf{s} \mid Y, \mathbf{w}]$, and the last two steps are the M-step that maximize $\mathbb{E}_q[\log p(\mathbf{s}, Y \mid \mathbf{w})]$.
 
 ### Analyses
 
--   [initial exploration of ICA in the presence of noise](ica_with_noise.html)
--   [Initial exploration of EB ICA](eb_ica.html)
--   [Exploration of flashier with Rademacher prior](ica_vs_flashier_r1_rad.html)
+- [initial exploration of ICA in the presence of noise](ica_with_noise.html)
+- [Initial exploration of EB ICA](eb_ica.html)
+- [Exploration of flashier with Rademacher prior](ica_vs_flashier_r1_rad.html)
+- [flashier on whitened data and the tree example](flashier_whitened_and_tree_example.html)
 
 ### Some observations
 
--   Fitting a parallel rank-$K_0$ EB ICA model ($K_0 > 1$) is more likely to recover some of the true sources. However, a deflation scheme does not seem to work well, probably because of the initial poor rank-1 fit.
+- Fitting a parallel rank-$K_0$ EB ICA model ($K_0 > 1$) is more likely to recover some of the true sources. However, a deflation scheme does not seem to work well, probably because of the initial poor rank-1 fit.
 
--   Whitening works well if we know the true rank.
+- Whitening works well if we know the true rank.
 
 Thoughts:
 
--   ICA/EBMF with different types of source?
+- ICA/EBMF with different types of source?
 
--   Generalized EBMF? to different noise?
+- Generalized EBMF? to different noise?
 
--   Is fastICA inability in unbalanced group due to centering or a wrong contrast function (logcosh is essentially a super Gaussian prior)?
+- Is fastICA inability in unbalanced group due to centering or a wrong contrast function (logcosh is essentially a super Gaussian prior)?
 
--   fastICA seems to correspond to two different formulation of ICA: noiseless ICA with 1/cosh prior, and Bayesian ICA with Rademacher prior and Gaussian noise.
+- fastICA seems to correspond to two different formulation of ICA: noiseless ICA with 1/cosh prior, and Bayesian ICA with Rademacher prior and Gaussian noise.
 
-    -   Relationship between 1/cosh and Rademacher?
+  - Relationship between 1/cosh and Rademacher?
 
--   fastICA treats $E$ in $LF^\top+E$ as Gaussian signals, but it doesn't look for it in the first few factors.
+- fastICA treats $E$ in $LF^\top+E$ as Gaussian signals, but it doesn't look for it in the first few factors.
