@@ -9,9 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="junmingguan" />
 
+<meta name="date" content="2026-05-22" />
 
-<title>Home</title>
+<title>On Rank-1 flashier update with Normal prior + Rademacher prior on whitened data</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -72,28 +74,6 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-/* for pandoc --citeproc since 2.11 */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 
 
@@ -379,7 +359,10 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Home</h1>
+<h1 class="title toc-ignore">On Rank-1 flashier update with Normal prior
++ Rademacher prior on whitened data</h1>
+<h4 class="author">junmingguan</h4>
+<h4 class="date">2026-05-22</h4>
 
 </div>
 
@@ -412,7 +395,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span> 0
 </p>
@@ -449,6 +432,90 @@ class="panel-collapse collapse">
 <p>Great! Since the R Markdown file has been committed to the Git
 repository, you know the exact version of the code that produced these
 results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251108code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251108code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251108)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
@@ -492,6 +559,7 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    analysis/exploratiion_normal_prior_on_factor.html
+    Ignored:    analysis/figure/
     Ignored:    analysis/presentation.html
     Ignored:    analysis/presentation_files/
 
@@ -539,10 +607,12 @@ have uncommitted changes.
 <div id="versions" class="tab-pane fade">
 <p>
 These are the previous versions of the repository in which changes were
-made to the R Markdown (<code>analysis/index.Rmd</code>) and HTML
-(<code>docs/index.html</code>) files. If you’ve configured a remote Git
-repository (see <code>?wflow_git_remote</code>), click on the hyperlinks
-in the table below to view the files as they were in that past version.
+made to the R Markdown
+(<code>analysis/on_flashier_and_whitened_data.Rmd</code>) and HTML
+(<code>docs/on_flashier_and_whitened_data.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -571,7 +641,7 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/junmingguan/misc/blob/edd63cc15dca7c0424477ed3ada1236873ca8849/analysis/index.Rmd" target="_blank">edd63cc</a>
+<a href="https://github.com/junmingguan/misc/blob/edd63cc15dca7c0424477ed3ada1236873ca8849/analysis/on_flashier_and_whitened_data.Rmd" target="_blank">edd63cc</a>
 </td>
 <td>
 junmingguan
@@ -583,366 +653,6 @@ junmingguan
 wflow_publish(c("analysis/on_flashier_and_whitened_data.Rmd",
 </td>
 </tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/6367d26344073b61e4d3cafc8966dda7f06457c1/docs/index.html" target="_blank">6367d26</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-05-17
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/f011595daeb067861e888b66c592248c863d35f3/analysis/index.Rmd" target="_blank">f011595</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-05-17
-</td>
-<td>
-wflow_publish(c("analysis/index.Rmd",
-"analysis/flashier_whitened_and_tree_example.Rmd"))
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/08e5465a530fdc38626ef05480cf60f38cb9f2d2/docs/index.html" target="_blank">08e5465</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-05-13
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/255c7778fa4227e188c8560061626142ee0f705d/docs/index.html" target="_blank">255c777</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-05-13
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/28e7491ee60cbdd30650d59e659f3769447fbd17/analysis/index.Rmd" target="_blank">28e7491</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-05-13
-</td>
-<td>
-wflow_publish(c("analysis/index.Rmd", "analysis/ica_with_noise.Rmd"))
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/5bb98a8bbca302e8c2988c2ced80c2d34a607a87/docs/index.html" target="_blank">5bb98a8</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-31
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/11adc57d0bfd3c256e16d37f3779bfb6f1b5a284/analysis/index.Rmd" target="_blank">11adc57</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-31
-</td>
-<td>
-wflow_publish("analysis/index.Rmd")
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/fab820927db361c13b980e081338d2154f810fc3/docs/index.html" target="_blank">fab8209</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-13
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/15704b735f35a1ea0079dfd991d74f2361d7e212/analysis/index.Rmd" target="_blank">15704b7</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-13
-</td>
-<td>
-wflow_publish("analysis/index.Rmd")
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/c17b03e5b6bd7af5e181097fca95559a88787d42/docs/index.html" target="_blank">c17b03e</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-12
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/35f3d4427957e283303206098841d86f858e7087/analysis/index.Rmd" target="_blank">35f3d44</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-12
-</td>
-<td>
-wflow_publish(c("analysis/eb_ica.Rmd", "analysis/index.Rmd"))
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/316f105316a5bec2d9516e89bc59e9c2a023d2a0/docs/index.html" target="_blank">316f105</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-12
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/a5e2613a2992d075de2080e66a2008fd3a4c7139/analysis/index.Rmd" target="_blank">a5e2613</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-03-12
-</td>
-<td>
-wflow_publish(c("analysis/index.Rmd"))
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/71e288edbcb53152802630e8725e6f1604331213/docs/index.html" target="_blank">71e288e</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-13
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/65a5c9c907e98735bfe6d9b366a6993af4e56f7e/docs/index.html" target="_blank">65a5c9c</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-13
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/d08229ba8c25c3a7a39333be5f798a4d9dae36b2/analysis/index.Rmd" target="_blank">d08229b</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-13
-</td>
-<td>
-wflow_publish(c("analysis/ica_vs_flash_r1_update_1.Rmd",
-"analysis/index.Rmd"))
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/f6acacfa68b1a4ce493a77beab84686f8ba324a9/docs/index.html" target="_blank">f6acacf</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-13
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/91090186e2c7f7ee57ec08f9e4ce26154bb71ef4/analysis/index.Rmd" target="_blank">9109018</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-13
-</td>
-<td>
-wflow_publish(c("analysis/ica_vs_flash_r1_update_1.Rmd",
-"analysis/index.Rmd"))
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/junmingguan/misc/aec07dac098df3a0fdc2f5027900c92a5f8c7c13/docs/index.html" target="_blank">aec07da</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/e4eb50a8503854e94b8581995780ca9377d74add/analysis/index.Rmd" target="_blank">e4eb50a</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-08
-</td>
-<td>
-Publish the initial files for ICA vs flashier
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/aaa922a435efe01f376fa282cddb51623d663b45/analysis/index.Rmd" target="_blank">aaa922a</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2025-11-08
-</td>
-<td>
-Start workflowr project.
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -950,110 +660,232 @@ Start workflowr project.
 </div>
 </div>
 </div>
-<p>This repo contains misc explorations.</p>
-<div id="ica-vs-flashier" class="section level1">
-<h1>ICA vs flashier</h1>
-<p>We want to compare fastICA’s rank-1 update with that of flashier.
-Matthew previously examined an <a
-href="https://stephens999.github.io/misc/fastica_02.html">example</a>
-where rank-1 fastICA almost perfectly picks up one column of the true
-mixing matrix, but flashier does not. Our conjecture is that flashier’s
-failure arises from an overemphasis on the <em>fit</em> term. We plan to
-investigate this further and potentially improve flashier’s rank-1
-update.</p>
-<div id="fastica-as-a-bayesian-ica-with-rademacher-prior-on-the-sources"
-class="section level2">
-<h2>fastICA as a Bayesian ICA with Rademacher prior on the sources</h2>
-<p>rank-1 FastICA can be considered as an EM algorithm with a Rademacher
-prior on the sources, with a spectral shift step to accelerate
-convergence <span class="citation">(Särelä and Valpola 2005)</span>.
-Therefore, it is also equivalent to rank-1 EBCD with Rademacher prior.
-Consider the model for <span class="math inline">\(Y\in
-\mathbb{R}^{n\times d}\)</span></p>
+<p>Here we demonstrate that flashier update with Normal and Rademacher
+prior might eventually collapse to 0.</p>
+<div id="derivation" class="section level2">
+<h2>Derivation</h2>
+<p>The model is</p>
 <p><span class="math display">\[
-Y_{ij} \sim \mathcal{N}(a_i s_j, \sigma^2), \quad s_i \sim
-\text{Rad}(1/2),\quad \sum_{i}^n a_i^2=1.
+Y \in \mathbb{R}^{p\times n} = vz^\top + E ,
 \]</span></p>
-<p>fastICA estimates <span
-class="math inline">\(\mathbf{s}=\begin{bmatrix}s_1 &amp; \dots
-s_d\end{bmatrix}^\top\)</span> by first estimating the “inverse” of
-<span class="math inline">\(\mathbf{a}\)</span>, via the following
-steps:</p>
+<p>with a Rademacher prior on <span class="math inline">\(v\)</span>, a
+normal prior on <span class="math inline">\(z\)</span>, and an estimated
+noise variance:</p>
+<p><span class="math display">\[
+v_i \sim \operatorname{Rad}(1/2), \qquad
+z_j \sim N(0,c\sigma^2), \qquad
+E_{ij}\sim N(0,\sigma^2).
+\]</span></p>
+<p>Denote</p>
+<p><span class="math display">\[
+S=YY^\top, \qquad
+\bar{v}=E_q[v], \qquad
+\lambda=\frac{\bar{v}^\top S \bar{v}}{\overline{v^\top v}} =
+\frac{\bar{v}^\top S \bar{v}}{n}.
+\]</span></p>
+<p>Given <span class="math inline">\(q_v\)</span>, and <span
+class="math inline">\(\sigma^2\)</span>, the shrinkage factor for the
+posterior of <span class="math inline">\(z\)</span> is</p>
+<p><span class="math display">\[
+\alpha = \left(1-\frac{p \sigma^2}{\lambda}\right)_+,
+\]</span></p>
+<p>hence</p>
+<p><span class="math display">\[
+\bar{z} = \alpha Y^\top \bar{v}/n
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\overline{z^\top z} = \alpha \lambda / n.
+\]</span></p>
+<p>Plugging in <span class="math inline">\(q_z\)</span> and <span
+class="math inline">\(\sigma^2\)</span>, the update for <span
+class="math inline">\(q_v\)</span> is</p>
+<p><span class="math display">\[
+\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right)
+\]</span></p>
+<p>The noise variance update is</p>
+<p><span class="math display">\[
+\hat{\sigma}^2 = \frac{\operatorname{tr}(S) - \hat{\alpha} \lambda}{np}.
+\]</span></p>
 <ul>
-<li><p>Pick an initial <span
-class="math inline">\(\mathbf{w}\)</span></p></li>
-<li><p>Iterate</p>
-<ul>
-<li><p><span class="math inline">\(\mathbf{s}=Y^\top
-\mathbf{w}\)</span></p></li>
-<li><p>Denoising: <span
-class="math inline">\(\mathbf{s}^+=f(\mathbf{s})\)</span></p></li>
-<li><p><span class="math inline">\(\mathbf{w}^+=Y
-\mathbf{s}^+\)</span></p></li>
-<li><p><span class="math inline">\(\mathbf{w}=\mathbf{w}^+ /
-\|\mathbf{w}^+\|\)</span>.</p></li>
-</ul></li>
+<li>If <span class="math inline">\(\hat{\alpha} = 0\)</span>, <span
+class="math inline">\(\hat{\sigma}^2 = \operatorname{tr}(S)/np\)</span>
+, <span class="math inline">\(\bar{v}=\tanh 0 = 0\)</span>; this happens
+when <span class="math inline">\(\lambda &lt;
+\operatorname{tr}(S)/n=p\)</span> for whitened <span
+class="math inline">\(Y\)</span>.</li>
+<li>If <span class="math inline">\(\hat{\alpha} &gt; 0\)</span>, we have
+<span
+class="math inline">\(\widehat\sigma^2=\frac{\operatorname{tr}(S)-\lambda}{p(n-1)}\)</span>.
+this happens when <span class="math inline">\(\lambda \ge
+\operatorname{tr}(S)/n=p\)</span>.</li>
 </ul>
-<p>The first two steps are the E-step that constructs the estimated
-posterior mean <span class="math inline">\(\mathbb{E}[\mathbf{s} \mid Y,
-\mathbf{w}]\)</span>, and the last two steps are the M-step that
-maximize <span class="math inline">\(\mathbb{E}_q[\log p(\mathbf{s}, Y
-\mid \mathbf{w})]\)</span>.</p>
-<div id="analyses" class="section level3">
-<h3>Analyses</h3>
-<ul>
-<li><a href="ica_with_noise.html">initial exploration of ICA in the
-presence of noise</a></li>
-<li><a href="eb_ica.html">Initial exploration of EB ICA</a></li>
-<li><a href="ica_vs_flashier_r1_rad.html">Exploration of flashier with
-Rademacher prior</a></li>
-<li><a href="flashier_whitened_and_tree_example.html">flashier on
-whitened data and the tree example</a></li>
-<li><a href="on_flashier_and_whitened_data.html">flashier with Normal
-prior and Rademacher prior might collapse to 0</a></li>
-</ul>
+<p>Let’s assume we start with <span
+class="math inline">\(\bar{v}\)</span> such that <span
+class="math inline">\(\lambda&gt;p\)</span>. Using estimates of <span
+class="math inline">\(\alpha\)</span> and <span
+class="math inline">\(\sigma^2\)</span>,</p>
+<p><span class="math display">\[
+\frac{\hat\alpha}{\hat\sigma^2}
+=
+\frac{np(\lambda-p)}{\lambda(np-\lambda)}.
+\]</span></p>
+<p>Define</p>
+<p><span class="math display">\[
+\gamma(\lambda)
+=
+\frac{np(\lambda-p)}{\lambda(np-\lambda)}.
+\]</span></p>
+<p>Then the update is</p>
+<p><span class="math display">\[
+\bar{v}^+=
+\tanh\left(\gamma(\lambda)P\bar{v}\right),
+\]</span></p>
+<p>where <span class="math inline">\(P=S/n\)</span> is a projection
+matrix, assuming that <span class="math inline">\(Y\)</span> is
+whitened, and <span
+class="math inline">\(\lambda=\|P\bar{v}\|^2\)</span>.</p>
+<p>The next estimate <span class="math inline">\(\bar{v}^+\)</span>
+satisfies</p>
+<p><span class="math display">\[
+\lambda^+
+\le
+\left\|\tanh(\gamma P\bar{v})\right\|^2
+\le \|P\bar{v}\|^2 = \lambda,
+\]</span></p>
+<p>whenever, <span class="math inline">\(p&lt;\lambda\leq p
+\sqrt{n}\)</span>. (could also hold for <span
+class="math inline">\(\lambda &gt; p\sqrt{n}\)</span>)</p>
+<p>This tells us that <span class="math inline">\(\lambda^+ \downarrow
+p\)</span>. But once <span class="math inline">\(\lambda\)</span> is
+sufficiently close to <span class="math inline">\(p\)</span>, the next
+iteration will cross the threshold, yielding <span
+class="math inline">\(\bar{v}^+ = 0\)</span>.</p>
 </div>
-<div id="some-observations" class="section level3">
-<h3>Some observations</h3>
-<ul>
-<li><p>Fitting a parallel rank-<span class="math inline">\(K_0\)</span>
-EB ICA model (<span class="math inline">\(K_0 &gt; 1\)</span>) is more
-likely to recover some of the true sources. However, a deflation scheme
-does not seem to work well, probably because of the initial poor rank-1
-fit.</p></li>
-<li><p>Whitening works well if we know the true rank.</p></li>
-</ul>
-<p>Thoughts:</p>
-<ul>
-<li><p>ICA/EBMF with different types of source?</p></li>
-<li><p>Generalized EBMF? to different noise?</p></li>
-<li><p>Is fastICA inability in unbalanced group due to centering or a
-wrong contrast function (logcosh is essentially a super Gaussian
-prior)?</p></li>
-<li><p>fastICA seems to correspond to two different formulation of ICA:
-noiseless ICA with 1/cosh prior, and Bayesian ICA with Rademacher prior
-and Gaussian noise.</p>
-<ul>
-<li>Relationship between 1/cosh and Rademacher?</li>
-</ul></li>
-<li><p>fastICA treats <span class="math inline">\(E\)</span> in <span
-class="math inline">\(LF^\top+E\)</span> as Gaussian signals, but it
-doesn’t look for it in the first few factors.</p></li>
-</ul>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<pre class="r"><code>library(flashier)</code></pre>
+<pre><code>Loading required package: ebnm</code></pre>
+<pre class="r"><code>code_dir &lt;- if (dir.exists(&quot;code&quot;)) &quot;code&quot; else &quot;../code&quot;
+source(file.path(code_dir, &quot;ica_functions.R&quot;))
+source(file.path(code_dir, &quot;ebnm_rademacher.R&quot;))
+
+
+flash_x_rademacher &lt;- function(X, S_init, ebnm_fn = ebnm_normal, S = NULL, var_type = 0, backfit = TRUE, maxiter = 30) {
+   if (is.vector(S_init)) S_init &lt;- matrix(S_init, ncol = 1)
+  A_init = t(solve(crossprod(S_init), crossprod(S_init, t(X))))
+  if (!is.null(S)) {
+    var_type = NULL
+  }
+  lambda_path = c()
+  res &lt;- flash_init(X, var_type = var_type, S = S) |&gt;
+      flash_factors_init(
+        init = list(A_init, S_init),
+        ebnm_fn = list(ebnm_fn, ebnm_rademacher)
+  )
+  lambda_path[1] = t(S_init) %*% t(X) %*% X %*% S_init
+  for (i in 1:maxiter) {
+    res &lt;- res |&gt;
+      flash_backfit(verbose = 0, extrapolate = TRUE, maxiter = 1)
+    lambda_path[i+1] = t(res$F_pm) %*% t(X) %*% X %*% res$F_pm
+  }
+  return(list(res=res, lambda_path = lambda_path))
+}</code></pre>
+<pre class="r"><code>K=3
+p = 100
+n = 1000
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-2-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>X1 = preprocess(X, n.comp = 9)
+X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
+<pre class="r"><code>fit = flash_x_rademacher(X1, L[,1])</code></pre>
+<pre><code>  --Estimate of factor 1 is numerically zero!
+  --Estimate of factor 1 is numerically zero!</code></pre>
+<p>We see here that the fit is essentially 0, and <span
+class="math inline">\(\lambda\)</span> converges to 0, although
+initially it is larger than <span
+class="math inline">\(p=100\)</span>.</p>
+<pre class="r"><code>sum(abs(fit$res$F_pm))</code></pre>
+<pre><code>[1] 7.198205e-07</code></pre>
+<pre class="r"><code>fit$lambda_path / n</code></pre>
+<pre><code> [1] 9.999985e+02 6.414354e+02 4.697545e+02 3.676153e+02 2.976616e+02
+ [6] 2.455266e+02 2.043350e+02 1.703297e+02 1.412643e+02 1.157043e+02
+[11] 9.268829e+01 7.155548e+01 5.186460e+01 3.339477e+01 1.632838e+01
+[16] 2.460478e+00 5.181423e-16 5.181423e-16 5.181423e-16 5.181423e-16
+[21] 5.181423e-16 5.181423e-16 5.181423e-16 5.181423e-16 5.181423e-16
+[26] 5.181423e-16 5.181423e-16 5.181423e-16 5.181423e-16 5.181423e-16
+[31] 5.181423e-16</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 26.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] flashier_1.0.59 ebnm_1.1-42     workflowr_1.7.2
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1      viridisLite_0.4.3     dplyr_1.1.4          
+ [4] farver_2.1.2          fastmap_1.2.0         lazyeval_0.2.3       
+ [7] promises_1.5.0        digest_0.6.37         lifecycle_1.0.5      
+[10] processx_3.8.7        invgamma_1.2          magrittr_2.0.5       
+[13] compiler_4.3.1        rlang_1.1.6           sass_0.4.10          
+[16] progress_1.2.3        tools_4.3.1           yaml_2.3.12          
+[19] data.table_1.17.8     knitr_1.51            prettyunits_1.2.0    
+[22] htmlwidgets_1.6.4     scatterplot3d_0.3-45  plyr_1.8.9           
+[25] RColorBrewer_1.1-3    Rtsne_0.17            purrr_1.0.4          
+[28] grid_4.3.1            git2r_0.36.2          fastTopics_0.7-44    
+[31] colorspace_2.1-2      ggplot2_3.5.2         scales_1.4.0         
+[34] gtools_3.9.5          cli_3.6.5             rmarkdown_2.31       
+[37] crayon_1.5.3          generics_0.1.4        otel_0.2.0           
+[40] RcppParallel_5.1.11-2 rstudioapi_0.18.0     httr_1.4.8           
+[43] reshape2_1.4.5        pbapply_1.7-4         cachem_1.1.0         
+[46] stringr_1.6.0         splines_4.3.1         parallel_4.3.1       
+[49] softImpute_1.4-3      matrixStats_1.5.0     vctrs_0.6.5          
+[52] Matrix_1.6-4          jsonlite_2.0.0        callr_3.7.6          
+[55] hms_1.1.4             mixsqp_0.3-54         ggrepel_0.9.6        
+[58] irlba_2.3.7           trust_0.1-9           plotly_4.12.0        
+[61] jquerylib_0.1.4       tidyr_1.3.2           glue_1.8.0           
+[64] cowplot_1.2.0         uwot_0.2.4            stringi_1.8.7        
+[67] Polychrome_1.5.1      gtable_0.3.6          later_1.4.8          
+[70] quadprog_1.5-8        tibble_3.3.1          pillar_1.11.1        
+[73] htmltools_0.5.9       truncnorm_1.0-9       R6_2.6.1             
+[76] rprojroot_2.1.1       evaluate_1.0.5        lattice_0.22-9       
+[79] RhpcBLASctl_0.23-42   SQUAREM_2026.1        ashr_2.2-63          
+[82] httpuv_1.6.17         bslib_0.10.0          Rcpp_1.1.0           
+[85] deconvolveR_1.2-1     whisker_0.4.1         xfun_0.57            
+[88] fs_1.6.6              getPass_0.2-4         pkgconfig_2.0.3      </code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-DSS" class="csl-entry">
-Särelä, Jaakko, and Harri Valpola. 2005. <span>“Denoising Source
-Separation.”</span> <em>Journal of Machine Learning Research</em> 6 (9):
-233–72. <a
-href="http://jmlr.org/papers/v6/sarela05a.html">http://jmlr.org/papers/v6/sarela05a.html</a>.
 </div>
 </div>
 
