@@ -105,7 +105,7 @@ preprocess = function(X, n.comp=10, center = TRUE){
   if (center) X <- scale(X, scale = FALSE)
   X <- t(X)
 
-  ## This appears to be equivalant to X1 = t(svd(X)$v[,1:n.comp])
+  ## This appears to be equivalant to X1 = sqrt(n) * t(svd(X)$v[,1:n.comp])
   V <- X %*% t(X)/n
   s <- La.svd(V)
   D <- diag(c(1/sqrt(s$d)))
@@ -327,26 +327,21 @@ ebica_parallel <- function(X, K, d, n, max_iter, tol, s, estimate_s, S_init, W_i
     obj_history[iter] <- elbo
 
 
+    if (K > 1) {
+      svd_res <- svd(W_plus)
+      W <- svd_res$u %*% t(svd_res$v)
+    } else {
+      W <- matrix(W_plus / sqrt(sum(W_plus^2)), ncol = 1)
+    }
+
     is_converged <- FALSE
     if (conv_crit == "elbo") {
       if (iter > 1 && (elbo - obj_history[iter - 1]) < tol) is_converged <- TRUE
-    } else {
+    } else if (conv_crit == "weights") {
       if (K > 1) {
-        svd_res <- svd(W_plus)
-        W <- svd_res$u %*% t(svd_res$v)
         if (max(1 - abs(colSums(W * W_old))) < tol) is_converged <- TRUE
       } else {
-        W <- matrix(W_plus / sqrt(sum(W_plus^2)), ncol = 1)
         if (1 - abs(sum(W * W_old)) < tol) is_converged <- TRUE
-      }
-    }
-
-    if (conv_crit == "elbo") {
-      if (K > 1) {
-        svd_res <- svd(W_plus)
-        W <- svd_res$u %*% t(svd_res$v)
-      } else {
-        W <- matrix(W_plus / sqrt(sum(W_plus^2)), ncol = 1)
       }
     }
 
@@ -443,7 +438,7 @@ ebica_deflation <- function(X, K, d, n, max_iter, tol, s, estimate_s, S_init, W_
       is_converged <- FALSE
       if (conv_crit == "elbo") {
         if (iter > 1 && (global_elbo - comp_obj[iter - 1]) < tol) is_converged <- TRUE
-      } else {
+      } else if (conv_crit == "weights") {
         if (1 - abs(sum(w * w_old)) < tol) is_converged <- TRUE
       }
 
@@ -478,7 +473,7 @@ ebica_deflation <- function(X, K, d, n, max_iter, tol, s, estimate_s, S_init, W_
 }
 
 ebica <- function(X, K = 1, alg_typ = "parallel", symmetric_rademacher = FALSE,
-                  conv_crit = "weights", max_iter = 1000, tol = 1e-6, s = NULL,
+                  conv_crit = "maxiter", max_iter = 1000, tol = 1e-6, s = NULL,
                   S_init = NULL, W_init = NULL, verbose = 0) {
   d <- nrow(X)
   n <- ncol(X)
@@ -486,8 +481,8 @@ ebica <- function(X, K = 1, alg_typ = "parallel", symmetric_rademacher = FALSE,
   if (!alg_typ %in% c("parallel", "deflation")) {
     stop("alg_typ must be either 'parallel' or 'deflation'.")
   }
-  if (!conv_crit %in% c("weights", "elbo")) {
-    stop("conv_crit must be either 'weights' or 'elbo'.")
+  if (!conv_crit %in% c("maxiter", "weights", "elbo")) {
+    stop("conv_crit must be one of 'maxiter', 'weights', or 'elbo'.")
   }
   if (!is.logical(symmetric_rademacher)) {
     stop("symmetric_rademacher must be TRUE or FALSE.")
@@ -517,7 +512,7 @@ ebica <- function(X, K = 1, alg_typ = "parallel", symmetric_rademacher = FALSE,
 
 # parallel update for general source prior
 ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-6, s = NULL,
-                                   S_init = NULL, W_init = NULL, conv_crit = 'elbo',
+                                   S_init = NULL, W_init = NULL, conv_crit = 'maxiter',
                                    verbose = 0) {
   d <- nrow(X)
   n <- ncol(X)
@@ -527,6 +522,10 @@ ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-
   estimate_s <- is.null(s)
   s_current <- init_residual_sd(X, s)
   ebnm_fns <- check_ebnm_fn_list(ebnm_fn, K)
+
+  if (!conv_crit %in% c("maxiter", "weights", "elbo")) {
+    stop("conv_crit must be one of 'maxiter', 'weights', or 'elbo'.")
+  }
 
   inits <- check_ebica_inits(S_init, W_init, n, d, K)
   S_init <- inits$S_init
@@ -582,26 +581,21 @@ ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-
     obj_history[iter] <- elbo
 
 
+    if (K > 1) {
+      svd_res <- svd(W_plus)
+      W <- svd_res$u %*% t(svd_res$v)
+    } else {
+      W <- matrix(W_plus / sqrt(sum(W_plus^2)), ncol = 1)
+    }
+
     is_converged <- FALSE
     if (conv_crit == "elbo") {
       if (iter > 1 && (elbo - obj_history[iter - 1]) < tol) is_converged <- TRUE
-    } else {
+    } else if (conv_crit == "weights") {
       if (K > 1) {
-        svd_res <- svd(W_plus)
-        W <- svd_res$u %*% t(svd_res$v)
         if (max(1 - abs(colSums(W * W_old))) < tol) is_converged <- TRUE
       } else {
-        W <- matrix(W_plus / sqrt(sum(W_plus^2)), ncol = 1)
         if (1 - abs(sum(W * W_old)) < tol) is_converged <- TRUE
-      }
-    }
-
-    if (conv_crit == "elbo") {
-      if (K > 1) {
-        svd_res <- svd(W_plus)
-        W <- svd_res$u %*% t(svd_res$v)
-      } else {
-        W <- matrix(W_plus / sqrt(sum(W_plus^2)), ncol = 1)
       }
     }
 
