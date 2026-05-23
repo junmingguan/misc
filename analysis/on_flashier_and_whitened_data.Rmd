@@ -1,0 +1,172 @@
+---
+title: "On Rank-1 flashier update with Normal prior + Rademacher prior on whitened data"
+author: "junmingguan"
+date: "2026-05-22"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+Here we demonstrate that flashier update with Normal and Rademacher prior might eventually collapse to 0. 
+
+## Derivation
+
+
+The model is
+
+$$
+Y \in \mathbb{R}^{p\times n} = vz^\top + E ,
+$$
+
+with a Rademacher prior on $v$, a normal prior on $z$, and an estimated noise variance:
+
+$$
+v_i \sim \operatorname{Rad}(1/2), \qquad
+z_j \sim N(0,c\sigma^2), \qquad
+E_{ij}\sim N(0,\sigma^2).
+$$
+
+Denote
+
+$$
+S=YY^\top, \qquad
+\bar{v}=E_q[v], \qquad
+\lambda=\frac{\bar{v}^\top S \bar{v}}{\overline{v^\top v}} = \frac{\bar{v}^\top S \bar{v}}{n}.
+$$
+
+Given $q_v$, and $\sigma^2$, the shrinkage factor for the posterior of $z$ is
+
+$$
+\alpha = \left(1-\frac{p \sigma^2}{\lambda}\right)_+,
+$$
+
+hence
+
+$$
+\bar{z} = \alpha Y^\top \bar{v}/n
+$$
+
+and
+
+$$
+\overline{z^\top z} = \alpha \lambda / n.
+$$
+
+Plugging in $q_z$ and $\sigma^2$, the update for $q_v$ is
+
+$$
+\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right)
+$$
+
+
+The noise variance update is
+
+$$
+\hat{\sigma}^2 = \frac{\operatorname{tr}(S) - \hat{\alpha} \lambda}{np}.
+$$
+
+
+- If $\hat{\alpha} = 0$, $\hat{\sigma}^2 = \operatorname{tr}(S)/np$
+, $\bar{v}=\tanh 0 = 0$; this happens when $\lambda < \operatorname{tr}(S)/n=p$ for whitened $Y$. 
+- If $\hat{\alpha} > 0$, we have $\widehat\sigma^2=\frac{\operatorname{tr}(S)-\lambda}{p(n-1)}$.  this happens when $\lambda \ge \operatorname{tr}(S)/n=p$. 
+
+Let's assume we start with $\bar{v}$ such that $\lambda>p$. Using estimates of $\alpha$ and $\sigma^2$,
+
+$$
+\frac{\hat\alpha}{\hat\sigma^2}
+=
+\frac{np(\lambda-p)}{\lambda(np-\lambda)}.
+$$
+
+Define
+
+$$
+\gamma(\lambda)
+=
+\frac{np(\lambda-p)}{\lambda(np-\lambda)}.
+$$
+
+Then the update is
+
+$$
+ \bar{v}^+=
+ \tanh\left(\gamma(\lambda)P\bar{v}\right),
+$$
+
+where $P=S/n$ is a projection matrix, assuming that $Y$ is whitened, and $\lambda=\|P\bar{v}\|^2$.
+
+The next estimate $\bar{v}^+$ satisfies
+
+$$
+\lambda^+
+\le
+\left\|\tanh(\gamma P\bar{v})\right\|^2
+\le \|P\bar{v}\|^2 = \lambda,
+$$
+
+whenever, $p<\lambda\leq p \sqrt{n}$. (could also hold for $\lambda > p\sqrt{n}$)
+
+This tells us that $\lambda^+ \downarrow p$. But once $\lambda$ is sufficiently close to $p$, the next iteration will cross the threshold, yielding $\bar{v}^+ = 0$.
+
+
+## Example
+
+```{r}
+library(flashier)
+code_dir <- if (dir.exists("code")) "code" else "../code"
+source(file.path(code_dir, "ica_functions.R"))
+source(file.path(code_dir, "ebnm_rademacher.R"))
+
+
+flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, S = NULL, var_type = 0, backfit = TRUE, maxiter = 30) {
+   if (is.vector(S_init)) S_init <- matrix(S_init, ncol = 1)
+  A_init = t(solve(crossprod(S_init), crossprod(S_init, t(X))))
+  if (!is.null(S)) {
+    var_type = NULL
+  }
+  lambda_path = c()
+  res <- flash_init(X, var_type = var_type, S = S) |>
+      flash_factors_init(
+        init = list(A_init, S_init),
+        ebnm_fn = list(ebnm_fn, ebnm_rademacher)
+  )
+  lambda_path[1] = t(S_init) %*% t(X) %*% X %*% S_init
+  for (i in 1:maxiter) {
+    res <- res |>
+      flash_backfit(verbose = 0, extrapolate = TRUE, maxiter = 1)
+    lambda_path[i+1] = t(res$F_pm) %*% t(X) %*% X %*% res$F_pm
+  }
+  return(list(res=res, lambda_path = lambda_path))
+}
+```
+```{r}
+K=3
+p = 100
+n = 1000
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])
+
+X1 = preprocess(X, n.comp = 9)
+X1 = rbind(rep(1,ncol(X1)), X1)
+```
+
+```{r}
+#| warning: false
+
+fit = flash_x_rademacher(X1, L[,1])
+
+```
+
+We see here that the fit is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=100$.
+
+```{r}
+sum(abs(fit$res$F_pm))
+fit$lambda_path / n
+```

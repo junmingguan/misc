@@ -45,6 +45,7 @@ The first two steps are the E-step that constructs the estimated posterior mean 
 - [Initial exploration of EB ICA](eb_ica.html)
 - [Exploration of flashier with Rademacher prior](ica_vs_flashier_r1_rad.html)
 - [flashier on whitened data and the tree example](flashier_whitened_and_tree_example.html)
+- [flashier with Normal prior and Rademacher prior might collapse to 0](on_flashier_and_whitened_data.html)
 
 ### Some observations
 
