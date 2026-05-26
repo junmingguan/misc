@@ -4,8 +4,37 @@ author: "junmingguan"
 date: "2026-05-22"
 output: workflowr::wflow_html
 editor_options:
-  chunk_output_type: console
+ chunk_output_type: console
 ---
+
+<style>
+.theorem,
+.proof {
+  border-left: 4px solid #e95420;
+  margin: 1.25em 0;
+  padding: 0.85em 1em;
+  background: #f8f8f8;
+}
+
+.proof {
+  border-left-color: #666;
+}
+
+.theorem::before,
+.proof::before {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.35em;
+}
+
+.theorem::before {
+  content: "Theorem.";
+}
+
+.proof::before {
+  content: "Proof.";
+}
+</style>
 
 
 
@@ -32,105 +61,179 @@ Denote
 
 $$
 S=YY^\top, \qquad
+P=S/n, \qquad
 \bar{v}=E_q[v], \qquad
 \lambda=\frac{\bar{v}^\top S \bar{v}}{\overline{v^\top v}} = \frac{\bar{v}^\top S \bar{v}}{n}.
 $$
+where we assume $Y$ is whitened, so that $P$ is a projection matrix.
+
 
 Given $q_v$, and $\sigma^2$, the shrinkage factor for the posterior of $z$ is
 
 $$
-\alpha = \left(1-\frac{p \sigma^2}{\lambda}\right)_+,
+\boxed{\alpha = \left(1-\frac{p \sigma^2}{\lambda}\right)_+}
 $$
 
-hence
+Hence
 
 $$
-\bar{z} = \alpha Y^\top \bar{v}/n
+\boxed{\bar{z} = \alpha Y^\top \bar{v}/n}
 $$
 
 and
 
 $$
-\overline{z^\top z} = \alpha \lambda / n.
+\boxed{\overline{z^\top z} = \alpha \lambda / n}
 $$
 
 Plugging in $q_z$ and $\sigma^2$, the update for $q_v$ is
 
 $$
-\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right)
+\boxed{\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right) = \tanh\left(\frac{\alpha}{\sigma^2}P \bar{v}\right)}
 $$
 
+### $\sigma^2$ not fixed
 
 The noise variance update is
 
 $$
-\hat{\sigma}^2 = \frac{\operatorname{tr}(S) - \hat{\alpha} \lambda}{np}.
+\boxed{\hat{\sigma}^2 = \frac{\operatorname{tr}(S) - \hat{\alpha} \lambda}{np}}
 $$
 
 
 - If $\hat{\alpha} = 0$, $\hat{\sigma}^2 = \operatorname{tr}(S)/np$
 , $\bar{v}=\tanh 0 = 0$; this happens when $\lambda < \operatorname{tr}(S)/n=p$ for whitened $Y$. 
-- If $\hat{\alpha} > 0$, we have $\widehat\sigma^2=\frac{\operatorname{tr}(S)-\lambda}{p(n-1)}$.  this happens when $\lambda \ge \operatorname{tr}(S)/n=p$. 
+- If $\hat{\alpha} > 0$, we have $\hat\sigma^2=\frac{\operatorname{tr}(S)-\lambda}{p(n-1)}$.  this happens when $\lambda \ge \operatorname{tr}(S)/n=p$. 
 
-Let's assume we start with $\bar{v}$ such that $\lambda>p$. Using estimates of $\alpha$ and $\sigma^2$,
+::: {.theorem #thm:estimated-sigma-collapse}
+Suppose we start with an initialization $\bar{v}_0\in\{\pm1\}^n$ such that $p<\lambda_0<p\sqrt{n}$. Then for some finite $t$ we have $\bar{v}_t=0$.
+:::
+
+::: {.proof}
+Using estimates of $\alpha$ and $\sigma^2$, for the $t$th step,
 
 $$
 \frac{\hat\alpha}{\hat\sigma^2}
 =
-\frac{np(\lambda-p)}{\lambda(np-\lambda)}.
+\frac{np(\lambda_t-p)}{\lambda_t(np-\lambda_t)}.
 $$
 
 Define
 
 $$
-\gamma(\lambda)
+\gamma(\lambda_t)
 =
-\frac{np(\lambda-p)}{\lambda(np-\lambda)}.
+\frac{np(\lambda_t-p)}{\lambda_t(np-\lambda_t)}.
 $$
 
 Then the update is
 
 $$
- \bar{v}^+=
- \tanh\left(\gamma(\lambda)P\bar{v}\right),
+ \bar{v}_{t+1}=
+ \tanh\left(\gamma(\lambda_t)P\bar{v}_t\right),
 $$
 
-where $P=S/n$ is a projection matrix, assuming that $Y$ is whitened, and $\lambda=\|P\bar{v}\|^2$.
 
-The next estimate $\bar{v}^+$ satisfies
+The next estimate $\bar{v}_{t+1}$ satisfies
 
 $$
-\lambda^+
+\lambda_{t+1} = \|P\bar{v}_{t+1}\|^2 = \|P\tanh(\gamma(\lambda_t) P\bar{v}_t)\|^2
 \le
-\left\|\tanh(\gamma P\bar{v})\right\|^2
-\le \|P\bar{v}\|^2 = \lambda,
+\left\|\tanh(\gamma(\lambda_t) P\bar{v}_{t})\right\|^2
+\le \|P\bar{v}_t\|^2 = \lambda_t,
 $$
 
-whenever, $p<\lambda\leq p \sqrt{n}$. (could also hold for $\lambda > p\sqrt{n}$)
+whenever, $p<\lambda_t\leq p \sqrt{n}$, so that $\gamma(\lambda_t) \le 1$. (might also hold for $\lambda_t > p\sqrt{n}$)
 
-This tells us that $\lambda^+ \downarrow p$. But once $\lambda$ is sufficiently close to $p$, the next iteration will cross the threshold, yielding $\bar{v}^+ = 0$.
+This tells us that $\lambda_{t} \searrow p$. But once $\lambda_{t}$ is sufficiently close to $p$, the next iteration will cross the threshold, yielding $\bar{v}^{t+1} = 0$. TODO: more rigorous statement?
+:::
 
+
+### Fixed $\sigma^2$
+
+For fixed $\sigma^2$, a factor will be removed if $\lambda < p\cdot \sigma^2$. However, since the update is (suppose $\lambda < p \sigma^2$, otherwise the update is 0)
+
+$$
+\bar{v}^+ = \tanh(\frac{\alpha}{ \sigma^2}S \bar{v}/n) = \tanh\left(\left(\frac{1}{\sigma^2}−\frac{p}{\lambda}\right) \frac{1}{n}S \bar{v}\right)
+$$
+
+we want $\left(\frac{1}{\sigma^2}−\frac{p}{\lambda}\right)>1$, or equivalently $\lambda> \frac{p\sigma^2}{1-\sigma^2}$ so that the update is not contrasive. 
+
+But since $Y$ is whitened, $\lambda\le n$. So $\frac{1}{\sigma^2}−\frac{p}{\lambda} \le \frac{1}{\sigma^2}-\frac{p}{n}$, and the right hand size is less than 1 if $\sigma^2>\frac{n}{n+p}$.
+
+In other words, to ensure the update doesn't collapse to 0, we need both $\sigma^2<\frac{n}{n+p}$ and an initialization with $\lambda < p \sigma^2$.
+
+::: {.theorem #thm:fixed-sigma-collapse}
+If $\sigma^2>\frac{n}{n+p}$, then for any initialization $\bar{v}_0\in\{\pm 1\}^n$, we have $\lambda_t<p\sigma^2$ for some $t$, hence $\bar{v}_{t+1}=0$.
+:::
+
+::: {.proof}
+Suppose the initialization $\bar{v}_0$ satisfies $\lambda_0>p\sigma^2$, and that $n \le p\sigma^2$ (otherwise it's trivial). Let
+
+$$
+\rho:= \frac{1}{\sigma^2}-\frac{p}{n}.
+$$
+
+Denote
+
+$$
+\gamma(\lambda_t) = \frac{1}{\sigma^2}-\frac{p}{\lambda_t},
+$$
+
+so $\gamma(\lambda)<1$. Since $P:=S/n$ is a projection matrix, we have
+
+$$
+\lambda_{t+1} = \|P \bar{v}_{t+1}\|^2 = \|P\tanh(\gamma(\lambda_t) P \bar{v}_t)\|^2 \le \|\tanh(\gamma(\lambda_t) P \bar{v}_t)\|^2 \le \gamma(\lambda_{t})^2\| P \bar{v}_t\|^2.
+$$
+
+So
+
+$$
+\lambda_{t+1} \le \rho^2 \lambda_t,
+$$
+
+and
+
+$$
+\lambda_t \leq \rho^{2t} \lambda_0.
+$$
+
+Hence there exists $t$ such that
+
+$$
+\lambda_t \le p \sigma^2.
+$$
+:::
 
 ## Example
 
 ```{r}
 library(flashier)
+library(pheatmap)
 code_dir <- if (dir.exists("code")) "code" else "../code"
 source(file.path(code_dir, "ica_functions.R"))
 source(file.path(code_dir, "ebnm_rademacher.R"))
+source(file.path(code_dir, "ebnm_point_rademacher.R"))
+source(file.path(code_dir, "utils.R"))
 
 
-flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, S = NULL, var_type = 0, backfit = TRUE, maxiter = 30) {
+flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, point_mass = FALSE, S = NULL, var_type = 0, backfit = TRUE, maxiter = 30) {
    if (is.vector(S_init)) S_init <- matrix(S_init, ncol = 1)
   A_init = t(solve(crossprod(S_init), crossprod(S_init, t(X))))
   if (!is.null(S)) {
     var_type = NULL
   }
   lambda_path = c()
+  if (point_mass) {
+    ebnm_source = ebnm_point_generalized_rademacher
+  }
+  else {
+    ebnm_source = ebnm_rademacher
+  }
   res <- flash_init(X, var_type = var_type, S = S) |>
       flash_factors_init(
         init = list(A_init, S_init),
-        ebnm_fn = list(ebnm_fn, ebnm_rademacher)
+        ebnm_fn = list(ebnm_fn, ebnm_source)
   )
   lambda_path[1] = t(S_init) %*% t(X) %*% X %*% S_init
   for (i in 1:maxiter) {
@@ -141,8 +244,9 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, S = NULL, var_t
   return(list(res=res, lambda_path = lambda_path))
 }
 ```
+
 ```{r}
-K=3
+K=9
 p = 100
 n = 1000
 set.seed(1)
@@ -160,13 +264,18 @@ X1 = rbind(rep(1,ncol(X1)), X1)
 ```{r}
 #| warning: false
 
-fit = flash_x_rademacher(X1, L[,1])
+fit_fixed = flash_x_rademacher(X1, L[,1], S=1)
+fit_notfixed = flash_x_rademacher(X1, L[,1], S=NULL)
 
 ```
 
-We see here that the fit is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=100$.
+We see here that the fit (either with $\sigma^2$ fixed or estimated) is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=10$ ($1+K=10$).
 
 ```{r}
-sum(abs(fit$res$F_pm))
-fit$lambda_path / n
+sum(abs(fit_fixed$res$F_pm))
+fit_fixed$lambda_path / n
+
+sum(abs(fit_notfixed$res$F_pm))
+fit_notfixed$lambda_path / n
 ```
+
