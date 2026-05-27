@@ -46,7 +46,7 @@ Here we demonstrate that flashier update with Normal and Rademacher prior might 
 The model is
 
 $$
-Y \in \mathbb{R}^{p\times n} = vz^\top + E ,
+Y \in \mathbb{R}^{n\times p} = vz^\top + E ,
 $$
 
 with a Rademacher prior on $v$, a normal prior on $z$, and an estimated noise variance:
@@ -90,6 +90,52 @@ Plugging in $q_z$ and $\sigma^2$, the update for $q_v$ is
 
 $$
 \boxed{\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right) = \tanh\left(\frac{\alpha}{\sigma^2}P \bar{v}\right)}
+$$
+
+The ELBO for fixed $c$ and $\sigma^2$ is given by
+
+$$
+\boxed{
+\begin{aligned}
+\text{ELBO}
+=&
+-\frac{np}{2}\log(2\pi\sigma^2)
+-\frac{1}{2\sigma^2}
+\left[
+\|Y\|_F^2
+-2\bar v^\top Y\bar z
++n\overline{z^\top z}
+\right]
+\\
+&-
+\sum_{i=1}^n
+\left[
+\frac{1+\bar v_i}{2}\log(1+\bar v_i)
++
+\frac{1-\bar v_i}{2}\log(1-\bar v_i)
+\right]
+\\
+&-
+\frac12
+\left[
+\frac{\overline{z^\top z}}{c\sigma^2}
+-p
++
+p\log(c\sigma^2)
+-
+\sum_{j=1}^p\log \left(\overline{z_j^2} - \bar{z}_j^2\right)
+\right]
+\end{aligned}
+}
+$$
+Maximizing the ELBO over $c$ with others fixed gives
+
+$$
+\boxed{
+\hat{c}
+=
+\frac{\overline{z^\top z}}{p\sigma^2}.
+}
 $$
 
 ### $\sigma^2$ not fixed
@@ -224,6 +270,9 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, point_mass = FA
     var_type = NULL
   }
   lambda_path = c()
+  elbo_path <- c()
+  resid_path <- c()
+  z_prior_var_path <- c()
   if (point_mass) {
     ebnm_source = ebnm_point_generalized_rademacher
   }
@@ -236,19 +285,27 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, point_mass = FA
         ebnm_fn = list(ebnm_fn, ebnm_source)
   )
   lambda_path[1] = t(S_init) %*% t(X) %*% X %*% S_init
+  elbo_path[1] = res$elbo
+  resid_path[1] = res$residuals_sd
+  z_prior_var_path[1] = res$L_ghat[[1]]$sd
   for (i in 1:maxiter) {
     res <- res |>
       flash_backfit(verbose = 0, extrapolate = TRUE, maxiter = 1)
     lambda_path[i+1] = t(res$F_pm) %*% t(X) %*% X %*% res$F_pm
+    elbo_path[i+1] = res$elbo
+    resid_path[i+1] = res$residuals_sd
+    z_prior_var_path[i+1] = res$L_ghat[[1]]$sd
   }
-  return(list(res=res, lambda_path = lambda_path))
+  return(list(res=res, lambda_path = lambda_path, 
+              elbo_path = elbo_path, resid_path = resid_path,
+              z_prior_var_path = z_prior_var_path))
 }
 ```
 
 ```{r}
 K=9
-p = 100
-n = 1000
+p = 1000
+n = 100
 set.seed(1)
 L = matrix(-1,nrow=n,ncol=K)
 for(i in 1:K){L[sample(1:n,20),i]=1}
@@ -264,12 +321,12 @@ X1 = rbind(rep(1,ncol(X1)), X1)
 ```{r}
 #| warning: false
 
-fit_fixed = flash_x_rademacher(X1, L[,1], S=1)
-fit_notfixed = flash_x_rademacher(X1, L[,1], S=NULL)
+fit_fixed = flash_x_rademacher(X1, L[,1], S=1, ebnm_fn = ebnm_normal)
+fit_notfixed = flash_x_rademacher(X1, L[,1], S=NULL, ebnm_fn = ebnm_normal)
 
 ```
 
-We see here that the fit (either with $\sigma^2$ fixed or estimated) is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=10$ ($1+K=10$).
+We see here that the fit (either with $\sigma^2$ fixed or estimated) is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=10$ ($1+K=10$). Also, the estimated prior variance for $z$ converges to 0.
 
 ```{r}
 sum(abs(fit_fixed$res$F_pm))
@@ -277,5 +334,7 @@ fit_fixed$lambda_path / n
 
 sum(abs(fit_notfixed$res$F_pm))
 fit_notfixed$lambda_path / n
-```
 
+plot(fit_fixed$z_prior_var_path[-1]^2, xlab = 'Iteration', ylab = 'Estimated prior variance')
+plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = 'Iteration', ylab = 'Estimated prior variance')
+```
