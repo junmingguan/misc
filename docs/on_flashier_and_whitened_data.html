@@ -391,7 +391,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-25
+<strong>Last updated:</strong> 2026-05-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree10712d133c904ebebb577426511edf01093024d0targetblank10712d1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree76235375f711f322c0b78ed295fe59d835cb695ctargetblank7623537a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/10712d133c904ebebb577426511edf01093024d0" target="_blank">10712d1</a>
+<a href="https://github.com/junmingguan/misc/tree/76235375f711f322c0b78ed295fe59d835cb695c" target="_blank">7623537</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree10712d133c904ebebb577426511edf01093024d0targetblank10712d1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree76235375f711f322c0b78ed295fe59d835cb695ctargetblank7623537a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/10712d133c904ebebb577426511edf01093024d0" target="_blank">10712d1</a>.
+<a href="https://github.com/junmingguan/misc/tree/76235375f711f322c0b78ed295fe59d835cb695c" target="_blank">7623537</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -566,6 +566,7 @@ Ignored files:
 
 Untracked files:
     Untracked:  Rplots.pdf
+    Untracked:  analysis/draft.Rmd
     Untracked:  analysis/eb_ica_backup.Rmd
     Untracked:  analysis/ebica_math.md
     Untracked:  analysis/exploratiion_normal_prior_on_factor_files/
@@ -574,7 +575,6 @@ Untracked files:
     Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
     Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
     Untracked:  analysis/index_bacup.Rmd
-    Untracked:  analysis/on_flashier_on_whitened_data_files/
     Untracked:  analysis/preemble.tex
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/references.bib
@@ -636,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/76235375f711f322c0b78ed295fe59d835cb695c/analysis/on_flashier_and_whitened_data.Rmd" target="_blank">7623537</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+<td>
+wflow_publish("analysis/on_flashier_and_whitened_data.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/0a81b92c3e305a1630d8dbd4f76ce685b9650693/docs/on_flashier_and_whitened_data.html" target="_blank">0a81b92</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -728,7 +762,7 @@ prior might eventually collapse to 0.</p>
 <h2>Derivation</h2>
 <p>The model is</p>
 <p><span class="math display">\[
-Y \in \mathbb{R}^{p\times n} = vz^\top + E ,
+Y \in \mathbb{R}^{n\times p} = vz^\top + E ,
 \]</span></p>
 <p>with a Rademacher prior on <span class="math inline">\(v\)</span>, a
 normal prior on <span class="math inline">\(z\)</span>, and an estimated
@@ -768,6 +802,50 @@ class="math inline">\(q_v\)</span> is</p>
 <p><span class="math display">\[
 \boxed{\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right) =
 \tanh\left(\frac{\alpha}{\sigma^2}P \bar{v}\right)}
+\]</span></p>
+<p>The ELBO for fixed <span class="math inline">\(c\)</span> and <span
+class="math inline">\(\sigma^2\)</span> is given by</p>
+<p><span class="math display">\[
+\boxed{
+\begin{aligned}
+\text{ELBO}
+=&amp;
+-\frac{np}{2}\log(2\pi\sigma^2)
+-\frac{1}{2\sigma^2}
+\left[
+\|Y\|_F^2
+-2\bar v^\top Y\bar z
++n\overline{z^\top z}
+\right]
+\\
+&amp;-
+\sum_{i=1}^n
+\left[
+\frac{1+\bar v_i}{2}\log(1+\bar v_i)
++
+\frac{1-\bar v_i}{2}\log(1-\bar v_i)
+\right]
+\\
+&amp;-
+\frac12
+\left[
+\frac{\overline{z^\top z}}{c\sigma^2}
+-p
++
+p\log(c\sigma^2)
+-
+\sum_{j=1}^p\log \left(\overline{z_j^2} - \bar{z}_j^2\right)
+\right]
+\end{aligned}
+}
+\]</span> Maximizing the ELBO over <span
+class="math inline">\(c\)</span> with others fixed gives</p>
+<p><span class="math display">\[
+\boxed{
+\hat{c}
+=
+\frac{\overline{z^\top z}}{p\sigma^2}.
+}
 \]</span></p>
 <div id="sigma2-not-fixed" class="section level3">
 <h3><span class="math inline">\(\sigma^2\)</span> not fixed</h3>
@@ -929,6 +1007,9 @@ flash_x_rademacher &lt;- function(X, S_init, ebnm_fn = ebnm_normal, point_mass =
     var_type = NULL
   }
   lambda_path = c()
+  elbo_path &lt;- c()
+  resid_path &lt;- c()
+  z_prior_var_path &lt;- c()
   if (point_mass) {
     ebnm_source = ebnm_point_generalized_rademacher
   }
@@ -941,16 +1022,24 @@ flash_x_rademacher &lt;- function(X, S_init, ebnm_fn = ebnm_normal, point_mass =
         ebnm_fn = list(ebnm_fn, ebnm_source)
   )
   lambda_path[1] = t(S_init) %*% t(X) %*% X %*% S_init
+  elbo_path[1] = res$elbo
+  resid_path[1] = res$residuals_sd
+  z_prior_var_path[1] = res$L_ghat[[1]]$sd
   for (i in 1:maxiter) {
     res &lt;- res |&gt;
       flash_backfit(verbose = 0, extrapolate = TRUE, maxiter = 1)
     lambda_path[i+1] = t(res$F_pm) %*% t(X) %*% X %*% res$F_pm
+    elbo_path[i+1] = res$elbo
+    resid_path[i+1] = res$residuals_sd
+    z_prior_var_path[i+1] = res$L_ghat[[1]]$sd
   }
-  return(list(res=res, lambda_path = lambda_path))
+  return(list(res=res, lambda_path = lambda_path, 
+              elbo_path = elbo_path, resid_path = resid_path,
+              z_prior_var_path = z_prior_var_path))
 }</code></pre>
 <pre class="r"><code>K=9
-p = 100
-n = 1000
+p = 1000
+n = 100
 set.seed(1)
 L = matrix(-1,nrow=n,ncol=K)
 for(i in 1:K){L[sample(1:n,20),i]=1}
@@ -983,6 +1072,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/0a81b92c3e305a1630d8dbd4f76ce685b9650693/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-2-1.png" target="_blank">0a81b92</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/314e47c606243738ead6c9d61cd782216850368c/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-2-1.png" target="_blank">314e47c</a>
 </td>
 <td>
@@ -998,10 +1098,10 @@ junmingguan
 </div>
 <pre class="r"><code>X1 = preprocess(X, n.comp = 9)
 X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
-<pre class="r"><code>fit_fixed = flash_x_rademacher(X1, L[,1], S=1)</code></pre>
+<pre class="r"><code>fit_fixed = flash_x_rademacher(X1, L[,1], S=1, ebnm_fn = ebnm_normal)</code></pre>
 <pre><code>  --Estimate of factor 1 is numerically zero!
   --Estimate of factor 1 is numerically zero!</code></pre>
-<pre class="r"><code>fit_notfixed = flash_x_rademacher(X1, L[,1], S=NULL)</code></pre>
+<pre class="r"><code>fit_notfixed = flash_x_rademacher(X1, L[,1], S=NULL, ebnm_fn = ebnm_normal)</code></pre>
 <pre><code>  --Estimate of factor 1 is numerically zero!
   --Estimate of factor 1 is numerically zero!</code></pre>
 <p>We see here that the fit (either with <span
@@ -1009,27 +1109,32 @@ class="math inline">\(\sigma^2\)</span> fixed or estimated) is
 essentially 0, and <span class="math inline">\(\lambda\)</span>
 converges to 0, although initially it is larger than <span
 class="math inline">\(p=10\)</span> (<span
-class="math inline">\(1+K=10\)</span>).</p>
+class="math inline">\(1+K=10\)</span>). Also, the estimated prior
+variance for <span class="math inline">\(z\)</span> converges to 0.</p>
 <pre class="r"><code>sum(abs(fit_fixed$res$F_pm))</code></pre>
-<pre><code>[1] 7.128452e-07</code></pre>
+<pre><code>[1] 1.082077e-09</code></pre>
 <pre class="r"><code>fit_fixed$lambda_path / n</code></pre>
-<pre><code> [1] 9.999989e+02 5.735965e+02 3.989821e+02 3.005341e+02 2.355714e+02
- [6] 1.883130e+02 1.515093e+02 1.213393e+02 9.558759e+01 7.288206e+01
-[11] 5.235046e+01 3.349308e+01 1.629941e+01 2.430657e+00 5.081489e-16
-[16] 5.081489e-16 5.081489e-16 5.081489e-16 5.081489e-16 5.081489e-16
-[21] 5.081489e-16 5.081489e-16 5.081489e-16 5.081489e-16 5.081489e-16
-[26] 5.081489e-16 5.081489e-16 5.081489e-16 5.081489e-16 5.081489e-16
-[31] 5.081489e-16</code></pre>
+<pre><code> [1] 9.999999e+01 5.130826e+01 2.706666e+01 1.003379e+01 1.142070e-04
+ [6] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
+[11] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
+[16] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
+[21] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
+[26] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
+[31] 1.170890e-20</code></pre>
 <pre class="r"><code>sum(abs(fit_notfixed$res$F_pm))</code></pre>
-<pre><code>[1] 7.198463e-07</code></pre>
+<pre><code>[1] 2.50714e-07</code></pre>
 <pre class="r"><code>fit_notfixed$lambda_path / n</code></pre>
-<pre><code> [1] 9.999989e+02 6.414358e+02 4.697549e+02 3.676157e+02 2.976619e+02
- [6] 2.455269e+02 2.043353e+02 1.703299e+02 1.412646e+02 1.157045e+02
-[11] 9.268852e+01 7.155569e+01 5.186480e+01 3.339496e+01 1.632855e+01
-[16] 2.460585e+00 5.181792e-16 5.181792e-16 5.181792e-16 5.181792e-16
-[21] 5.181792e-16 5.181792e-16 5.181792e-16 5.181792e-16 5.181792e-16
-[26] 5.181792e-16 5.181792e-16 5.181792e-16 5.181792e-16 5.181792e-16
-[31] 5.181792e-16</code></pre>
+<pre><code> [1] 9.999999e+01 5.870948e+01 3.458381e+01 1.669552e+01 2.765550e+00
+ [6] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
+[11] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
+[16] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
+[21] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
+[26] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
+[31] 6.285753e-16</code></pre>
+<pre class="r"><code>plot(fit_fixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
