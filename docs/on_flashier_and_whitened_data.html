@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree76235375f711f322c0b78ed295fe59d835cb695ctargetblank7623537a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree2b05fd286e2a6dae1ff4c719dbe15264231307ddtargetblank2b05fd2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/76235375f711f322c0b78ed295fe59d835cb695c" target="_blank">7623537</a>
+<a href="https://github.com/junmingguan/misc/tree/2b05fd286e2a6dae1ff4c719dbe15264231307dd" target="_blank">2b05fd2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree76235375f711f322c0b78ed295fe59d835cb695ctargetblank7623537a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree2b05fd286e2a6dae1ff4c719dbe15264231307ddtargetblank2b05fd2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/76235375f711f322c0b78ed295fe59d835cb695c" target="_blank">7623537</a>.
+<a href="https://github.com/junmingguan/misc/tree/2b05fd286e2a6dae1ff4c719dbe15264231307dd" target="_blank">2b05fd2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -636,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2b05fd286e2a6dae1ff4c719dbe15264231307dd/analysis/on_flashier_and_whitened_data.Rmd" target="_blank">2b05fd2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+<td>
+wflow_publish("analysis/on_flashier_and_whitened_data.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/70faf4e8d4cb1e563ef992f20440b9f87ec1e306/docs/on_flashier_and_whitened_data.html" target="_blank">70faf4e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1072,6 +1106,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/70faf4e8d4cb1e563ef992f20440b9f87ec1e306/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-2-1.png" target="_blank">70faf4e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/0a81b92c3e305a1630d8dbd4f76ce685b9650693/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-2-1.png" target="_blank">0a81b92</a>
 </td>
 <td>
@@ -1110,7 +1155,9 @@ essentially 0, and <span class="math inline">\(\lambda\)</span>
 converges to 0, although initially it is larger than <span
 class="math inline">\(p=10\)</span> (<span
 class="math inline">\(1+K=10\)</span>). Also, the estimated prior
-variance for <span class="math inline">\(z\)</span> converges to 0.</p>
+variance for <span class="math inline">\(z\)</span> converges to 0, and
+the ELBO seems to stablized at <span
+class="math inline">\(c=0\)</span>.</p>
 <pre class="r"><code>sum(abs(fit_fixed$res$F_pm))</code></pre>
 <pre><code>[1] 1.082077e-09</code></pre>
 <pre class="r"><code>fit_fixed$lambda_path / n</code></pre>
@@ -1133,8 +1180,86 @@ variance for <span class="math inline">\(z\)</span> converges to 0.</p>
 [31] 6.285753e-16</code></pre>
 <pre class="r"><code>plot(fit_fixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/70faf4e8d4cb1e563ef992f20440b9f87ec1e306/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-1.png" target="_blank">70faf4e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot(fit_fixed$elbo_path[-1], xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-2">
+Past versions of unnamed-chunk-4-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/70faf4e8d4cb1e563ef992f20440b9f87ec1e306/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-2.png" target="_blank">70faf4e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fit_notfixed$elbo_path[-1], xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
