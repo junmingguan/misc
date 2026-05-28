@@ -326,7 +326,7 @@ fit_notfixed = flash_x_rademacher(X1, L[,1], S=NULL, ebnm_fn = ebnm_normal)
 
 ```
 
-We see here that the fit (either with $\sigma^2$ fixed or estimated) is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=10$ ($1+K=10$). Also, the estimated prior variance for $z$ converges to 0.
+We see here that the fit (either with $\sigma^2$ fixed or estimated) is essentially 0, and $\lambda$ converges to 0, although initially it is larger than $p=10$ ($1+K=10$). Also, the estimated prior variance for $z$ converges to 0, and the ELBO seems to stablized at $c=0$.
 
 ```{r}
 sum(abs(fit_fixed$res$F_pm))
@@ -336,5 +336,7 @@ sum(abs(fit_notfixed$res$F_pm))
 fit_notfixed$lambda_path / n
 
 plot(fit_fixed$z_prior_var_path[-1]^2, xlab = 'Iteration', ylab = 'Estimated prior variance')
+plot(fit_fixed$elbo_path[-1], xlab = 'Iteration', ylab = 'ELBO')
 plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = 'Iteration', ylab = 'Estimated prior variance')
+plot(fit_notfixed$elbo_path[-1], xlab = 'Iteration', ylab = 'ELBO')
 ```
