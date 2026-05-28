@@ -91,6 +91,7 @@ Plugging in $q_z$ and $\sigma^2$, the update for $q_v$ is
 $$
 \boxed{\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right) = \tanh\left(\frac{\alpha}{\sigma^2}P \bar{v}\right)}
 $$
+
 ### Understanding ELBO with respect to $c$
 
 The ELBO for fixed $c$ and $\sigma^2$ is given by
