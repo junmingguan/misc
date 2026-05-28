@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree2b05fd286e2a6dae1ff4c719dbe15264231307ddtargetblank2b05fd2a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree14f3c8b1f08e08b8da345d4ecce153e110579885targetblank14f3c8ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/2b05fd286e2a6dae1ff4c719dbe15264231307dd" target="_blank">2b05fd2</a>
+<a href="https://github.com/junmingguan/misc/tree/14f3c8b1f08e08b8da345d4ecce153e110579885" target="_blank">14f3c8b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree2b05fd286e2a6dae1ff4c719dbe15264231307ddtargetblank2b05fd2a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree14f3c8b1f08e08b8da345d4ecce153e110579885targetblank14f3c8ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/2b05fd286e2a6dae1ff4c719dbe15264231307dd" target="_blank">2b05fd2</a>.
+<a href="https://github.com/junmingguan/misc/tree/14f3c8b1f08e08b8da345d4ecce153e110579885" target="_blank">14f3c8b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -636,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/14f3c8b1f08e08b8da345d4ecce153e110579885/analysis/on_flashier_and_whitened_data.Rmd" target="_blank">14f3c8b</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+<td>
+wflow_publish("analysis/on_flashier_and_whitened_data.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/dc001e2f4b550625f7502e30161592a3f9fef652/docs/on_flashier_and_whitened_data.html" target="_blank">dc001e2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -836,14 +870,15 @@ class="math inline">\(q_v\)</span> is</p>
 <p><span class="math display">\[
 \boxed{\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right) =
 \tanh\left(\frac{\alpha}{\sigma^2}P \bar{v}\right)}
-\]</span></p>
+\]</span> ### Understanding ELBO with respect to <span
+class="math inline">\(c\)</span></p>
 <p>The ELBO for fixed <span class="math inline">\(c\)</span> and <span
 class="math inline">\(\sigma^2\)</span> is given by</p>
 <p><span class="math display">\[
 \boxed{
 \begin{aligned}
 \text{ELBO}
-=&amp;
+\text{ }=&amp;
 -\frac{np}{2}\log(2\pi\sigma^2)
 -\frac{1}{2\sigma^2}
 \left[
@@ -852,7 +887,7 @@ class="math inline">\(\sigma^2\)</span> is given by</p>
 +n\overline{z^\top z}
 \right]
 \\
-&amp;-
+&amp; \text{ }-
 \sum_{i=1}^n
 \left[
 \frac{1+\bar v_i}{2}\log(1+\bar v_i)
@@ -860,15 +895,13 @@ class="math inline">\(\sigma^2\)</span> is given by</p>
 \frac{1-\bar v_i}{2}\log(1-\bar v_i)
 \right]
 \\
-&amp;-
-\frac12
+&amp; \text{ } -
+\frac{1}{2}
 \left[
 \frac{\overline{z^\top z}}{c\sigma^2}
--p
-+
-p\log(c\sigma^2)
--
-\sum_{j=1}^p\log \left(\overline{z_j^2} - \bar{z}_j^2\right)
+-p + p\log(c\sigma^2)
+- \sum_{j=1}^p\log \underbrace{\left(\overline{z_j^2} -
+\bar{z}_j^2\right)}_{=:\eta^2=\operatorname{Var}_q(z_j)}
 \right]
 \end{aligned}
 }
@@ -878,9 +911,85 @@ class="math inline">\(c\)</span> with others fixed gives</p>
 \boxed{
 \hat{c}
 =
-\frac{\overline{z^\top z}}{p\sigma^2}.
+\frac{\overline{z^\top z}}{p\sigma^2}
 }
 \]</span></p>
+<p>Plugging in <span class="math inline">\(c\)</span> into <span
+class="math inline">\(q_z\)</span>, we have</p>
+<p><span class="math display">\[
+\boxed{
+\bar{z} = \frac{c}{1+nc}Y^\top \bar{v}
+\qquad
+\eta_j^2 = \frac{c\sigma^2}{1+nc}
+}
+\]</span> So the ELBO profiled over <span
+class="math inline">\(z\)</span> with <span
+class="math inline">\(\sigma^2\)</span> fixed is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{\text{ELBO}}(c, q_v)
+=\text{ }&amp;
+\text{const.} + \frac{c}{1+nc}
+\frac{\|Y^\top \bar v\|^2}{2\sigma^2}
+\\
+&amp;-
+\sum_{i=1}^n
+\left[
+\frac{1+\bar{v}_i}{2}\log(1+\bar{v}_i)
++
+\frac{1-\bar{v}_i}{2}\log(1-\bar{v}_i)
+\right]
+\\
+&amp;
+-\frac p2\log(1+nc).
+\end{aligned}
+\]</span> Then</p>
+<p><span class="math display">\[
+\hat{c} =
+\frac{1}{n}\left(\frac{\|Y^\top \bar{v}\|^2}{pn\sigma^2} - 1\right)_+
+=
+\frac{1}{n}\left(\frac{\|Y^\top \bar{v}\|^2}{pn\sigma^2} - 1\right)_+.
+\]</span></p>
+<p>So whether the ELBO is maximized at <span
+class="math inline">\(c=0\)</span> for fixed <span
+class="math inline">\(q_v\)</span> depends on whether <span
+class="math inline">\(\|Y^\top\bar v\|^2 = n\|P\bar{v}\|^2 &gt; pn
+\sigma^2\)</span>.</p>
+<p>But if we look at <span class="math inline">\(c\)</span> and <span
+class="math inline">\(q_v\)</span> jointly: since <span
+class="math inline">\(\text{KL}(q_v \| \text{Rad}(1/2)) \ge \frac12
+\|\bar{v}\|^2\)</span> (equality achieved when <span
+class="math inline">\(\bar v=0\)</span>)</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{\text{ELBO}}(c, q_v)
+\leq \text{ } &amp;
+\text{const.} +\frac{c}{1+nc}  \frac{\|Y^\top \bar v\|^2}{2\sigma^2}
+\\
+&amp; + \frac12 \|\bar v\|^2 -\frac{p}{2}\log (1+nc)
+\\
+\leq \text{ } &amp;
+\text{const.} +\frac{c}{1+nc}  \frac{n \|\bar v\|^2}{2\sigma^2}
+\\
+&amp; + \frac12 \|\bar v\|^2 -\frac{p}{2}\log (1+nc) \\
+= \text{ } &amp;
+\text{const.}
+-\frac p2\log(1+nc) +
+\frac12
+\left[
+\frac{nc}{\sigma^2(1+nc)}-1
+\right]
+\|\bar v\|^2=:U(c, \bar v).
+\end{aligned}
+\]</span> For <span class="math inline">\(\sigma^2\ge 1\)</span>, <span
+class="math inline">\(\frac{nc}{\sigma^2(1+nc)}&lt;1\)</span>. Ignoring
+the constant, <span class="math inline">\(U(c, \bar v)\le 0\)</span> and
+is maximized at <span class="math inline">\(c=0\)</span> and <span
+class="math inline">\(\bar{v}=0\)</span>, hence the profiled <span
+class="math inline">\(\widehat{\text{ELBO}}(c, q_v)\)</span> is also
+maximized at <span class="math inline">\(c=0\)</span> and <span
+class="math inline">\(\bar{v}=0\)</span> and the maximum is <span
+class="math inline">\(0\)</span>.</p>
 <div id="sigma2-not-fixed" class="section level3">
 <h3><span class="math inline">\(\sigma^2\)</span> not fixed</h3>
 <p>The noise variance update is</p>
@@ -1243,6 +1352,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/dc001e2f4b550625f7502e30161592a3f9fef652/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-2.png" target="_blank">dc001e2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/70faf4e8d4cb1e563ef992f20440b9f87ec1e306/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-2.png" target="_blank">70faf4e</a>
 </td>
 <td>
@@ -1258,8 +1378,82 @@ junmingguan
 </div>
 <pre class="r"><code>plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-3">
+Past versions of unnamed-chunk-4-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/dc001e2f4b550625f7502e30161592a3f9fef652/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-3.png" target="_blank">dc001e2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(fit_notfixed$elbo_path[-1], xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-4">
+Past versions of unnamed-chunk-4-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/dc001e2f4b550625f7502e30161592a3f9fef652/docs/figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-4.png" target="_blank">dc001e2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
