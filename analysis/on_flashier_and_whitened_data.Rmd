@@ -91,6 +91,7 @@ Plugging in $q_z$ and $\sigma^2$, the update for $q_v$ is
 $$
 \boxed{\bar{v}=\tanh\left(\frac{\alpha}{n \sigma^2}S \bar{v}\right) = \tanh\left(\frac{\alpha}{\sigma^2}P \bar{v}\right)}
 $$
+### Understanding ELBO with respect to $c$
 
 The ELBO for fixed $c$ and $\sigma^2$ is given by
 
@@ -98,7 +99,7 @@ $$
 \boxed{
 \begin{aligned}
 \text{ELBO}
-=&
+\text{ }=&
 -\frac{np}{2}\log(2\pi\sigma^2)
 -\frac{1}{2\sigma^2}
 \left[
@@ -107,7 +108,7 @@ $$
 +n\overline{z^\top z}
 \right]
 \\
-&-
+& \text{ }-
 \sum_{i=1}^n
 \left[
 \frac{1+\bar v_i}{2}\log(1+\bar v_i)
@@ -115,15 +116,12 @@ $$
 \frac{1-\bar v_i}{2}\log(1-\bar v_i)
 \right]
 \\
-&-
-\frac12
+& \text{ } -
+\frac{1}{2}
 \left[
 \frac{\overline{z^\top z}}{c\sigma^2}
--p
-+
-p\log(c\sigma^2)
--
-\sum_{j=1}^p\log \left(\overline{z_j^2} - \bar{z}_j^2\right)
+-p + p\log(c\sigma^2)
+- \sum_{j=1}^p\log \underbrace{\left(\overline{z_j^2} - \bar{z}_j^2\right)}_{=:\eta^2=\operatorname{Var}_q(z_j)}
 \right]
 \end{aligned}
 }
@@ -134,9 +132,76 @@ $$
 \boxed{
 \hat{c}
 =
-\frac{\overline{z^\top z}}{p\sigma^2}.
+\frac{\overline{z^\top z}}{p\sigma^2}
 }
 $$
+
+Plugging in $c$ into $q_z$, we have
+
+$$
+\boxed{
+\bar{z} = \frac{c}{1+nc}Y^\top \bar{v}
+\qquad
+\eta_j^2 = \frac{c\sigma^2}{1+nc}
+}
+$$
+So the ELBO profiled over $z$ with $\sigma^2$ fixed is 
+
+$$
+\begin{aligned}
+\widehat{\text{ELBO}}(c, q_v)
+=\text{ }&
+\text{const.} + \frac{c}{1+nc}
+\frac{\|Y^\top \bar v\|^2}{2\sigma^2}
+\\
+&-
+\sum_{i=1}^n
+\left[
+\frac{1+\bar{v}_i}{2}\log(1+\bar{v}_i)
++
+\frac{1-\bar{v}_i}{2}\log(1-\bar{v}_i)
+\right]
+\\
+&
+-\frac p2\log(1+nc).
+\end{aligned}
+$$
+Then
+
+$$
+\hat{c} = 
+\frac{1}{n}\left(\frac{\|Y^\top \bar{v}\|^2}{pn\sigma^2} - 1\right)_+
+=
+\frac{1}{n}\left(\frac{\|Y^\top \bar{v}\|^2}{pn\sigma^2} - 1\right)_+.
+$$
+
+So whether the ELBO is maximized at $c=0$ for fixed $q_v$ depends on whether $\|Y^\top\bar v\|^2 = n\|P\bar{v}\|^2 > pn \sigma^2$.
+
+But if we look at $c$ and $q_v$ jointly: since $\text{KL}(q_v \| \text{Rad}(1/2)) \ge \frac12 \|\bar{v}\|^2$ (equality achieved when $\bar v=0$)
+
+$$
+\begin{aligned}
+\widehat{\text{ELBO}}(c, q_v) 
+\leq \text{ } & 
+\text{const.} +\frac{c}{1+nc}  \frac{\|Y^\top \bar v\|^2}{2\sigma^2}
+\\
+& + \frac12 \|\bar v\|^2 -\frac{p}{2}\log (1+nc)
+\\
+\leq \text{ } & 
+\text{const.} +\frac{c}{1+nc}  \frac{n \|\bar v\|^2}{2\sigma^2}
+\\
+& + \frac12 \|\bar v\|^2 -\frac{p}{2}\log (1+nc) \\
+= \text{ } & 
+\text{const.} 
+-\frac p2\log(1+nc) +
+\frac12
+\left[
+\frac{nc}{\sigma^2(1+nc)}-1
+\right]
+\|\bar v\|^2=:U(c, \bar v).
+\end{aligned}
+$$
+For $\sigma^2\ge 1$, $\frac{nc}{\sigma^2(1+nc)}<1$. Ignoring the constant, $U(c, \bar v)\le 0$ and is maximized at $c=0$ and $\bar{v}=0$, hence the profiled $\widehat{\text{ELBO}}(c, q_v)$ is also maximized at $c=0$ and $\bar{v}=0$ and the maximum is $0$.
 
 ### $\sigma^2$ not fixed
 
