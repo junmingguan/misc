@@ -57,6 +57,58 @@ ebcd_init <- function(X = NULL,
   return(ebcd_obj)
 }
 
+ebcd_random_init <- function(X,
+                             Z = NULL,
+                             K = NULL,
+                             ebnm_fn = ebnm::ebnm_point_laplace,
+                             tau = NULL) {
+  if (is.null(Z) && is.null(K)) {
+    stop("Either K or Z must be supplied.")
+  }
+
+  if (!is.null(Z)) {
+    if (is.vector(Z)) Z <- matrix(Z, ncol = 1)
+    if (nrow(Z) != nrow(X)) {
+      stop("Z must have nrow(X) rows.")
+    }
+    if (any(!is.finite(Z))) {
+      stop("Z must contain only finite values.")
+    }
+    if (!is.null(K) && ncol(Z) != K) {
+      stop("If supplied, K must match ncol(Z).")
+    }
+    K <- ncol(Z)
+  } else {
+    if (length(K) != 1 || !is.finite(K) || K <= 0 || K != as.integer(K)) {
+      stop("K must be a single positive integer.")
+    }
+    Z <- matrix(rnorm(nrow(X) * K), nrow = nrow(X), ncol = K)
+  }
+
+  if (K > nrow(X)) {
+    stop("K cannot be greater than nrow(X).")
+  }
+  if (any(colSums(Z^2) == 0)) {
+    stop("Each column of Z must have nonzero norm.")
+  }
+
+  A <- X
+  N <- nrow(X)
+  nrowA <- nrow(A)
+  if (is.null(tau)) {
+    tau <- prod(dim(A)) / sum(A^2)
+  }
+  Z <- sqrt(nrowA) * PolarU(Z)
+  EL <- matrix(0, nrow = ncol(A), ncol = K)
+
+  ebcd_obj <- list(
+    A = A, N = N, nrowA = nrowA,
+    tau = tau, Z = Z, EL = EL, ebnm_fn = ebnm_fn
+  )
+
+  return(ebcd_obj)
+}
+
 #alternative to irlba::irlba is RSpectra::svds()
 #irlba is a randomized svd method so I get different results if I don't set a seed
 ebcd_greedy <- function(ebcd_obj,
@@ -97,6 +149,7 @@ ebcd_greedy <- function(ebcd_obj,
 }
 
 ebcd_backfit <- function(ebcd_obj,
+                         est_precision = TRUE,
                          tol = 1e-6,
                          maxiter = 5000) {
   Kmax <- ncol(ebcd_obj$Z)
@@ -125,7 +178,9 @@ ebcd_backfit <- function(ebcd_obj,
     ebcd_obj$Z <- sqrt(ebcd_obj$nrowA) * PolarU(ebcd_obj$A %*% ebcd_obj$EL)
 
     # Precision step
-    ebcd_obj$tau <- prod(dim(ebcd_obj$A)) / (sum((ebcd_obj$A - ebcd_obj$Z %*% t(ebcd_obj$EL))^2) + ebcd_obj$nrowA * sum(ebcd_obj$V))
+    if (est_precision) {
+      ebcd_obj$tau <- prod(dim(ebcd_obj$A)) / (sum((ebcd_obj$A - ebcd_obj$Z %*% t(ebcd_obj$EL))^2) + ebcd_obj$nrowA * sum(ebcd_obj$V))
+    }
 
     # check convergence
     ebcd_obj$obj <- -ebcd_obj$N * ncol(ebcd_obj$A) / 2 * log(2 * pi / ebcd_obj$tau) +

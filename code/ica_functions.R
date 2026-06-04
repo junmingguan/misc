@@ -256,6 +256,10 @@ get_prior_prob <- function(ebnm_fit) {
   NA_real_
 }
 
+get_prior <- function(ebnm_fit) {
+  return(ebnm_fit$fitted_g)
+}
+
 check_ebnm_fn_list <- function(ebnm_fn, K) {
   if (is.function(ebnm_fn)) {
     return(rep(list(ebnm_fn), K))
@@ -508,6 +512,114 @@ ebica <- function(X, K = 1, alg_typ = "parallel", symmetric_rademacher = FALSE,
   }
 }
 
+ebica_rank_one_unconstrained <- function(X, symmetric_rademacher = FALSE,
+                                         conv_crit = "maxiter", max_iter = 1000,
+                                         tol = 1e-6, s = NULL, S_init = NULL,
+                                         W_init = NULL, verbose = 0) {
+  d <- nrow(X)
+  n <- ncol(X)
+
+  if (!conv_crit %in% c("maxiter", "weights", "elbo")) {
+    stop("conv_crit must be one of 'maxiter', 'weights', or 'elbo'.")
+  }
+  if (!is.logical(symmetric_rademacher)) {
+    stop("symmetric_rademacher must be TRUE or FALSE.")
+  }
+  if (length(verbose) != 1 || !is.numeric(verbose) || !is.finite(verbose)) {
+    stop("verbose must be a single finite numeric value.")
+  }
+  if (length(max_iter) != 1 || !is.finite(max_iter) || max_iter <= 0 || max_iter != as.integer(max_iter)) {
+    stop("max_iter must be a single positive integer.")
+  }
+
+  inits <- check_ebica_inits(S_init, W_init, n, d, 1)
+  S_init <- inits$S_init
+  W_init <- inits$W_init
+  estimate_s <- is.null(s)
+  s_current <- init_residual_sd(X, s)
+
+  if (!is.null(W_init)) {
+    w <- as.numeric(W_init[, 1])
+  } else if (!is.null(S_init)) {
+    S_init2 <- sum(S_init[, 1]^2)
+    if (S_init2 == 0) {
+      stop("S_init must have nonzero norm.")
+    }
+    w <- as.numeric(X %*% S_init[, 1]) / S_init2
+  } else {
+    w <- rnorm(d)
+    # w <- w / sqrt(sum(w^2))
+  }
+  if (sum(w^2) == 0) {
+    stop("Initial w must have nonzero norm.")
+  }
+
+  obj_history <- numeric(max_iter)
+  residual_sd <- numeric(max_iter)
+
+  for (iter in 1:max_iter) {
+    w_old <- w
+    w_norm2 <- sum(w^2)
+    y <- as.numeric(t(w) %*% X) / w_norm2
+    y_se <- s_current / sqrt(w_norm2)
+
+    if (symmetric_rademacher) {
+      ebnm_fit <- ebnm_rademacher(x = y, s = y_se)
+    } else {
+      ebnm_fit <- ebnm_generalized_rademacher(x = y, s = y_se)
+    }
+
+    post_mean <- ebnm_fit$posterior$mean
+    post_sec_moment <- ebnm_fit$posterior$sd^2 + post_mean^2
+    sum_E_S2 <- sum(post_sec_moment)
+    if (sum_E_S2 <= 0) {
+      stop("The posterior second moment is zero; cannot estimate w by MLE.")
+    }
+
+    Eloglik <- normal_means_loglik(x = y, s = y_se,
+                                   Et = post_mean,
+                                   Et2 = post_sec_moment)
+    KL <- Eloglik - ebnm_fit$log_likelihood
+
+    w <- as.numeric(X %*% post_mean) / sum_E_S2
+    fitted <- as.numeric(t(w) %*% X)
+    R2 <- sum(X^2) - 2 * sum(fitted * post_mean) + sum(w^2) * sum_E_S2
+    if (estimate_s) {
+      s_current <- estimate_residual_sd(R2, d, n)
+    }
+    residual_sd[iter] <- s_current
+    global_Eloglik <- -0.5 * (d * n) * log(2 * pi * s_current^2) - R2 / (2 * s_current^2)
+    elbo <- global_Eloglik - KL
+    obj_history[iter] <- elbo
+
+    is_converged <- FALSE
+    if (conv_crit == "elbo") {
+      if (iter > 1 && (elbo - obj_history[iter - 1]) < tol) is_converged <- TRUE
+    } else if (conv_crit == "weights") {
+      rel_w_change <- sqrt(sum((w - w_old)^2)) / max(sqrt(sum(w_old^2)), sqrt(.Machine$double.eps))
+      if (rel_w_change < tol) is_converged <- TRUE
+    }
+
+    if (is_converged || iter == max_iter) {
+      if (is_converged && verbose > 0) cat("Converged in", iter, "iterations. Final ELBO:", elbo, "\n")
+      break
+    }
+  }
+
+  w_norm2 <- sum(w^2)
+  return(list(
+    W = matrix(w, ncol = 1),
+    S = as.numeric(t(w) %*% X) / w_norm2,
+    S_plus = matrix(post_mean, ncol = 1),
+    prior_probs = get_prior_prob(ebnm_fit),
+    residual_sd = s_current,
+    residual_variance = s_current^2,
+    residual_sd_path = residual_sd[1:iter],
+    residual_variance_path = residual_variance_path(residual_sd[1:iter]),
+    obj = obj_history[1:iter]
+  ))
+}
+
 
 
 # parallel update for general source prior
@@ -516,7 +628,8 @@ ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-
                                    verbose = 0) {
   d <- nrow(X)
   n <- ncol(X)
-  prior_probs <- numeric(K)
+  # prior_probs <- numeric(K)
+  fitted_priors <- vector("list", K)
   obj_history <- numeric(max_iter)
   residual_sd <- numeric(max_iter)
   estimate_s <- is.null(s)
@@ -557,7 +670,8 @@ ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-
       post_sec_moment <- ebnm_fit$posterior$sd^2 + post_mean^2
 
       S_plus[, k] <- post_mean
-      prior_probs[k] <- get_prior_prob(ebnm_fit)
+      # prior_probs[k] <- get_prior_prob(ebnm_fit)
+      fitted_priors[[k]] <- get_prior(ebnm_fit)
 
       Eloglik <- normal_means_loglik(x = y_k, s = s_current,
                                      Et = post_mean,
@@ -609,7 +723,8 @@ ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-
     W = W,
     S = t(X) %*% W,
     S_plus = S_plus,
-    prior_probs = prior_probs,
+    # prior_probs = prior_probs,
+    fitted_priors = fitted_priors,
     residual_sd = s_current,
     residual_variance = s_current^2,
     residual_sd_path = residual_sd[1:iter],
