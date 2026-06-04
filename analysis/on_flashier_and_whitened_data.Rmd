@@ -326,6 +326,7 @@ code_dir <- if (dir.exists("code")) "code" else "../code"
 source(file.path(code_dir, "ica_functions.R"))
 source(file.path(code_dir, "ebnm_rademacher.R"))
 source(file.path(code_dir, "ebnm_point_rademacher.R"))
+source(file.path(code_dir, "ebnm_normal_fixed_sd.R"))
 source(file.path(code_dir, "utils.R"))
 
 
@@ -344,7 +345,7 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, point_mass = FA
   }
   else {
     ebnm_source = ebnm_rademacher
-  }
+
   res <- flash_init(X, var_type = var_type, S = S) |>
       flash_factors_init(
         init = list(A_init, S_init),
@@ -365,6 +366,7 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, point_mass = FA
   return(list(res=res, lambda_path = lambda_path, 
               elbo_path = elbo_path, resid_path = resid_path,
               z_prior_var_path = z_prior_var_path))
+  }
 }
 ```
 
@@ -384,7 +386,7 @@ X1 = preprocess(X, n.comp = 9)
 X1 = rbind(rep(1,ncol(X1)), X1)
 ```
 
-```{r}
+```{r, warning = FALSE}
 #| warning: false
 
 fit_fixed = flash_x_rademacher(X1, L[,1], S=1, ebnm_fn = ebnm_normal)
@@ -396,13 +398,42 @@ We see here that the fit (either with $\sigma^2$ fixed or estimated) is essentia
 
 ```{r}
 sum(abs(fit_fixed$res$F_pm))
-fit_fixed$lambda_path / n
 
 sum(abs(fit_notfixed$res$F_pm))
-fit_notfixed$lambda_path / n
 
 plot(fit_fixed$z_prior_var_path[-1]^2, xlab = 'Iteration', ylab = 'Estimated prior variance')
 plot(fit_fixed$elbo_path[-1], xlab = 'Iteration', ylab = 'ELBO')
+plot(fit_fixed$lambda_path / n, xlab = 'Iteration', ylab = 'lambda')
 plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = 'Iteration', ylab = 'Estimated prior variance')
 plot(fit_notfixed$elbo_path[-1], xlab = 'Iteration', ylab = 'ELBO')
+plot(fit_notfixed$lambda_path / n, xlab = 'Iteration', ylab = 'lambda')
+```
+
+
+### Unconstrained $z$
+
+Here, we examine the case where $z# is unconstrained and estimated via MLE.
+
+To do it in flashier, we can set and fix the normal prior variance to be very large. It seems that $z=0$ is still a fixed point for whitened data, but it takes a large number of iterations to converge to it.
+
+```{r, warning = FALSE}
+ebnm_normal_fixed_prior_sd <- make_ebnm_normal_fixed_sd(100000)
+fit_fixed_prior_sd = flash_x_rademacher(X1, L[,1], S=NULL, ebnm_fn = ebnm_normal_fixed_prior_sd, maxiter = 5000)
+sum(abs(fit_fixed_prior_sd$res$F_pm))
+plot(fit_fixed_prior_sd$lambda_path / n, xlab = 'Iteration', ylab = 'lambda')
+plot(fit_fixed_prior_sd$elbo_path[-1], xlab = 'Iteration', ylab = 'ELBO')
+plot(fit_fixed_prior_sd$resid_path, xlab = 'Iteration', ylab = 'Residual variance')
+```
+
+
+A better way is to fit thr true MLE. Without constraint, convergence to $z=0$ is even slower, although the ELBO stablizes very quickly.
+
+Is $z=0$ maximizing the ELBO? If seems that if we keep going regardless of the ELBO, we will reach $z=0$ eventually, but in practice we might have stopped because ELBO won't change much.
+```{r}
+ebica_fit = ebica_rank_one_unconstrained(X1, symmetric_rademacher = TRUE, max_iter = 50000)
+max(apply(cor(L, t(X1) %*% ebica_fit$W), MARGIN = 1, abs))
+sum(abs(ebica_fit$S_plus))
+ebica_fit$S_plus
+plot(ebica_fit$obj, xlab = 'Iteration', ylab = 'ELBO')
+plot(ebica_fit$residual_variance_path, xlab = 'Iteration', ylab = 'Residual variance')
 ```
