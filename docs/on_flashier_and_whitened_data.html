@@ -391,7 +391,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-27
+<strong>Last updated:</strong> 2026-06-04
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreebe9c561b7369f82ecd8dee19e96d0e45b1df9853targetblankbe9c561a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreebd74196a555f6f1d89dd01f8e171adf059ab8242targetblankbd74196a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/be9c561b7369f82ecd8dee19e96d0e45b1df9853" target="_blank">be9c561</a>
+<a href="https://github.com/junmingguan/misc/tree/bd74196a555f6f1d89dd01f8e171adf059ab8242" target="_blank">bd74196</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreebe9c561b7369f82ecd8dee19e96d0e45b1df9853targetblankbe9c561a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreebd74196a555f6f1d89dd01f8e171adf059ab8242targetblankbd74196a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/be9c561b7369f82ecd8dee19e96d0e45b1df9853" target="_blank">be9c561</a>.
+<a href="https://github.com/junmingguan/misc/tree/bd74196a555f6f1d89dd01f8e171adf059ab8242" target="_blank">bd74196</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -560,16 +560,15 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    .luarc.json
     Ignored:    _extensions/
+    Ignored:    analysis/.DS_Store
     Ignored:    analysis/exploratiion_normal_prior_on_factor.html
     Ignored:    analysis/presentation.html
-    Ignored:    analysis/presentation_files/
 
 Untracked files:
     Untracked:  Rplots.pdf
     Untracked:  analysis/draft.Rmd
     Untracked:  analysis/eb_ica_backup.Rmd
     Untracked:  analysis/ebica_math.md
-    Untracked:  analysis/exploratiion_normal_prior_on_factor_files/
     Untracked:  analysis/flashier_whitened_and_tree_example_tese.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
@@ -579,7 +578,6 @@ Untracked files:
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/references.bib
     Untracked:  analysis/tree_example.Rmd
-    Untracked:  code/ebnm_normal_fixed_sd.R
     Untracked:  code/references.bib
 
 Unstaged changes:
@@ -589,8 +587,6 @@ Unstaged changes:
     Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
     Modified:   analysis/ica_vs_flashier_r1_rad.Rmd
     Modified:   analysis/ica_with_noise.Rmd
-    Modified:   code/ebcd_functions.R
-    Modified:   code/ica_functions.R
 
 </code></pre>
 <p>
@@ -636,6 +632,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/bd74196a555f6f1d89dd01f8e171adf059ab8242/analysis/on_flashier_and_whitened_data.Rmd" target="_blank">bd74196</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-04
+</td>
+<td>
+wflow_publish("analysis/on_flashier_and_whitened_data.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/b920fb25f164a3ddd0ce93da70acaa1adc4c1a36/docs/on_flashier_and_whitened_data.html" target="_blank">b920fb2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-05-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1177,6 +1207,7 @@ that</p>
 source(file.path(code_dir, &quot;ica_functions.R&quot;))
 source(file.path(code_dir, &quot;ebnm_rademacher.R&quot;))
 source(file.path(code_dir, &quot;ebnm_point_rademacher.R&quot;))
+source(file.path(code_dir, &quot;ebnm_normal_fixed_sd.R&quot;))
 source(file.path(code_dir, &quot;utils.R&quot;))
 
 
@@ -1195,7 +1226,7 @@ flash_x_rademacher &lt;- function(X, S_init, ebnm_fn = ebnm_normal, point_mass =
   }
   else {
     ebnm_source = ebnm_rademacher
-  }
+
   res &lt;- flash_init(X, var_type = var_type, S = S) |&gt;
       flash_factors_init(
         init = list(A_init, S_init),
@@ -1216,6 +1247,7 @@ flash_x_rademacher &lt;- function(X, S_init, ebnm_fn = ebnm_normal, point_mass =
   return(list(res=res, lambda_path = lambda_path, 
               elbo_path = elbo_path, resid_path = resid_path,
               z_prior_var_path = z_prior_var_path))
+  }
 }</code></pre>
 <pre class="r"><code>K=9
 p = 1000
@@ -1306,24 +1338,8 @@ the ELBO seems to stablized at <span
 class="math inline">\(c=0\)</span>.</p>
 <pre class="r"><code>sum(abs(fit_fixed$res$F_pm))</code></pre>
 <pre><code>[1] 1.082077e-09</code></pre>
-<pre class="r"><code>fit_fixed$lambda_path / n</code></pre>
-<pre><code> [1] 9.999999e+01 5.130826e+01 2.706666e+01 1.003379e+01 1.142070e-04
- [6] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
-[11] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
-[16] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
-[21] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
-[26] 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20 1.170890e-20
-[31] 1.170890e-20</code></pre>
 <pre class="r"><code>sum(abs(fit_notfixed$res$F_pm))</code></pre>
 <pre><code>[1] 2.50714e-07</code></pre>
-<pre class="r"><code>fit_notfixed$lambda_path / n</code></pre>
-<pre><code> [1] 9.999999e+01 5.870948e+01 3.458381e+01 1.669552e+01 2.765550e+00
- [6] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
-[11] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
-[16] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
-[21] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
-[26] 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16 6.285753e-16
-[31] 6.285753e-16</code></pre>
 <pre class="r"><code>plot(fit_fixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1413,7 +1429,7 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
+<pre class="r"><code>plot(fit_fixed$lambda_path / n, xlab = &#39;Iteration&#39;, ylab = &#39;lambda&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-3">
@@ -1452,7 +1468,7 @@ junmingguan
 </table>
 </div>
 </div>
-<pre class="r"><code>plot(fit_notfixed$elbo_path[-1], xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
+<pre class="r"><code>plot(fit_notfixed$z_prior_var_path[-1]^2, xlab = &#39;Iteration&#39;, ylab = &#39;Estimated prior variance&#39;)</code></pre>
 <p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-4">
@@ -1491,6 +1507,148 @@ junmingguan
 </table>
 </div>
 </div>
+<pre class="r"><code>plot(fit_notfixed$elbo_path[-1], xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fit_notfixed$lambda_path / n, xlab = &#39;Iteration&#39;, ylab = &#39;lambda&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-4-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<div id="unconstrained-z" class="section level3">
+<h3>Unconstrained <span class="math inline">\(z\)</span></h3>
+<p>Here, we examine the case where $z# is unconstrained and estimated
+via MLE.</p>
+<p>To do it in flashier, we can set and fix the normal prior variance to
+be very large. It seems that <span class="math inline">\(z=0\)</span> is
+still a fixed point for whitened data, but it takes a large number of
+iterations to converge to it.</p>
+<pre class="r"><code>ebnm_normal_fixed_prior_sd &lt;- make_ebnm_normal_fixed_sd(100000)
+fit_fixed_prior_sd = flash_x_rademacher(X1, L[,1], S=NULL, ebnm_fn = ebnm_normal_fixed_prior_sd, maxiter = 5000)</code></pre>
+<pre><code>  --Estimate of factor 1 is numerically zero!</code></pre>
+<pre><code>  --Estimate of factor 1 is numerically zero!</code></pre>
+<pre class="r"><code>sum(abs(fit_fixed_prior_sd$res$F_pm))</code></pre>
+<pre><code>[1] 3.700179e-14</code></pre>
+<pre class="r"><code>plot(fit_fixed_prior_sd$lambda_path / n, xlab = &#39;Iteration&#39;, ylab = &#39;lambda&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-5-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fit_fixed_prior_sd$elbo_path[-1], xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-5-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fit_fixed_prior_sd$resid_path, xlab = &#39;Iteration&#39;, ylab = &#39;Residual variance&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-5-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>A better way is to fit thr true MLE. Without constraint, convergence
+to <span class="math inline">\(z=0\)</span> is even slower, although the
+ELBO stablizes very quickly.</p>
+<p>Is <span class="math inline">\(z=0\)</span> maximizing the ELBO? If
+seems that if we keep going regardless of the ELBO, we will reach <span
+class="math inline">\(z=0\)</span> eventually, but in practice we might
+have stopped because ELBO won’t change much.</p>
+<pre class="r"><code>ebica_fit = ebica_rank_one_unconstrained(X1, symmetric_rademacher = TRUE, max_iter = 50000)
+max(apply(cor(L, t(X1) %*% ebica_fit$W), MARGIN = 1, abs))</code></pre>
+<pre><code>[1] 0.9999999</code></pre>
+<pre class="r"><code>sum(abs(ebica_fit$S_plus))</code></pre>
+<pre><code>[1] 0.6538502</code></pre>
+<pre class="r"><code>ebica_fit$S_plus</code></pre>
+<pre><code>               [,1]
+  [1,] -0.006540210
+  [2,]  0.006539295
+  [3,] -0.006543333
+  [4,] -0.006536314
+  [5,] -0.006539850
+  [6,] -0.006536320
+  [7,] -0.006534207
+  [8,] -0.006540748
+  [9,]  0.006539897
+ [10,]  0.006536509
+ [11,] -0.006539108
+ [12,]  0.006540184
+ [13,] -0.006535329
+ [14,]  0.006540797
+ [15,]  0.006538635
+ [16,]  0.006537083
+ [17,] -0.006541133
+ [18,] -0.006533797
+ [19,] -0.006534499
+ [20,] -0.006537261
+ [21,] -0.006544368
+ [22,] -0.006535983
+ [23,] -0.006536526
+ [24,]  0.006539993
+ [25,] -0.006539054
+ [26,] -0.006541175
+ [27,] -0.006535357
+ [28,] -0.006540011
+ [29,] -0.006535864
+ [30,] -0.006539946
+ [31,] -0.006540822
+ [32,]  0.006538164
+ [33,] -0.006542694
+ [34,] -0.006538248
+ [35,] -0.006540907
+ [36,] -0.006540653
+ [37,]  0.006539431
+ [38,] -0.006544519
+ [39,]  0.006537084
+ [40,]  0.006537872
+ [41,] -0.006536764
+ [42,] -0.006538660
+ [43,] -0.006543306
+ [44,] -0.006539155
+ [45,] -0.006537736
+ [46,] -0.006535839
+ [47,] -0.006538835
+ [48,] -0.006538827
+ [49,] -0.006538037
+ [50,]  0.006541272
+ [51,] -0.006538101
+ [52,] -0.006539616
+ [53,] -0.006539615
+ [54,] -0.006538864
+ [55,] -0.006538362
+ [56,] -0.006537458
+ [57,] -0.006540026
+ [58,] -0.006539000
+ [59,] -0.006537442
+ [60,] -0.006538905
+ [61,] -0.006538090
+ [62,] -0.006534173
+ [63,] -0.006539599
+ [64,] -0.006534852
+ [65,]  0.006540270
+ [66,] -0.006536615
+ [67,]  0.006538018
+ [68,] -0.006541075
+ [69,] -0.006537113
+ [70,] -0.006536440
+ [71,] -0.006540858
+ [72,] -0.006540547
+ [73,]  0.006538123
+ [74,] -0.006540487
+ [75,]  0.006534697
+ [76,] -0.006538273
+ [77,] -0.006538663
+ [78,] -0.006537639
+ [79,]  0.006537523
+ [80,] -0.006542303
+ [81,] -0.006536210
+ [82,] -0.006538213
+ [83,] -0.006536080
+ [84,] -0.006535705
+ [85,] -0.006539475
+ [86,] -0.006536929
+ [87,] -0.006536883
+ [88,] -0.006540218
+ [89,] -0.006538018
+ [90,] -0.006539909
+ [91,] -0.006535354
+ [92,]  0.006538698
+ [93,] -0.006537638
+ [94,] -0.006539503
+ [95,] -0.006535870
+ [96,] -0.006537499
+ [97,] -0.006542384
+ [98,] -0.006533801
+ [99,]  0.006536678
+[100,] -0.006540773</code></pre>
+<pre class="r"><code>plot(ebica_fit$obj, xlab = &#39;Iteration&#39;, ylab = &#39;ELBO&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-6-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(ebica_fit$residual_variance_path, xlab = &#39;Iteration&#39;, ylab = &#39;Residual variance&#39;)</code></pre>
+<p><img src="figure/on_flashier_and_whitened_data.Rmd/unnamed-chunk-6-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1511,7 +1669,7 @@ LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlap
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 
-time zone: America/Chicago
+time zone: America/Los_Angeles
 tzcode source: internal
 
 attached base packages:
@@ -1551,6 +1709,7 @@ loaded via a namespace (and not attached):
 [82] httpuv_1.6.17         bslib_0.10.0          Rcpp_1.1.0           
 [85] deconvolveR_1.2-1     whisker_0.4.1         xfun_0.57            
 [88] fs_1.6.6              getPass_0.2-4         pkgconfig_2.0.3      </code></pre>
+</div>
 </div>
 </div>
 </div>
