@@ -178,7 +178,7 @@ $$
 
 So whether the ELBO is maximized at $c=0$ for fixed $q_v$ depends on whether $\|Y^\top\bar v\|^2 = n\|P\bar{v}\|^2 > pn \sigma^2$.
 
-But if we look at $c$ and $q_v$ jointly: since $\text{KL}(q_v \| \text{Rad}(1/2)) \ge \frac12 \|\bar{v}\|^2$ (equality achieved when $\bar v=0$)
+But if we look at $c$ and $q_v$ jointly: since $\mathrm{KL}\!\left(q_v \,\middle\|\,\mathrm{Rad}\!\left(\tfrac12\right)\right) \ge \frac12 \|\bar{v}\|^2$ (equality achieved when $\bar v=0$)
 
 $$
 \begin{aligned}
@@ -317,6 +317,102 @@ $$
 $$
 :::
 
+### Unconstrained $z$ and unknown $\sigma^2$ {#unconstr-z}
+
+Here instead of putting a normal prior on $z$, we treat it as a "free" parameter and estimate it via MLE. The update for $z$ and $\sigma^2$ given $q_v$ is given by
+
+$$
+z^+ = Y^\top \bar{v} / n
+$$
+and
+
+$$
+\sigma^2 = \frac{\text{tr}(S)-\lambda}{np} =1- \frac{\|P \bar v\|^2}{np}.
+$$
+The profiled ELBO with respect to $\bar v$ is 
+
+$$
+\widehat{\mathrm{ELBO}}(q_v)
+=
+-\frac{np}{2}
+\left[
+\log\!\left(
+2\pi
+\left(
+1-\frac{\|P\bar v\|^2}{np}
+\right)
+\right)
++1
+\right]
+-
+\mathrm{KL}\!\left(
+q_v \,\middle\|\, \mathrm{Rad}\!\left(\tfrac12\right)
+\right).
+$$
+Setting $\bar v = z = 0$, we have $\sigma^2=1$. This corresponds to $q_v=\text{Rad}(1/2)$. The profiled ELBO is
+
+$$
+\widehat{\text{ELBO}}(\text{Rad}(1/2)) = -\frac{np}{2}(\log (2\pi) + 1).
+$$
+
+The profiled ELBO gain over the null is
+
+$$
+\Delta(q_v) = -\frac{np}{2}\log \left(1-\frac{\|P\bar v \|^2}{np}\right)- \mathrm{KL}\!\left(
+q_v \,\middle\|\, \mathrm{Rad}\!\left(\tfrac12\right)
+\right).
+$$
+
+::: {.theorem #thm:unconstrained-z}
+If $p\ge 3$ and $Y$ is whitened, then $\Delta(q_v) \le 0$, and equality holds if $q_v=\text{Rad}(1/2)$.
+:::
+
+
+::: {.proof}
+Since $P$ is a projection matrix, $\|P \bar v\| \le \|m\bar v\|$, and
+
+$$
+-\frac{np}{2}\log \left(1-\frac{\|P\bar v \|^2}{np}\right) \leq -\frac{np}{2}\log \left(1-\frac{\|\bar v \|^2}{np}\right)
+$$
+
+We need to show
+
+$$
+\mathrm{KL}\!\left(
+q_v \,\middle\|\, \mathrm{Rad}\!\left(\tfrac12\right)
+\right) \ge -\frac{np}{2}\log \left(1-\frac{\|\bar v \|^2}{np}\right).
+$$
+Note that 
+
+$$
+\mathrm{KL}\!\left(
+q_v \,\middle\|\, \mathrm{Rad}\!\left(\tfrac12\right)
+\right) = \sum_i^n d(\bar v), \qquad 
+d(x)=\frac{1+x}{2}\log(1+x)+\frac{1-x}{2}\log(1-x).
+$$
+Observe that for $p\ge 3$,
+
+$$
+d(x) \ge -\frac{p}{2} \log \left(1-\frac{x^2}{p}\right).
+$$
+
+So
+
+$$
+\mathrm{KL}\!\left(
+q_v \,\middle\|\, \mathrm{Rad}\!\left(\tfrac12\right)
+\right) \ge -\frac{p}{2} \sum_i \log \left(1-\frac{\bar v^2_i}{p}\right)
+\ge -\frac{np}{2} \log \left(1-\frac{\|\bar v\|^2}{p}\right),
+$$
+where the second inequality is due to Jensen's inequality. Too see this, let $u_i=\bar v^2_i/p$, then $0\leq u_i\le 1/p\le 1$; $f(u)=-\log(1-u)$ is convex.
+
+All inequality is strict unless $q_v$ is Rademacher (although the first equality is very close to being equality for $\bar v$ far away from $\pm 1$; try plotting $\frac{1+x}{2}\log(1+x)+\frac{1-x}{2}\log(1-x)+\frac{p}{2}\log\left(1-\frac{x^{2}}{p}\right)$ using [desmos](https://www.desmos.com/calculator). This probably explains why the convergence to 0 is slow; see [here](#unconstr-z-example)).
+
+So $\Delta(q_v) \le 0$, with equality when $\bar v=0$.
+
+:::
+
+
 ## Example
 
 ```{r}
@@ -410,9 +506,9 @@ plot(fit_notfixed$lambda_path / n, xlab = 'Iteration', ylab = 'lambda')
 ```
 
 
-### Unconstrained $z$
+### Unconstrained $z$ {#unconstr-z-example}
 
-Here, we examine the case where $z# is unconstrained and estimated via MLE.
+Here, we examine the case where $z$ is unconstrained and estimated via MLE.
 
 To do it in flashier, we can set and fix the normal prior variance to be very large. It seems that $z=0$ is still a fixed point for whitened data, but it takes a large number of iterations to converge to it.
 
@@ -426,9 +522,9 @@ plot(fit_fixed_prior_sd$resid_path, xlab = 'Iteration', ylab = 'Residual varianc
 ```
 
 
-A better way is to fit thr true MLE. Without constraint, convergence to $z=0$ is even slower, although the ELBO stablizes very quickly.
+A better way is to fit the true MLE. Without constraint, convergence to $z=0$ is even slower, although the ELBO stabilizes very quickly; see a possible explanation [here](#unconstr-z).
 
-Is $z=0$ maximizing the ELBO? If seems that if we keep going regardless of the ELBO, we will reach $z=0$ eventually, but in practice we might have stopped because ELBO won't change much.
+It seems that if we keep going regardless of the ELBO, we will reach $z=0$ eventually, but in practice we might have stopped because ELBO won't change much.
 ```{r}
 ebica_fit = ebica_rank_one_unconstrained(X1, symmetric_rademacher = TRUE, max_iter = 50000)
 max(apply(cor(L, t(X1) %*% ebica_fit$W), MARGIN = 1, abs))
