@@ -39,11 +39,11 @@ editor_options:
 
 ## Introduction
 
-In this analysis, I compare EBICA with Rademacher prior, EBICA with generalized Rademacher (where the prior probability $\pi$ is estimated by maximizing marginal likelihood), and fastICA, on the whitened with and without an intercept in the 9 unbalanced group examples.
+In this analysis, I compare EBICA with a Rademacher prior, EBICA with a generalized Rademacher prior (where the prior probability $\pi$ is estimated by maximizing the marginal likelihood), and fastICA, on the whitened data with and without an intercept in the 9 unbalanced group examples.
 
-Without an intercept, none of the three approaches appear to capture one true source; for EBICA generalized Rademacher, the estimated prior probability also seems way off from the truth 0.2/0.8.
+Without an intercept, none of the three approaches appears to capture one true source; for EBICA generalized Rademacher, the estimated prior probability also seems far off from the true 0.2/0.8 probabilities.
 
-With the intercept added, EBICA generalized Rademacher always picks up the trivial solution, with $\hat{\pi}=1/0$, which is not ideal; I wonder if it makes sense to put a prior on $\pi$ to shrink it towards $0.5$, say $\text{Beta}(0.5, 0.5)$? EBICA Rademacher on the other hand is very similar to fastICA as expected, but fastICA seems to capture the trivial solution slightly more often, probably due to the Newton "acceleration".
+With the intercept added, EBICA generalized Rademacher always picks up the trivial solution, with $\hat{\pi}=1/0$, which is not ideal; I wonder if it makes sense to put a prior on $\pi$ to shrink it toward $0.5$, say $\text{Beta}(0.5, 0.5)$? EBICA Rademacher, on the other hand, is very similar to fastICA as expected, but fastICA seems to capture the trivial solution slightly more often, probably due to the Newton "acceleration".
 
 ```{r}
 library(flashier)
@@ -91,7 +91,7 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, ebnm_source = e
 ```
 
 
-## 3 overlapping unbalanced groups
+## 9 unbalanced groups
 
 ```{r}
 K=9
@@ -271,4 +271,3 @@ plot(fastica.corr.max[order(fastica.obj)], ylab = "Max correlation with a true s
      main = 'fastICA')
 plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
 ```
-
