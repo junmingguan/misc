@@ -43,7 +43,7 @@ In this analysis, I compare EBICA with a Rademacher prior, EBICA with a generali
 
 Without an intercept, none of the three approaches appears to capture one true source; for EBICA generalized Rademacher, the estimated prior probability also seems far off from the true 0.2/0.8 probabilities.
 
-With the intercept added, EBICA generalized Rademacher always picks up the trivial solution, with $\hat{\pi}=1/0$, which is not ideal; I wonder if it makes sense to put a prior on $\pi$ to shrink it toward $0.5$, say $\text{Beta}(0.5, 0.5)$? EBICA Rademacher, on the other hand, is very similar to fastICA as expected, but fastICA seems to capture the trivial solution slightly more often, probably due to the Newton "acceleration".
+With the intercept added, EBICA generalized Rademacher always picks up the trivial solution, with $\hat{\pi}=1/0$, which is not ideal; I wonder if it makes sense to put a prior on $\pi$ to shrink it toward $0.5$, say $\text{Beta}(5, 5)$? EBICA Rademacher, on the other hand, is very similar to fastICA as expected, but fastICA seems to capture the trivial solution slightly more often, probably due to the Newton "acceleration".
 
 ```{r}
 library(flashier)
