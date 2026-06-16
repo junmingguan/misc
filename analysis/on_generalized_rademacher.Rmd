@@ -323,9 +323,9 @@ plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
 
 
 
-## 9 unbalanced groups
+## 9 unbalanced groups, misspecified generalized Rademacher
 
-Here I tried applying no-intercept generalized Rademacher with $\pi$ fixed to $0.2$, while the true $\pi$ is $0.15$.
+Here I tried applying no-intercept generalized Rademacher with $\pi$ fixed to $0.2$, while the true $\pi$ is $0.1$.
 
 ```{r}
 K=9
