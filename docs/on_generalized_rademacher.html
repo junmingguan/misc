@@ -390,7 +390,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-11
+<strong>Last updated:</strong> 2026-06-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree47e0ab10ece780219b4a2d0bd1ffa62231af164dtargetblank47e0ab1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree715cfb8658ae50cb14188c07b57a42c2dabfb24etargetblank715cfb8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/47e0ab10ece780219b4a2d0bd1ffa62231af164d" target="_blank">47e0ab1</a>
+<a href="https://github.com/junmingguan/misc/tree/715cfb8658ae50cb14188c07b57a42c2dabfb24e" target="_blank">715cfb8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree47e0ab10ece780219b4a2d0bd1ffa62231af164dtargetblank47e0ab1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree715cfb8658ae50cb14188c07b57a42c2dabfb24etargetblank715cfb8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/47e0ab10ece780219b4a2d0bd1ffa62231af164d" target="_blank">47e0ab1</a>.
+<a href="https://github.com/junmingguan/misc/tree/715cfb8658ae50cb14188c07b57a42c2dabfb24e" target="_blank">715cfb8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -586,6 +586,7 @@ Unstaged changes:
     Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
     Modified:   analysis/ica_vs_flashier_r1_rad.Rmd
     Modified:   analysis/ica_with_noise.Rmd
+    Modified:   analysis/on_flashier_and_whitened_data.Rmd
 
 </code></pre>
 <p>
@@ -631,6 +632,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/715cfb8658ae50cb14188c07b57a42c2dabfb24e/analysis/on_generalized_rademacher.Rmd" target="_blank">715cfb8</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/on_generalized_rademacher.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/d54315df6fcec838f2a23eb6439287f36c7cab1d/docs/on_generalized_rademacher.html" target="_blank">d54315d</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -816,6 +851,24 @@ flash_x_rademacher &lt;- function(X, S_init, ebnm_fn = ebnm_normal, ebnm_source 
               elbo_path = elbo_path, resid_path = resid_path,
               z_prior_var_path = z_prior_var_path))
 }</code></pre>
+<pre class="r"><code>ebnm_rademacher_0.2 &lt;- function(
+    x,
+    s = 1,
+    mode = 0,
+    g_init = NULL,
+    fix_g = FALSE,
+    output = NULL,
+    control = NULL
+) {
+  ebnm_generalized_rademacher(
+    x = x,
+    s = s,
+    mode = mode,
+    m = 1,
+    g_init = rademacher(pi = 0.2, m = 1),
+    fix_g = TRUE
+  )
+}</code></pre>
 </div>
 <div id="unbalanced-groups" class="section level2">
 <h2>9 unbalanced groups</h2>
@@ -829,510 +882,34 @@ FF = matrix(rnorm(p*K), nrow = p, ncol=K)
 
 X = L %*% t(FF) + rnorm(n*p,0,0.01)
 plot(X %*% FF[,1])</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-2-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
-Past versions of unnamed-chunk-2-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-2-1.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-3-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>X1 = preprocess(X, n.comp = K)
 # X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
 <div id="no-intercept" class="section level3">
 <h3>No intercept</h3>
 <pre class="r"><code>generalized.rad.corr.max &lt;- c()
 rad.corr.max &lt;- c()
-
-generalized.rad.obj &lt;- c()
-rad.obj &lt;- c()
-
-generalized.rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
-rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
-
-
-generalized.rad.prior.prob &lt;- c()
-
-
-for (seed in 1:100) {
-  set.seed(seed = seed)
-  W_init = rnorm(dim(X1)[1])
-  res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
-  res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
-  
-  generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
-  generalized.rad.obj[seed] = compute_objective(X1, res.generalized.rad$W)
-  generalized.rad.Lhat[seed,] = res.generalized.rad$S
-  
-  generalized.rad.prior.prob[seed] = ifelse(res.generalized.rad$prior_probs &gt; 0.5, res.generalized.rad$prior_probs, 1 - res.generalized.rad$prior_probs)
-  
-  rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
-  rad.obj[seed] = compute_objective(X1, res.rad$W)
-  rad.Lhat[seed,] = res.rad$S
-}</code></pre>
-<p>FastICA</p>
-<pre class="r"><code>init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
-
-for (seed in 1:100) {
-  set.seed(seed)
-  init_W[,seed] = rnorm(dim(X1)[1])
-}
-W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
-
-fastica.obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
-fastica.corr.max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
-fastica.Lhat = t(t(X1) %*% W)</code></pre>
-<pre class="r"><code>plot(sort(generalized.rad.obj), ylab = &quot;logcosh objective&quot;,
-     main = &#39;Generalized Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
-Past versions of unnamed-chunk-5-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-1.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot(generalized.rad.corr.max[order(generalized.rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
-     main = &#39;Generalized Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-2">
-Past versions of unnamed-chunk-5-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-2.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = &quot;Estimated prior probability&quot;,
-     main = &#39;Generalized Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-3">
-Past versions of unnamed-chunk-5-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-3.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-4">
-Past versions of unnamed-chunk-5-4.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-4.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot(sort(rad.obj), ylab = &quot;logcosh objective&quot;,
-     main = &#39;Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-5">
-Past versions of unnamed-chunk-5-5.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-5.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot(rad.corr.max[order(rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
-     main = &#39;Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-6">
-Past versions of unnamed-chunk-5-6.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-6.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot_heatmap(t(rad.Lhat[order(rad.obj), ]))</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-7">
-Past versions of unnamed-chunk-5-7.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-7.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot(sort(fastica.obj), ylab = &quot;logcosh objective&quot;,
-     main = &#39;fastICA&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-8">
-Past versions of unnamed-chunk-5-8.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-8.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot(fastica.corr.max[order(fastica.obj)], ylab = &quot;Max correlation with a true source&quot;,
-     main = &#39;fastICA&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-9">
-Past versions of unnamed-chunk-5-9.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-9.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-10">
-Past versions of unnamed-chunk-5-10.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-5-10.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="with-intercept" class="section level3">
-<h3>With intercept</h3>
-<pre class="r"><code>X1 = preprocess(X, n.comp = K)
-X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
-<pre class="r"><code>generalized.rad.corr.max &lt;- c()
-rad.corr.max &lt;- c()
+rad.0.2.corr.max &lt;- c()
 fastica.corr.max &lt;- c()
 
 generalized.rad.obj &lt;- c()
 rad.obj &lt;- c()
+rad.0.2.obj &lt;- c()
 fastica.obj &lt;- c()
 
 generalized.rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
 rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+rad.0.2.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
 fastica.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
 
 generalized.rad.prior.prob &lt;- c()
 
 for (seed in 1:100) {
   set.seed(seed = seed)
-  W_init = rnorm(dim(X1)[1])
+  W_init = rnorm(dim(X1)[1]) #X1 %*% L[,1]
   res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
   res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
+  res.0.2.rad = ebica_generalized_parallel(X1, K=1, ebnm_fn = ebnm_rademacher_0.2, s = 1, W_init = W_init, max_iter = 100)
   fastica_rank_one_update(X1, init_w = W_init)
   
   generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
@@ -1344,9 +921,10 @@ for (seed in 1:100) {
   rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
   rad.obj[seed] = compute_objective(X1, res.rad$W)
   rad.Lhat[seed,] = res.rad$S
-  rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
-  rad.obj[seed] = compute_objective(X1, res.rad$W)
-  rad.Lhat[seed,] = res.rad$S
+  
+  rad.0.2.corr.max[seed] = max(abs(cor(L, res.0.2.rad$S)))
+  rad.0.2.obj[seed] = compute_objective(X1, res.0.2.rad$W)
+  rad.0.2.Lhat[seed,] = res.0.2.rad$S
 }</code></pre>
 <p>FastICA</p>
 <pre class="r"><code>init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
@@ -1362,401 +940,238 @@ fastica.corr.max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))}
 fastica.Lhat = t(t(X1) %*% W)</code></pre>
 <pre class="r"><code>plot(sort(generalized.rad.obj), ylab = &quot;logcosh objective&quot;,
      main = &#39;Generalized Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
-Past versions of unnamed-chunk-9-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-1.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot(generalized.rad.corr.max[order(generalized.rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
      main = &#39;Generalized Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-2">
-Past versions of unnamed-chunk-9-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-2.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = &quot;Estimated prior probability&quot;,
      main = &#39;Generalized Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-3">
-Past versions of unnamed-chunk-9-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-3.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-4">
-Past versions of unnamed-chunk-9-4.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-4.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot(sort(rad.obj), ylab = &quot;logcosh objective&quot;,
      main = &#39;Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-5">
-Past versions of unnamed-chunk-9-5.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-5.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot(rad.corr.max[order(rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
      main = &#39;Rademacher&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-6">
-Past versions of unnamed-chunk-9-6.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-6.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot_heatmap(t(rad.Lhat[order(rad.obj), ]))</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-7">
-Past versions of unnamed-chunk-9-7.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-7.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(rad.0.2.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Generalized Rademacher p=0.2&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(rad.0.2.corr.max[order(rad.0.2.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Generalized Rademacher p=0.2&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(rad.0.2.Lhat[order(rad.0.2.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot(sort(fastica.obj), ylab = &quot;logcosh objective&quot;,
      main = &#39;fastICA&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-8">
-Past versions of unnamed-chunk-9-8.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-8.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot(fastica.corr.max[order(fastica.obj)], ylab = &quot;Max correlation with a true source&quot;,
      main = &#39;fastICA&#39;)</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-9">
-Past versions of unnamed-chunk-9-9.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-9.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))</code></pre>
-<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-10">
-Past versions of unnamed-chunk-9-10.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-9-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/junmingguan/misc/blob/70043e2b57cce99644bd4ef8fdd9150181e609a3/docs/figure/on_generalized_rademacher.Rmd/unnamed-chunk-9-10.png" target="_blank">70043e2</a>
-</td>
-<td>
-junmingguan
-</td>
-<td>
-2026-06-11
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-6-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="with-intercept" class="section level3">
+<h3>With intercept</h3>
+<pre class="r"><code>X1 = preprocess(X, n.comp = K)
+X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
+<pre class="r"><code>generalized.rad.corr.max &lt;- c()
+rad.corr.max &lt;- c()
+rad.0.2.corr.max &lt;- c()
+fastica.corr.max &lt;- c()
+
+generalized.rad.obj &lt;- c()
+rad.obj &lt;- c()
+rad.0.2.obj &lt;- c()
+fastica.obj &lt;- c()
+
+generalized.rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+rad.0.2.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+fastica.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+
+generalized.rad.prior.prob &lt;- c()
+
+for (seed in 1:100) {
+  set.seed(seed = seed)
+  W_init = rnorm(dim(X1)[1]) #X1 %*% L[,1]
+  res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
+  res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
+  res.0.2.rad = ebica_generalized_parallel(X1, K=1, ebnm_fn = ebnm_rademacher_0.2, s = 1, W_init = W_init, max_iter = 100)
+  fastica_rank_one_update(X1, init_w = W_init)
+  
+  generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
+  generalized.rad.obj[seed] = compute_objective(X1, res.generalized.rad$W)
+  generalized.rad.Lhat[seed,] = res.generalized.rad$S
+  
+  generalized.rad.prior.prob[seed] = ifelse(res.generalized.rad$prior_probs &gt; 0.5, res.generalized.rad$prior_probs, 1 - res.generalized.rad$prior_probs)
+  
+  rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
+  rad.obj[seed] = compute_objective(X1, res.rad$W)
+  rad.Lhat[seed,] = res.rad$S
+  
+  rad.0.2.corr.max[seed] = max(abs(cor(L, res.0.2.rad$S)))
+  rad.0.2.obj[seed] = compute_objective(X1, res.0.2.rad$W)
+  rad.0.2.Lhat[seed,] = res.0.2.rad$S
+}</code></pre>
+<p>FastICA</p>
+<pre class="r"><code>init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+
+for (seed in 1:100) {
+  set.seed(seed)
+  init_W[,seed] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
+
+fastica.obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+fastica.corr.max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+fastica.Lhat = t(t(X1) %*% W)</code></pre>
+<pre class="r"><code>plot(sort(generalized.rad.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Generalized Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(generalized.rad.corr.max[order(generalized.rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Generalized Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = &quot;Estimated prior probability&quot;,
+     main = &#39;Generalized Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(rad.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(rad.corr.max[order(rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(rad.Lhat[order(rad.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(rad.0.2.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Generalized Rademacher p=0.2&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(rad.0.2.corr.max[order(rad.0.2.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Generalized Rademacher p=0.2&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(rad.0.2.Lhat[order(rad.0.2.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(fastica.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;fastICA&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fastica.corr.max[order(fastica.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;fastICA&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-10-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
+<div id="unbalanced-groups-1" class="section level2">
+<h2>9 unbalanced groups</h2>
+<p>Here I tried applying no-intercept generalized Rademacher with <span
+class="math inline">\(\pi\)</span> fixed to <span
+class="math inline">\(0.2\)</span>, while the true <span
+class="math inline">\(\pi\)</span> is <span
+class="math inline">\(0.15\)</span>.</p>
+<pre class="r"><code>K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,10),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-11-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>X1 = preprocess(X, n.comp = K)
+# X1 = rbind(rep(1,ncol(X1)), X1)</code></pre>
+<pre class="r"><code>generalized.rad.corr.max &lt;- c()
+rad.corr.max &lt;- c()
+rad.0.2.corr.max &lt;- c()
+fastica.corr.max &lt;- c()
+
+generalized.rad.obj &lt;- c()
+rad.obj &lt;- c()
+rad.0.2.obj &lt;- c()
+fastica.obj &lt;- c()
+
+generalized.rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+rad.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+rad.0.2.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+fastica.Lhat &lt;- matrix(0, nrow = 100, ncol = 100)
+
+generalized.rad.prior.prob &lt;- c()
+
+for (seed in 1:100) {
+  set.seed(seed = seed)
+  W_init = rnorm(dim(X1)[1]) #X1 %*% L[,1]
+  res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
+  res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
+  res.0.2.rad = ebica_generalized_parallel(X1, K=1, ebnm_fn = ebnm_rademacher_0.2, s = 1, W_init = W_init, max_iter = 100)
+  fastica_rank_one_update(X1, init_w = W_init)
+  
+  generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
+  generalized.rad.obj[seed] = compute_objective(X1, res.generalized.rad$W)
+  generalized.rad.Lhat[seed,] = res.generalized.rad$S
+  
+  generalized.rad.prior.prob[seed] = ifelse(res.generalized.rad$prior_probs &gt; 0.5, res.generalized.rad$prior_probs, 1 - res.generalized.rad$prior_probs)
+  
+  rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
+  rad.obj[seed] = compute_objective(X1, res.rad$W)
+  rad.Lhat[seed,] = res.rad$S
+  
+  rad.0.2.corr.max[seed] = max(abs(cor(L, res.0.2.rad$S)))
+  rad.0.2.obj[seed] = compute_objective(X1, res.0.2.rad$W)
+  rad.0.2.Lhat[seed,] = res.0.2.rad$S
+}</code></pre>
+<p>FastICA</p>
+<pre class="r"><code>init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+
+for (seed in 1:100) {
+  set.seed(seed)
+  init_W[,seed] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
+
+fastica.obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+fastica.corr.max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+fastica.Lhat = t(t(X1) %*% W)</code></pre>
+<pre class="r"><code>plot(sort(generalized.rad.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Generalized Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(generalized.rad.corr.max[order(generalized.rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Generalized Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = &quot;Estimated prior probability&quot;,
+     main = &#39;Generalized Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(rad.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(rad.corr.max[order(rad.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Rademacher&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(rad.Lhat[order(rad.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(rad.0.2.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;Generalized Rademacher p=0.2&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(rad.0.2.corr.max[order(rad.0.2.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;Generalized Rademacher p=0.2&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(rad.0.2.Lhat[order(rad.0.2.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(sort(fastica.obj), ylab = &quot;logcosh objective&quot;,
+     main = &#39;fastICA&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(fastica.corr.max[order(fastica.obj)], ylab = &quot;Max correlation with a true source&quot;,
+     main = &#39;fastICA&#39;)</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))</code></pre>
+<p><img src="figure/on_generalized_rademacher.Rmd/unnamed-chunk-14-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1817,7 +1232,6 @@ loaded via a namespace (and not attached):
 [82] httpuv_1.6.17         bslib_0.10.0          Rcpp_1.1.0           
 [85] deconvolveR_1.2-1     whisker_0.4.1         xfun_0.57            
 [88] fs_1.6.6              getPass_0.2-4         pkgconfig_2.0.3      </code></pre>
-</div>
 </div>
 </div>
 </div>
