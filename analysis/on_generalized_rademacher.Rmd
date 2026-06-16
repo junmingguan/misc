@@ -91,6 +91,27 @@ flash_x_rademacher <- function(X, S_init, ebnm_fn = ebnm_normal, ebnm_source = e
 ```
 
 
+```{r}
+ebnm_rademacher_0.2 <- function(
+    x,
+    s = 1,
+    mode = 0,
+    g_init = NULL,
+    fix_g = FALSE,
+    output = NULL,
+    control = NULL
+) {
+  ebnm_generalized_rademacher(
+    x = x,
+    s = s,
+    mode = mode,
+    m = 1,
+    g_init = rademacher(pi = 0.2, m = 1),
+    fix_g = TRUE
+  )
+}
+```
+
 ## 9 unbalanced groups
 
 ```{r}
@@ -114,22 +135,28 @@ X1 = preprocess(X, n.comp = K)
 ```{r}
 generalized.rad.corr.max <- c()
 rad.corr.max <- c()
+rad.0.2.corr.max <- c()
+fastica.corr.max <- c()
 
 generalized.rad.obj <- c()
 rad.obj <- c()
+rad.0.2.obj <- c()
+fastica.obj <- c()
 
 generalized.rad.Lhat <- matrix(0, nrow = 100, ncol = 100)
 rad.Lhat <- matrix(0, nrow = 100, ncol = 100)
-
+rad.0.2.Lhat <- matrix(0, nrow = 100, ncol = 100)
+fastica.Lhat <- matrix(0, nrow = 100, ncol = 100)
 
 generalized.rad.prior.prob <- c()
 
-
 for (seed in 1:100) {
   set.seed(seed = seed)
-  W_init = rnorm(dim(X1)[1])
+  W_init = rnorm(dim(X1)[1]) #X1 %*% L[,1]
   res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
   res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
+  res.0.2.rad = ebica_generalized_parallel(X1, K=1, ebnm_fn = ebnm_rademacher_0.2, s = 1, W_init = W_init, max_iter = 100)
+  fastica_rank_one_update(X1, init_w = W_init)
   
   generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
   generalized.rad.obj[seed] = compute_objective(X1, res.generalized.rad$W)
@@ -140,6 +167,10 @@ for (seed in 1:100) {
   rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
   rad.obj[seed] = compute_objective(X1, res.rad$W)
   rad.Lhat[seed,] = res.rad$S
+  
+  rad.0.2.corr.max[seed] = max(abs(cor(L, res.0.2.rad$S)))
+  rad.0.2.obj[seed] = compute_objective(X1, res.0.2.rad$W)
+  rad.0.2.Lhat[seed,] = res.0.2.rad$S
 }
 ```
 
@@ -171,12 +202,17 @@ plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = "Estimated p
 plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))
 
 
-
 plot(sort(rad.obj), ylab = "logcosh objective",
      main = 'Rademacher')
 plot(rad.corr.max[order(rad.obj)], ylab = "Max correlation with a true source",
      main = 'Rademacher')
 plot_heatmap(t(rad.Lhat[order(rad.obj), ]))
+
+plot(sort(rad.0.2.obj), ylab = "logcosh objective",
+     main = 'Generalized Rademacher p=0.2')
+plot(rad.0.2.corr.max[order(rad.0.2.obj)], ylab = "Max correlation with a true source",
+     main = 'Generalized Rademacher p=0.2')
+plot_heatmap(t(rad.0.2.Lhat[order(rad.0.2.obj), ]))
 
 plot(sort(fastica.obj), ylab = "logcosh objective",
      main = 'fastICA')
@@ -184,6 +220,7 @@ plot(fastica.corr.max[order(fastica.obj)], ylab = "Max correlation with a true s
      main = 'fastICA')
 plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
 ```
+
 
 
 
@@ -198,23 +235,27 @@ X1 = rbind(rep(1,ncol(X1)), X1)
 ```{r}
 generalized.rad.corr.max <- c()
 rad.corr.max <- c()
+rad.0.2.corr.max <- c()
 fastica.corr.max <- c()
 
 generalized.rad.obj <- c()
 rad.obj <- c()
+rad.0.2.obj <- c()
 fastica.obj <- c()
 
 generalized.rad.Lhat <- matrix(0, nrow = 100, ncol = 100)
 rad.Lhat <- matrix(0, nrow = 100, ncol = 100)
+rad.0.2.Lhat <- matrix(0, nrow = 100, ncol = 100)
 fastica.Lhat <- matrix(0, nrow = 100, ncol = 100)
 
 generalized.rad.prior.prob <- c()
 
 for (seed in 1:100) {
   set.seed(seed = seed)
-  W_init = rnorm(dim(X1)[1])
+  W_init = rnorm(dim(X1)[1]) #X1 %*% L[,1]
   res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
   res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
+  res.0.2.rad = ebica_generalized_parallel(X1, K=1, ebnm_fn = ebnm_rademacher_0.2, s = 1, W_init = W_init, max_iter = 100)
   fastica_rank_one_update(X1, init_w = W_init)
   
   generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
@@ -226,9 +267,10 @@ for (seed in 1:100) {
   rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
   rad.obj[seed] = compute_objective(X1, res.rad$W)
   rad.Lhat[seed,] = res.rad$S
-  rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
-  rad.obj[seed] = compute_objective(X1, res.rad$W)
-  rad.Lhat[seed,] = res.rad$S
+  
+  rad.0.2.corr.max[seed] = max(abs(cor(L, res.0.2.rad$S)))
+  rad.0.2.obj[seed] = compute_objective(X1, res.0.2.rad$W)
+  rad.0.2.Lhat[seed,] = res.0.2.rad$S
 }
 ```
 
@@ -259,11 +301,18 @@ plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = "Estimated p
      main = 'Generalized Rademacher')
 plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))
 
+
 plot(sort(rad.obj), ylab = "logcosh objective",
      main = 'Rademacher')
 plot(rad.corr.max[order(rad.obj)], ylab = "Max correlation with a true source",
      main = 'Rademacher')
 plot_heatmap(t(rad.Lhat[order(rad.obj), ]))
+
+plot(sort(rad.0.2.obj), ylab = "logcosh objective",
+     main = 'Generalized Rademacher p=0.2')
+plot(rad.0.2.corr.max[order(rad.0.2.obj)], ylab = "Max correlation with a true source",
+     main = 'Generalized Rademacher p=0.2')
+plot_heatmap(t(rad.0.2.Lhat[order(rad.0.2.obj), ]))
 
 plot(sort(fastica.obj), ylab = "logcosh objective",
      main = 'fastICA')
@@ -271,3 +320,116 @@ plot(fastica.corr.max[order(fastica.obj)], ylab = "Max correlation with a true s
      main = 'fastICA')
 plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
 ```
+
+
+
+## 9 unbalanced groups
+
+Here I tried applying no-intercept generalized Rademacher with $\pi$ fixed to $0.2$, while the true $\pi$ is $0.15$.
+
+```{r}
+K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,10),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,0.01)
+plot(X %*% FF[,1])
+
+X1 = preprocess(X, n.comp = K)
+# X1 = rbind(rep(1,ncol(X1)), X1)
+```
+
+
+```{r}
+generalized.rad.corr.max <- c()
+rad.corr.max <- c()
+rad.0.2.corr.max <- c()
+fastica.corr.max <- c()
+
+generalized.rad.obj <- c()
+rad.obj <- c()
+rad.0.2.obj <- c()
+fastica.obj <- c()
+
+generalized.rad.Lhat <- matrix(0, nrow = 100, ncol = 100)
+rad.Lhat <- matrix(0, nrow = 100, ncol = 100)
+rad.0.2.Lhat <- matrix(0, nrow = 100, ncol = 100)
+fastica.Lhat <- matrix(0, nrow = 100, ncol = 100)
+
+generalized.rad.prior.prob <- c()
+
+for (seed in 1:100) {
+  set.seed(seed = seed)
+  W_init = rnorm(dim(X1)[1]) #X1 %*% L[,1]
+  res.generalized.rad = ebica(X1, s = 1, W_init = W_init, max_iter = 100)
+  res.rad = ebica(X1, s = 1, W_init = W_init, symmetric_rademacher = T, max_iter = 100)
+  res.0.2.rad = ebica_generalized_parallel(X1, K=1, ebnm_fn = ebnm_rademacher_0.2, s = 1, W_init = W_init, max_iter = 100)
+  fastica_rank_one_update(X1, init_w = W_init)
+  
+  generalized.rad.corr.max[seed] = max(abs(cor(L, res.generalized.rad$S)))
+  generalized.rad.obj[seed] = compute_objective(X1, res.generalized.rad$W)
+  generalized.rad.Lhat[seed,] = res.generalized.rad$S
+  
+  generalized.rad.prior.prob[seed] = ifelse(res.generalized.rad$prior_probs > 0.5, res.generalized.rad$prior_probs, 1 - res.generalized.rad$prior_probs)
+  
+  rad.corr.max[seed] = max(abs(cor(L, res.rad$S)))
+  rad.obj[seed] = compute_objective(X1, res.rad$W)
+  rad.Lhat[seed,] = res.rad$S
+  
+  rad.0.2.corr.max[seed] = max(abs(cor(L, res.0.2.rad$S)))
+  rad.0.2.obj[seed] = compute_objective(X1, res.0.2.rad$W)
+  rad.0.2.Lhat[seed,] = res.0.2.rad$S
+}
+```
+
+FastICA
+
+```{r}
+init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+
+for (seed in 1:100) {
+  set.seed(seed)
+  init_W[,seed] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE)
+
+fastica.obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+fastica.corr.max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+fastica.Lhat = t(t(X1) %*% W)
+
+```
+
+
+```{r}
+plot(sort(generalized.rad.obj), ylab = "logcosh objective",
+     main = 'Generalized Rademacher')
+plot(generalized.rad.corr.max[order(generalized.rad.obj)], ylab = "Max correlation with a true source",
+     main = 'Generalized Rademacher')
+plot(generalized.rad.prior.prob[order(generalized.rad.obj)], ylab = "Estimated prior probability",
+     main = 'Generalized Rademacher')
+plot_heatmap(t(generalized.rad.Lhat[order(generalized.rad.obj), ]))
+
+
+plot(sort(rad.obj), ylab = "logcosh objective",
+     main = 'Rademacher')
+plot(rad.corr.max[order(rad.obj)], ylab = "Max correlation with a true source",
+     main = 'Rademacher')
+plot_heatmap(t(rad.Lhat[order(rad.obj), ]))
+
+plot(sort(rad.0.2.obj), ylab = "logcosh objective",
+     main = 'Generalized Rademacher p=0.2')
+plot(rad.0.2.corr.max[order(rad.0.2.obj)], ylab = "Max correlation with a true source",
+     main = 'Generalized Rademacher p=0.2')
+plot_heatmap(t(rad.0.2.Lhat[order(rad.0.2.obj), ]))
+
+plot(sort(fastica.obj), ylab = "logcosh objective",
+     main = 'fastICA')
+plot(fastica.corr.max[order(fastica.obj)], ylab = "Max correlation with a true source",
+     main = 'fastICA')
+plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
+```
+
