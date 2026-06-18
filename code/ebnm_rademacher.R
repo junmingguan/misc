@@ -68,9 +68,22 @@ ebnm_generalized_rademacher <- function(
   }
 
   if (!fix_g) {
-    opt     <- opt_rademacher(x, s, pi_init, m)
-    pi_hat  <- opt$par
-    loglik  <- -opt$value
+    L <- cbind(
+      dnorm(x, mean = -m, sd = s, log = TRUE),
+      dnorm(x, mean = +m, sd = s, log = TRUE)
+    )
+    pi_init <- min(max(pi_init, 1e-8), 1 - 1e-8)
+    mixsqp_fit <- mixsqp::mixsqp(
+      L,
+      x0 = c(1 - pi_init, pi_init),
+      log = TRUE,
+      control = list(verbose = FALSE)
+    )
+    pi_hat  <- mixsqp_fit$x[2]
+    loglik  <- llik_rademacher(x, s, pi_hat, m)
+    # opt     <- opt_rademacher(x, s, pi_init, m)
+    # pi_hat  <- opt$par
+    # loglik  <- -opt$value
   } else {
     pi_hat  <- pi_init
     loglik  <- llik_rademacher(x, s, pi_hat, m)

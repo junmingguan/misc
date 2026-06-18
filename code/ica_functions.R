@@ -1,26 +1,33 @@
-fastica_rank_one_update_1iter = function(X, w, include_G2=TRUE){
+fastica_rank_one_update_1iter = function(X, w, include_G2=TRUE, pi = NULL){
   w= w/sqrt(sum(w^2))
   P = t(X) %*% w
+  if (!is.null(pi)) {
+    if (length(pi) != 1 || !is.finite(pi) || pi <= 0 || pi >= 1) {
+      stop("pi must be NULL or a single value between 0 and 1.")
+    }
+    P = P + 0.5 * log(pi / (1 - pi))
+  }
   G = tanh(P)
   G2 = 0
-  if(include_G2) # Note: if you don't include G2, this is like the EBCD updates rather than ICA and I believe it will always try to maximize logcosh
+  if(include_G2)
     {G2 = 1-tanh(P)^2}
   w = X %*% G - sum(G2) * w
   w = w/sqrt(sum(w^2))
   return(w)
 }
 
-fastica_rank_one_update = function(X1, init_w, include_G2 = TRUE, n_iter = 100) {
+fastica_rank_one_update = function(X1, init_w, include_G2 = TRUE, n_iter = 100, pi = NULL) {
   w = init_w
   for(i in 1:n_iter)
   {
-    w = fastica_rank_one_update_1iter(X1, w, include_G2)
+    w = fastica_rank_one_update_1iter(X1, w, include_G2, pi)
   }
   return(w)
 }
 
 fastica_vectorized_rank_one_update = function(X1, init_W = NULL, seeds = 1:100,
-                                              include_G2 = TRUE, n_iter = 100) {
+                                              include_G2 = TRUE, n_iter = 100,
+                                              pi = NULL) {
 
   if (is.null(init_W)) {
     init_W = sapply(seeds, function(seed) {
@@ -33,6 +40,12 @@ fastica_vectorized_rank_one_update = function(X1, init_W = NULL, seeds = 1:100,
 
   for(i in 1:n_iter) {
     P = t(X1) %*% W
+    if (!is.null(pi)) {
+      if (length(pi) != 1 || !is.finite(pi) || pi <= 0 || pi >= 1) {
+        stop("pi must be NULL or a single value between 0 and 1.")
+      }
+      P = P + 0.5 * log(pi / (1 - pi))
+    }
     G = tanh(P)
     if (include_G2) {
       G2 = 1 - tanh(P)^2
