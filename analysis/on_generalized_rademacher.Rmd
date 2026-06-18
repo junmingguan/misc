@@ -39,9 +39,28 @@ editor_options:
 
 ## Introduction
 
-In this analysis, I compare EBICA with a Rademacher prior, EBICA with a generalized Rademacher prior (where the prior probability $\pi$ is estimated by maximizing the marginal likelihood), and fastICA, on the whitened data with and without an intercept in the 9 unbalanced group examples.
+Recall that the posterior mean $\mathbb{E}[\theta \mid x]$ for a normal mean model with variance 1 and an asymmetric Rademacher prior is
 
-Without an intercept, none of the three approaches appears to capture one true source; for EBICA generalized Rademacher, the estimated prior probability also seems far off from the true 0.2/0.8 probabilities.
+$$
+\tanh\left(x + \frac{1}{2}\ln\left(\frac{\pi}{1-\pi}\right)\right).
+$$
+So a potential generalization of fastICA to an asymmetric has the following update:
+
+$$
+s =\frac1n\sum_{i=1}^n X_i \tanh(X_i^\top w+c)-
+\left\{
+\frac1n\sum_{i=1}^n
+\Big[1-\tanh^2(X_i^\top w+c)\Big]
+\right\}w \quad \quad w^+=\frac{s}{\|s\|},
+$$
+
+where $c=\frac12 \log(\frac{\pi}{1-\pi})$. The log odd term can be seen as a fixed "intercept" term that we have been including. Note that before when we include an intercept row in $X$, $c$ is estimated with the constraint $\|w\|^2+c^2=1$, hence $|c|\le 1$ in those cases. But here, the log odd term is unbounded.
+
+### Results
+
+In this analysis, I compare EBICA with a Rademacher prior, EBICA with a generalized Rademacher prior (where the prior probability $\pi$ is either fixed or estimated by maximizing the marginal likelihood), and fastICA (with or without fixed or estimated intercept), on the whitened data with and without an intercept in the 9 unbalanced group examples.
+
+Without an intercept, only fastICA with fixed intercept and EBICA generalized Rademacher prior with fixed proportion can capture one true source; for EBICA generalized Rademacher with estimated prior, the estimated prior proportion seems far off from the true 0.2/0.8 probabilities.
 
 With the intercept added, EBICA generalized Rademacher always picks up the trivial solution, with $\hat{\pi}=1/0$, which is not ideal; I wonder if it makes sense to put a prior on $\pi$ to shrink it toward $0.5$, say $\text{Beta}(5, 5)$? EBICA Rademacher, on the other hand, is very similar to fastICA as expected, but fastICA seems to capture the trivial solution slightly more often, probably due to the Newton "acceleration".
 
@@ -191,6 +210,23 @@ fastica.Lhat = t(t(X1) %*% W)
 
 ```
 
+FastICA with asymmetric Rademacher
+
+```{r}
+init_W = matrix(0, ncol = 100, nrow = dim(X1)[1])
+
+for (seed in 1:100) {
+  set.seed(seed)
+  init_W[,seed] = rnorm(dim(X1)[1])
+}
+W = fastica_vectorized_rank_one_update(X1, init_W = init_W, include_G2 = TRUE, pi = 0.2)
+
+fastica.0.2.obj = apply(W, 2, FUN = function(w) {compute_objective(X1, w)})
+fastica.0.2.corr.max = apply(W, 2, FUN = function(w) {max(abs(cor(L, t(X1) %*% w)))})
+fastica.0.2.Lhat = t(t(X1) %*% W)
+
+```
+
 
 ```{r}
 plot(sort(generalized.rad.obj), ylab = "logcosh objective",
@@ -219,6 +255,12 @@ plot(sort(fastica.obj), ylab = "logcosh objective",
 plot(fastica.corr.max[order(fastica.obj)], ylab = "Max correlation with a true source",
      main = 'fastICA')
 plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
+
+plot(sort(fastica.0.2.obj), ylab = "logcosh objective",
+     main = 'fastICA pi=0.2')
+plot(fastica.0.2.corr.max[order(fastica.0.2.obj)], ylab = "Max correlation with a true source",
+     main = 'fastICA pi=0.2')
+plot_heatmap(t(fastica.0.2.Lhat[order(fastica.0.2.obj), ]))
 ```
 
 
@@ -432,4 +474,3 @@ plot(fastica.corr.max[order(fastica.obj)], ylab = "Max correlation with a true s
      main = 'fastICA')
 plot_heatmap(t(fastica.Lhat[order(fastica.obj), ]))
 ```
-
