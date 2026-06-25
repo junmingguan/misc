@@ -1,0 +1,229 @@
+---
+title: "Shifted Rademacher prior for EBproj"
+author: "junmingguan"
+date: "2026-06-23"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+Matthew's results suggest that if the data matrix with binary sources is centered, then it's no longer appropriate to put a Rademacher type prior. Instead we should explicitly model the shift due to centering. Consider the model:
+
+$$
+x_i \mid z_i, s_i^2 \sim N(z_i, s_i^2),
+\qquad
+z_i \sim \text{GSRad}(\pi, c):=\pi\delta_{-1+c} + (1-\pi)\delta_{1+c},
+$$
+where GSRad stands for "generalized shifted Rademacher". The prior proportion $\pi$ and the shift $c$ shall be estimated from the data by maximizing the marginal log likelihood:
+
+$$
+\ell(c,\pi)
+=
+\sum_{i=1}^n
+\log
+\left[
+(1-\pi)\,\phi(x_i; c-1, s_i^2)
++
+\pi\,\phi(x_i; c+1, s_i^2)
+\right].
+$$
+To facilitate optimization, consider the reparametrization of $\pi$, so that we don't have to worry about boundary cases:
+
+$$
+\eta = \operatorname{logit}(\pi),
+\qquad
+\pi = \operatorname{logit}^{-1}(\eta)
+=
+\frac{1}{1+\exp(-\eta)}.
+$$
+Then the marginal log likelihood is given by
+
+$$
+\ell(c,\eta)
+=
+\sum_{i=1}^n
+\log
+\left[
+\frac{\exp(-\eta)}{1+\exp(-\eta)}
+\phi(x_i; c-1, s_i^2)
++
+\frac{1}{1+\exp(-\eta)}
+\phi(x_i; c+1, s_i^2)
+\right].
+$$
+If $\pi$ is fixed at $1/2$ and $c$ is to be estimated, the prior is termed shifted Rademacher: $\text{SRad}(c)$.
+
+
+## First look at shifted (generalized) Rademacher
+
+
+```{r}
+source(file.path("code", "ebnm_shifted_rademacher.R"))
+source(file.path("code", "ebnm_rademacher.R"))
+source(file.path("code", "ica_functions.R"))
+
+ebnm_shifted_rademacher_pi02 <- ebnm_shifted_rademacher_fixed_pi(0.2)
+```
+
+We look at a 9-group unbalanced example.
+
+```{r}
+K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+X = L %*% t(FF) + rnorm(n*p,0,1)
+```
+
+
+We center and whiten the data.
+
+```{r}
+Xcenter = scale(X,scale=FALSE)
+Ucenter = svd(Xcenter)$u[,1:K] 
+Pcenter = Ucenter %*% t(Ucenter)
+# equivalent to the following
+X1 = preprocess(X, n.comp = K)
+# P = t(X1) %*% X1 / n
+```
+
+Some note on the whitening step:
+
+$$
+\begin{aligned}
+X_c &= X(I_n - \boldsymbol{11}^\top/n) = UDV^\top \\
+\widetilde{X} &= X_c K = X_c V_K D_K^{-1} = U_K.
+\end{aligned}
+$$
+
+```{r}
+ebproj_rank1_update <- function(P, v_init, ebnm_fn = ebnm_shifted_rademacher,
+                                k = NULL, b = 0, maxiter = 100,
+                                tol = 1e-8, verbose = FALSE) {
+  n <- nrow(P)
+  if (ncol(P) != n) {
+    stop("P must be a square matrix.")
+  }
+  if (length(v_init) != n) {
+    stop("v_init must have length nrow(P).")
+  }
+  if (is.null(k)) {
+    k <- round(sum(diag(P)))
+  }
+  if (n - k - 2 * b <= 0) {
+    stop("n - k - 2 * b must be positive.")
+  }
+
+  vbar <- as.vector(v_init)
+  v2 <- sum(vbar^2)
+  tau <- Inf
+  rho_trace <- rep(NA_real_, maxiter)
+  tau_trace <- rep(NA_real_, maxiter)
+  c_trace <- rep(NA_real_, maxiter)
+
+  for (iter in seq_len(maxiter)) {
+    Pv <- as.vector(P %*% vbar)
+    rho <- as.numeric(crossprod(vbar, Pv) / v2)
+    rho <- min(max(rho, 1e-12), 1 - 1e-12)
+
+    tau <- 1 / (1 - rho)
+    sigma_eff2 <- n / ((n - k - 2 * b) * tau)
+
+    x <- Pv / rho
+    s <- sqrt(sigma_eff2 * v2 / (n * rho))
+    fit <- ebnm_fn(x, s = s)
+
+    vbar_new <- fit$posterior$mean
+    v2_new <- sum(fit$posterior$second_moment)
+
+    rho_new <- as.numeric(crossprod(vbar_new, P %*% vbar_new) / v2_new)
+    rho_new <- min(max(rho_new, 1e-12), 1 - 1e-12)
+    rho_trace[iter] <- rho_new
+    tau_trace[iter] <- tau
+    c_trace[iter] <- fit$fitted_g$c
+
+    if (verbose) {
+      message(sprintf(
+        "iter %d: rho = %.6f, tau = %.6f, c = %.6f",
+        iter, rho_new, tau, fit$fitted_g$c
+      ))
+    }
+
+    if (sqrt(sum((vbar_new - vbar)^2)) <= tol * (sqrt(sum(vbar^2)) + 1)) {
+      vbar <- vbar_new
+      v2 <- v2_new
+      break
+    }
+
+    vbar <- vbar_new
+    v2 <- v2_new
+  }
+
+  list(
+    posterior = fit$posterior,
+    fitted_g = fit$fitted_g,
+    log_likelihood = fit$log_likelihood,
+    vbar = vbar,
+    v2 = v2,
+    rho = as.numeric(crossprod(vbar, P %*% vbar) / v2),
+    tau = 1 / (1 - as.numeric(crossprod(vbar, P %*% vbar) / v2)),
+    rho_trace = rho_trace[seq_len(iter)],
+    tau_trace = tau_trace[seq_len(iter)],
+    c_trace = c_trace[seq_len(iter)],
+    niter = iter
+  )
+}
+```
+
+EBproj with shifted generalized Radmacher perfectly recovers a true source, with very high alignment. At the same time, the prior parameters are also almost perfectly estimated.
+
+```{r}
+set.seed(30)
+v.init = sample(c(-1,1),n,replace=TRUE)
+maxiter = 1000
+fit.shifted = ebproj_rank1_update(
+  P = Pcenter,
+  v_init = v.init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = 1,
+  maxiter = maxiter
+)
+fit.shifted$rho
+fit.shifted$fitted_g
+cor(fit.shifted$vbar, L)
+plot(fit.shifted$vbar)
+```
+
+
+I also tried $\text{GSRad}(0.2, c)$ where $\pi=0.2$ is fixed. The results are similar.
+
+```{r}
+fit.shifted.pi02 = ebproj_rank1_update(
+  P = Pcenter,
+  v_init = v.init,
+  ebnm_fn = ebnm_shifted_rademacher_pi02,
+  k = 1,
+  maxiter = maxiter
+)
+fit.shifted.pi02$rho
+fit.shifted.pi02$fitted_g
+cor(fit.shifted.pi02$vbar, L)
+plot(fit.shifted.pi02$vbar)
+```
+
+
+It would also be interesting to see what happens if we apply "EB ICA" with the shifted Rademacher. It appears that the solution is close to binary but with a bit of "noise". Also the fitted prior proportion and shift are not as accurate as in EBproj. Is it because the low-rank **plus iid noise** model is misspecified?
+
+```{r}
+fit.ebica = ebica_generalized_parallel(X1, K = 1, ebnm_fn = ebnm_generalized_shifted_rademacher, S_init = v.init, s= 1)
+cor(fit.ebica$S_plus, L)
+plot(fit.ebica$S_plus)
+fit.ebica$fitted_priors
+```
+
