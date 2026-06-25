@@ -67,3 +67,11 @@ Thoughts:
   - Relationship between 1/cosh and Rademacher?
 
 - fastICA treats $E$ in $LF^\top+E$ as Gaussian signals, but it doesn't look for it in the first few factors.
+
+
+# EBproj
+
+## Analyses
+
+- [Initial exploration of EBproj, with shifted Rademacher](shifted_rademacher_for_ebproj.html)
+  - TODO: It seems we need to choose the correct rank. Investigate this.
