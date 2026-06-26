@@ -1,0 +1,52 @@
+---
+title: "ICA"
+author: "junmingguan"
+date: "2026-06-26"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+bibliography: references.bib
+---
+
+## Introduction
+
+In this repo, our goal is to understand the performance of ICA and its connection with flashier.
+
+## fastICA as a Bayesian ICA with Rademacher prior on the sources
+
+Rank-1 FastICA can be considered as an EM algorithm with a Rademacher prior on the sources, with a spectral shift step to accelerate convergence [@DSS]. Therefore, it is also equivalent to rank-1 EBCD with Rademacher prior. Consider the model for $Y\in \mathbb{R}^{n\times d}$, with
+
+$$
+Y_{ij} \sim \mathcal{N}(a_i s_j, 1), \quad s_i \sim \text{Rad}(1/2),\quad \sum_{i}^n a_i^2=1.
+$$
+
+fastICA estimates $\mathbf{s}=\begin{bmatrix}s_1 & \dots s_d\end{bmatrix}^\top$ by first estimating the "inverse" of $\mathbf{a}$, via the following steps:
+
+- Pick an initial $\mathbf{w}$
+
+- Iterate
+
+  - $\mathbf{s}=Y^\top \mathbf{w}$
+
+  - Denoising: $\mathbf{s}^+=f(\mathbf{s})$
+
+  - $\mathbf{w}^+=Y \mathbf{s}^+$
+
+  - $\mathbf{w}=\mathbf{w}^+ / \|\mathbf{w}^+\|$.
+
+The first two steps are the E-step that constructs the estimated posterior mean $\mathbb{E}[\mathbf{s} \mid Y, \mathbf{w}]$, and the last two steps are the M-step that maximize $\mathbb{E}_q[\log p(\mathbf{s}, Y \mid \mathbf{w})]$.
+
+## Analyses
+
+- [initial exploration of ICA in the presence of noise](ica_with_noise.html)
+- [Exploration of flashier with Rademacher prior](ica_vs_flashier_r1_rad.html)
+- [flashier on whitened data and the tree example](flashier_whitened_and_tree_example.html)
+- [flashier with Normal prior and Rademacher prior might collapse to 0](on_flashier_and_whitened_data.html)
+- [EB ICA with generalized Rademacher vs fastICA](on_generalized_rademacher.html)
+
+
+
+## References
+
+::: {#refs}
+:::
