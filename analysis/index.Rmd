@@ -11,62 +11,10 @@ bibliography: references.bib
 
 This repo contains misc explorations.
 
-# ICA vs flashier
+# ICA
 
-We want to compare fastICA's rank-1 update with that of flashier. Matthew previously examined an [example](https://stephens999.github.io/misc/fastica_02.html) where rank-1 fastICA almost perfectly picks up one column of the true mixing matrix, but flashier does not. Our conjecture is that flashier's failure arises from an overemphasis on the *fit* term. We plan to investigate this further and potentially improve flashier's rank-1 update.
+See [here](ica.html)
 
-## fastICA as a Bayesian ICA with Rademacher prior on the sources
-
-rank-1 FastICA can be considered as an EM algorithm with a Rademacher prior on the sources, with a spectral shift step to accelerate convergence [@DSS]. Therefore, it is also equivalent to rank-1 EBCD with Rademacher prior. Consider the model for $Y\in \mathbb{R}^{n\times d}$
-
-$$
-Y_{ij} \sim \mathcal{N}(a_i s_j, \sigma^2), \quad s_i \sim \text{Rad}(1/2),\quad \sum_{i}^n a_i^2=1.
-$$
-
-fastICA estimates $\mathbf{s}=\begin{bmatrix}s_1 & \dots s_d\end{bmatrix}^\top$ by first estimating the "inverse" of $\mathbf{a}$, via the following steps:
-
-- Pick an initial $\mathbf{w}$
-
-- Iterate
-
-  - $\mathbf{s}=Y^\top \mathbf{w}$
-
-  - Denoising: $\mathbf{s}^+=f(\mathbf{s})$
-
-  - $\mathbf{w}^+=Y \mathbf{s}^+$
-
-  - $\mathbf{w}=\mathbf{w}^+ / \|\mathbf{w}^+\|$.
-
-The first two steps are the E-step that constructs the estimated posterior mean $\mathbb{E}[\mathbf{s} \mid Y, \mathbf{w}]$, and the last two steps are the M-step that maximize $\mathbb{E}_q[\log p(\mathbf{s}, Y \mid \mathbf{w})]$.
-
-### Analyses
-
-- [initial exploration of ICA in the presence of noise](ica_with_noise.html)
-- [Initial exploration of EB ICA](eb_ica.html)
-- [Exploration of flashier with Rademacher prior](ica_vs_flashier_r1_rad.html)
-- [flashier on whitened data and the tree example](flashier_whitened_and_tree_example.html)
-- [flashier with Normal prior and Rademacher prior might collapse to 0](on_flashier_and_whitened_data.html)
-- [EB ICA with generalized Rademacher vs fastICA](on_generalized_rademacher.html)
-
-### Some observations
-
-- Fitting a parallel rank-$K_0$ EB ICA model ($K_0 > 1$) is more likely to recover some of the true sources. However, a deflation scheme does not seem to work well, probably because of the initial poor rank-1 fit.
-
-- Whitening works well if we know the true rank.
-
-Thoughts:
-
-- ICA/EBMF with different types of source?
-
-- Generalized EBMF? to different noise?
-
-- Is fastICA inability in unbalanced group due to centering or a wrong contrast function (logcosh is essentially a super Gaussian prior)?
-
-- fastICA seems to correspond to two different formulation of ICA: noiseless ICA with 1/cosh prior, and Bayesian ICA with Rademacher prior and Gaussian noise.
-
-  - Relationship between 1/cosh and Rademacher?
-
-- fastICA treats $E$ in $LF^\top+E$ as Gaussian signals, but it doesn't look for it in the first few factors.
 
 
 # EBproj
