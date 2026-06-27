@@ -1,0 +1,298 @@
+---
+title: "Phase transition for fastICA"
+author: "junmingguan"
+date: "2026-06-23"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+bibliography: references.bib
+---
+
+## Introduction
+
+The vanilla fastICA assumes a noiseless model, or at best a model with fixed noise level $\sigma^2=1$. In this analysis, we investigate what the smallest signal-to-noise ratio (SNR) above which fastICA or EBICA can reliably recover the true sources.
+
+## Related works
+
+Relevant references include @Li2022-lx, @Li2023-pc and @CelentanoTapZ2. These papers study AMP and related algorithms for spiked Wigner models. A canonical model in @Li2022-lx is
+
+$$
+M = \lambda vv^\top + W, \quad W_{ij}\sim N(0, 1/n), \quad W_{ii}\sim N(0, 2/n), \quad v_{i}\sim \text{Unif}(\pm 1/\sqrt{n}).
+$$
+Here $\lambda$ is the SNR parameter. The phase transition is at $\lambda=1$: below this threshold, the Bayes-optimal estimate has asymptotically zero correlation with the spike, while above it nontrivial correlation is achievable. The finite-sample AMP result in @Li2022-lx assumes a slightly stronger condition $\lambda > 1 + \log(n)n^{-1/16}$, but this extra gap is a proof condition rather than the sharp asymptotic threshold.
+
+The simulation here starts from a noisy rank-$K$ model,
+
+$$
+Y = LF^\top + E, \quad E_{ij}\sim N(0,\sigma^2),
+$$
+with $L_{ik}\in\{\pm 1\}$ and $F_{jk}\sim N(0,c)$. Conditional on $L$,
+
+$$
+\mathbb{E}\left[\frac1p YY^\top \;\middle|\; L\right]=\sigma^2 I_n+c LL^\top.
+$$
+
+Thus the model induces a spiked covariance. The Li--Wei threshold does not directly apply to our simulation model, but Appendix A gives a heuristic reduction from the off-diagonal Gram matrix to a spiked Wigner model. Under this reduction, the effective Wigner spike strength is approximately
+
+$$
+\lambda_{\mathrm{eff}}
+\approx
+\frac{\lambda_{\mathrm{signal}}\sqrt{p/n}}
+{\sqrt{\sigma^4+2\bar c\sigma^2}},
+$$
+where $\lambda_{\mathrm{signal}}$ is a signal eigenvalue of $(LF^\top)(LF^\top)^\top/p$ and
+
+$$
+\bar c
+=
+\frac1n \operatorname{tr}\left((LF^\top)(LF^\top)^\top/p\right)
+$$
+
+is the average signal variance per row. For recovering any one of the true sources, a conservative scale is given by the weakest nonzero signal eigenvalue, although the rectangular covariance model has its own BBP scaling and this mapping should be viewed as a heuristic connection.
+
+With the phase-transition threshold $\lambda_{\mathrm{eff}}=1$, the corresponding phase-transition noise variance is approximately
+
+$$
+\sigma^2_{\mathrm{crit}}
+\approx
+\sqrt{\bar c^2+\lambda_{\mathrm{signal}}^2p/n}
+-\bar c.
+$$
+
+
+## Results
+
+
+We look at the unbalanced group example with varying noise levels, and apply rank-1 EBCD with Rademacher prior and fixed $\tau=1$, which is equivalent to fastICA and EBICA.
+
+```{r}
+source(file.path("code", "utils.R"))
+source(file.path("code", "ebnm_shifted_rademacher.R"))
+source(file.path("code", "ebnm_rademacher.R"))
+source(file.path("code", "ebcd_functions.R"))
+source(file.path("code", "ica_functions.R"))
+```
+
+```{r}
+ebcd_rank_one_random_init <- function(X, init_Z = NULL, 
+                                      tau = NULL, est_precision = TRUE,
+                                      tol_backfit = 1e-6,
+                                      maxiter_backfit = 100) {
+  ebcd_obj <- ebcd_random_init(X = X, Z = init_Z, tau = tau, ebnm_fn = ebnm_rademacher) |>
+    ebcd_backfit(
+      tol = tol_backfit,
+      maxiter = maxiter_backfit,
+      est_precision = est_precision
+    )
+  return(ebcd_obj)
+}
+```
+
+```{r}
+K=9
+p = 1000
+n = 100
+set.seed(1)
+L = matrix(-1,nrow=n,ncol=K)
+for(i in 1:K){L[sample(1:n,20),i]=1}
+FF = matrix(rnorm(p*K), nrow = p, ncol=K)
+
+# LFt = L %*% t(FF)
+```
+
+```{r, include=FALSE}
+# X1 = preprocess(X, n.comp = K)
+# X1 = rbind(X1, rep(1, n))
+```
+
+```{r, include=FALSE}
+# init_Z = rnorm(dim(X1)[1])
+# ebcd.fit = ebcd_rank_one_random_init(X1, init_Z = init_Z, tau = 1, est_precision = FALSE, maxiter_backfit = 100)
+# cor(ebcd.fit$EL, L)
+# note that this is equivalent to ebica with s=d^-0.25
+# ebica.res <- ebica(
+#   X1,
+#   W_init = init_Z,
+#   symmetric_rademacher = TRUE,
+#   s = nrow(X1)^(-1/4),
+#   max_iter = 100,
+#   conv_crit = "maxiter"
+# )
+# cor(ebica.res$S_plus, L)
+```
+
+We vary the variance of the Gaussian noise added to $LF^\top$, and count how many out of 100 random starts recover one of the true sources. Note that $\sigma^2_{\mathrm{crit}}\approx 125.742$.
+
+```{r}
+n_starts <- 100
+signal <- L %*% t(FF)
+signal_eigenvalues <- eigen(signal %*% t(signal) / p, symmetric = TRUE)$values
+weakest_signal_eigenvalue <- signal_eigenvalues[K]
+signal_variance_per_row <- sum(signal_eigenvalues) / n
+critical_noise_variance <- sqrt(
+  signal_variance_per_row^2 + weakest_signal_eigenvalue^2 * p / n
+) - signal_variance_per_row
+
+critical_noise_variance
+```
+
+
+
+```{r}
+
+effective_lambdas <- c(3, 2, 1.2, 1, 0.75, 0.5)
+noise_variances <- critical_noise_variance / effective_lambdas
+
+run_ebcd_noise_experiment <- function(noise_var, noise_id) {
+  set.seed(1000 + noise_id)
+  X_noise <- signal + rnorm(n * p, mean = 0, sd = sqrt(noise_var))
+  X1_noise <- preprocess(X_noise, n.comp = K)
+  X1_noise <- rbind(X1_noise, rep(1, ncol(X1_noise)))
+
+  max_abs_cor <- numeric(n_starts)
+
+  for (start_id in 1:n_starts) {
+    set.seed(start_id)
+    init_Z <- rnorm(nrow(X1_noise))
+    ebcd.fit <- ebcd_rank_one_random_init(
+      X1_noise,
+      init_Z = init_Z,
+      tau = 1,
+      est_precision = FALSE,
+      maxiter_backfit = 100
+    )
+    max_abs_cor[start_id] <- max(abs(cor(ebcd.fit$EL, L)))
+  }
+
+  data.frame(
+    noise_variance = noise_var,
+    n_success = sum(max_abs_cor > 0.9),
+    n_starts = n_starts,
+    success_rate = mean(max_abs_cor > 0.9),
+    mean_max_abs_cor = mean(max_abs_cor),
+    max_max_abs_cor = max(max_abs_cor)
+  )
+}
+
+ebcd_noise_results <- do.call(
+  rbind,
+  Map(run_ebcd_noise_experiment, noise_variances, seq_along(noise_variances))
+)
+
+ebcd_noise_results
+```
+
+
+## Appendix A: Heuristic Wigner reduction
+
+This derivation is heuristic. It maps the off-diagonal part of the rectangular Gram matrix to the spiked Wigner scaling in @Li2022-lx.
+
+Write
+
+$$
+S=LF^\top,
+\quad
+Y=S+E.
+$$
+
+Then
+
+$$
+\frac1pYY^\top
+=
+\frac1p SS^\top
++ \frac1p S E^\top
++ \frac1p E S^\top
++ \frac1p EE^\top.
+$$
+
+Let $\theta$ be an eigenvalue of $SS^\top/p$ with unit eigenvector $q$. The corresponding signal term is
+
+$$
+\theta qq^\top.
+$$
+
+For $i\neq j$, the three off-diagonal noise terms are
+
+$$
+\frac1p\sum_{\ell=1}^p S_{i\ell}E_{j\ell},
+\quad
+\frac1p\sum_{\ell=1}^p E_{i\ell}S_{j\ell},
+\quad
+\frac1p\sum_{\ell=1}^p E_{i\ell}E_{j\ell}.
+$$
+
+They have mean zero. Conditional on $S$, their variances are
+
+$$
+\frac{\sigma^2\|S_{i\cdot}\|^2}{p^2},
+\quad
+\frac{\sigma^2\|S_{j\cdot}\|^2}{p^2},
+\quad
+\frac{\sigma^4}{p}.
+$$
+
+Using the average row energy
+
+$$
+\bar c
+=
+\frac1n\sum_{i=1}^n\frac{\|S_{i\cdot}\|^2}{p}
+=
+\frac1n \operatorname{tr}(SS^\top/p),
+$$
+
+the typical off-diagonal Gram noise variance is approximately
+
+$$
+\frac{\sigma^4+2\bar c\sigma^2}{p}.
+$$
+
+Multiplying the centered off-diagonal Gram matrix by
+
+$$
+\alpha
+\approx
+\sqrt{\frac{p}{n(\sigma^4+2\bar c\sigma^2)}}
+$$
+
+puts the noise variance on the Wigner scale $1/n$. Under the same rescaling, the signal becomes approximately $\alpha\theta qq^\top$, so
+
+$$
+\lambda_{\mathrm{eff}}
+\approx
+\alpha\theta
+\approx
+\frac{\theta\sqrt{p/n}}{\sqrt{\sigma^4+2\bar c\sigma^2}}.
+$$
+
+Setting $\lambda_{\mathrm{eff}}\approx 1$ with $\theta=\lambda_{\mathrm{signal}}$ gives
+
+$$
+\sigma^4 + 2\bar c\sigma^2
+\approx
+\lambda_{\mathrm{signal}}^2 p/n,
+$$
+
+and therefore
+
+$$
+\sigma^2_{\mathrm{crit}}
+\approx
+\sqrt{\bar c^2+\lambda_{\mathrm{signal}}^2p/n}
+-\bar c.
+$$
+
+In the rank-one special case, $\bar c\approx c$ and $\lambda_{\mathrm{signal}}\approx cn$, so this reduces to
+
+$$
+\sigma^2_{\mathrm{crit}}
+\approx
+c\left(\sqrt{1+np}-1\right).
+$$
+
+
+
+
+
+## References
