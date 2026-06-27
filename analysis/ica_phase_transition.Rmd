@@ -19,7 +19,8 @@ Relevant references include @Li2022-lx, @Li2023-pc and @CelentanoTapZ2. These pa
 $$
 M = \lambda vv^\top + W, \quad W_{ij}\sim N(0, 1/n), \quad W_{ii}\sim N(0, 2/n), \quad v_{i}\sim \text{Unif}(\pm 1/\sqrt{n}).
 $$
-Here $\lambda$ is the SNR parameter. The phase transition is at $\lambda=1$: below this threshold, the Bayes-optimal estimate has asymptotically zero correlation with the spike, while above it nontrivial correlation is achievable. The finite-sample AMP result in @Li2022-lx assumes a slightly stronger condition $\lambda > 1 + \log(n)n^{-1/16}$, but this extra gap is a proof condition rather than the sharp asymptotic threshold.
+Here $\lambda$ is the SNR parameter. The phase transition is at $\lambda=1$: below this threshold, the Bayes-optimal estimate has asymptotically zero correlation with the spike, while above it nontrivial correlation is achievable. 
+<!-- The finite-sample AMP result in @Li2022-lx assumes a slightly stronger condition $\lambda > 1 + \log(n)n^{-1/16}$, but this extra gap is a proof condition rather than the sharp asymptotic threshold. -->
 
 The simulation here starts from a noisy rank-$K$ model,
 
@@ -32,7 +33,7 @@ $$
 \mathbb{E}\left[\frac1p YY^\top \;\middle|\; L\right]=\sigma^2 I_n+c LL^\top.
 $$
 
-Thus the model induces a spiked covariance. The Li--Wei threshold does not directly apply to our simulation model, but Appendix A gives a heuristic reduction from the off-diagonal Gram matrix to a spiked Wigner model. Under this reduction, the effective Wigner spike strength is approximately
+Thus the model induces a spiked covariance. The Li--Wei threshold does not directly apply to our simulation model, but [Appendix](#appendix) gives a heuristic reduction from the off-diagonal Gram matrix to a spiked Wigner model. Under this reduction, the effective Wigner spike strength is approximately
 
 $$
 \lambda_{\mathrm{eff}}
@@ -183,7 +184,7 @@ ebcd_noise_results
 ```
 
 
-## Appendix A: Heuristic Wigner reduction
+## Appendix
 
 This derivation is heuristic. It maps the off-diagonal part of the rectangular Gram matrix to the spiked Wigner scaling in @Li2022-lx.
 
