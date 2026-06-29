@@ -14,7 +14,7 @@ Matthew's results suggest that if the data matrix with binary sources is centere
 $$
 x_i \mid z_i, s_i^2 \sim N(z_i, s_i^2),
 \qquad
-z_i \sim \text{GSRad}(\pi, c):=\pi\delta_{-1+c} + (1-\pi)\delta_{1+c},
+z_i \sim \text{GSRad}(\pi, c):=(1-\pi)\delta_{-1+c} + \pi\delta_{1+c},
 $$
 where GSRad stands for "generalized shifted Rademacher". The prior proportion $\pi$ and the shift $c$ shall be estimated from the data by maximizing the marginal log likelihood:
 
@@ -55,16 +55,115 @@ $$
 $$
 If $\pi$ is fixed at $1/2$ and $c$ is to be estimated, the prior is termed shifted Rademacher: $\text{SRad}(c)$.
 
+For a centered and whitened asymmetric binary source, it is natural to use a two-point prior whose mean and variance are fixed to match the transformed source. We call this the normalized Rademacher prior:
+
+$$
+z_i \sim \text{NRad}(\pi, c)
+=
+\pi \delta_{c - a_\pi}
++
+(1-\pi)\delta_{c + b_\pi},
+\qquad
+a_\pi = \sqrt{\frac{1-\pi}{\pi}},
+\qquad
+b_\pi = \sqrt{\frac{\pi}{1-\pi}}.
+$$
+
+This prior satisfies
+
+$$
+\mathbb E[z_i] = c,
+\qquad
+\operatorname{Var}(z_i)=1.
+$$
+
+Its marginal log likelihood is
+
+$$
+\ell(c,\pi)
+=
+\sum_{i=1}^n
+\log
+\left[
+\pi\,\phi(x_i; c-a_\pi, s_i^2)
++
+(1-\pi)\,\phi(x_i; c+b_\pi, s_i^2)
+\right].
+$$
+
+The posterior is again a two-point distribution. Let
+
+$$
+\theta_- = c-a_\pi,
+\qquad
+\theta_+ = c+b_\pi,
+\qquad
+r_i = \Pr(z_i=\theta_+ \mid x_i).
+$$
+
+Then
+
+$$
+r_i
+=
+\frac{
+(1-\pi)\phi(x_i; \theta_+, s_i^2)
+}{
+\pi\phi(x_i; \theta_-, s_i^2)
++
+(1-\pi)\phi(x_i; \theta_+, s_i^2)
+},
+$$
+
+and the posterior moments are
+
+$$
+\mathbb E[z_i \mid x_i]
+=
+(1-r_i)\theta_- + r_i\theta_+,
+\qquad
+\mathbb E[z_i^2 \mid x_i]
+=
+(1-r_i)\theta_-^2 + r_i\theta_+^2.
+$$
+
+Equivalently, if
+
+$$
+m_\pi = \frac{\theta_-+\theta_+}{2},
+\qquad
+h_\pi = \frac{\theta_+-\theta_-}{2}
+=
+\frac{1}{2\sqrt{\pi(1-\pi)}},
+$$
+
+then
+
+$$
+\mathbb E[z_i \mid x_i]
+=
+m_\pi
++
+h_\pi
+\tanh\left\{
+\frac12\log\frac{1-\pi}{\pi}
++
+\frac{x_i-m_\pi}{2s_i^2\sqrt{\pi(1-\pi)}}
+\right\}.
+$$
+
 
 ## First look at shifted (generalized) Rademacher
 
 
 ```{r}
 source(file.path("code", "ebnm_shifted_rademacher.R"))
+source(file.path("code", "ebnm_normalized_rademacher.R"))
 source(file.path("code", "ebnm_rademacher.R"))
 source(file.path("code", "ica_functions.R"))
 
 ebnm_shifted_rademacher_pi02 <- ebnm_shifted_rademacher_fixed_pi(0.2)
+ebnm_normalized_rademacher_c0 <- ebnm_normalized_rademacher_fixed_c(0)
 ```
 
 We look at a 9-group unbalanced example.
@@ -184,9 +283,9 @@ ebproj_rank1_update <- function(P, v_init, ebnm_fn = ebnm_shifted_rademacher,
 EBproj with shifted generalized Radmacher perfectly recovers a true source, with very high alignment. At the same time, the prior parameters are also almost perfectly estimated.
 
 ```{r}
-set.seed(30)
+set.seed(2)
 v.init = sample(c(-1,1),n,replace=TRUE)
-maxiter = 1000
+maxiter = 100
 fit.shifted = ebproj_rank1_update(
   P = Pcenter,
   v_init = v.init,
@@ -217,6 +316,38 @@ cor(fit.shifted.pi02$vbar, L)
 plot(fit.shifted.pi02$vbar)
 ```
 
+Now try the normalized Rademacher prior $\text{NRad}(\pi,c)$, where the atom locations change with $\pi$ to keep prior variance equal to one.
+
+```{r}
+fit.normalized = ebproj_rank1_update(
+  P = Pcenter,
+  v_init = v.init,
+  ebnm_fn = ebnm_normalized_rademacher,
+  k = 1,
+  maxiter = maxiter
+)
+fit.normalized$rho
+fit.normalized$fitted_g
+cor(fit.normalized$vbar, L)
+plot(fit.normalized$vbar)
+```
+
+If the centering step is expected to remove the source mean, we can fix the normalized prior shift at $c=0$ and estimate only $\pi$.
+
+```{r}
+fit.normalized.c0 = ebproj_rank1_update(
+  P = Pcenter,
+  v_init = v.init,
+  ebnm_fn = ebnm_normalized_rademacher_c0,
+  k = 1,
+  maxiter = maxiter
+)
+fit.normalized.c0$rho
+fit.normalized.c0$fitted_g
+cor(fit.normalized.c0$vbar, L)
+plot(fit.normalized.c0$vbar)
+```
+
 
 It would also be interesting to see what happens if we apply "EB ICA" with the shifted Rademacher. It appears that the solution is close to binary but with a bit of "noise". Also the fitted prior proportion and shift are not as accurate as in EBproj. Is it because the low-rank **plus iid noise** model is misspecified?
 
@@ -226,4 +357,3 @@ cor(fit.ebica$S_plus, L)
 plot(fit.ebica$S_plus)
 fit.ebica$fitted_priors
 ```
-
