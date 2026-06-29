@@ -18,7 +18,7 @@
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -390,7 +390,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-25
+<strong>Last updated:</strong> 2026-06-29
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreece87c1896d21593d65c64b28aa7556cbed27b2a3targetblankce87c18a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree83a5fba4768b23e0730121ba73632da828c070d1targetblank83a5fbaa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/ce87c1896d21593d65c64b28aa7556cbed27b2a3" target="_blank">ce87c18</a>
+<a href="https://github.com/junmingguan/misc/tree/83a5fba4768b23e0730121ba73632da828c070d1" target="_blank">83a5fba</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreece87c1896d21593d65c64b28aa7556cbed27b2a3targetblankce87c18a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree83a5fba4768b23e0730121ba73632da828c070d1targetblank83a5fbaa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/ce87c1896d21593d65c64b28aa7556cbed27b2a3" target="_blank">ce87c18</a>.
+<a href="https://github.com/junmingguan/misc/tree/83a5fba4768b23e0730121ba73632da828c070d1" target="_blank">83a5fba</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -561,7 +561,6 @@ Ignored files:
     Ignored:    _extensions/
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/exploratiion_normal_prior_on_factor.html
-    Ignored:    analysis/figure/
     Ignored:    analysis/presentation.html
 
 Untracked files:
@@ -571,6 +570,7 @@ Untracked files:
     Untracked:  analysis/ebica_math.md
     Untracked:  analysis/fastica_with_intercept.Rmd
     Untracked:  analysis/flashier_whitened_and_tree_example_tese.Rmd
+    Untracked:  analysis/generalized_rademacher.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
     Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
@@ -579,6 +579,7 @@ Untracked files:
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/references.bib
     Untracked:  analysis/tree_example.Rmd
+    Untracked:  code/ebnm_normalized_rademacher.R
     Untracked:  code/references.bib
 
 Unstaged changes:
@@ -640,6 +641,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/junmingguan/misc/blob/83a5fba4768b23e0730121ba73632da828c070d1/analysis/shifted_rademacher_for_ebproj.Rmd" target="_blank">83a5fba</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-29
+</td>
+<td>
+wflow_publish("analysis/shifted_rademacher_for_ebproj.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/5848c2e37a8849fb34cc2d2647020e2ffb563b2e/docs/shifted_rademacher_for_ebproj.html" target="_blank">5848c2e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/junmingguan/misc/blob/ce87c1896d21593d65c64b28aa7556cbed27b2a3/analysis/shifted_rademacher_for_ebproj.Rmd" target="_blank">ce87c18</a>
 </td>
 <td>
@@ -668,7 +703,7 @@ Consider the model:</p>
 <p><span class="math display">\[
 x_i \mid z_i, s_i^2 \sim N(z_i, s_i^2),
 \qquad
-z_i \sim \text{GSRad}(\pi, c):=\pi\delta_{-1+c} + (1-\pi)\delta_{1+c},
+z_i \sim \text{GSRad}(\pi, c):=(1-\pi)\delta_{-1+c} + \pi\delta_{1+c},
 \]</span> where GSRad stands for “generalized shifted Rademacher”. The
 prior proportion <span class="math inline">\(\pi\)</span> and the shift
 <span class="math inline">\(c\)</span> shall be estimated from the data
@@ -710,15 +745,100 @@ class="math inline">\(1/2\)</span> and <span
 class="math inline">\(c\)</span> is to be estimated, the prior is termed
 shifted Rademacher: <span
 class="math inline">\(\text{SRad}(c)\)</span>.</p>
+<p>For a centered and whitened asymmetric binary source, it is natural
+to use a two-point prior whose mean and variance are fixed to match the
+transformed source. We call this the normalized Rademacher prior:</p>
+<p><span class="math display">\[
+z_i \sim \text{NRad}(\pi, c)
+=
+\pi \delta_{c - a_\pi}
++
+(1-\pi)\delta_{c + b_\pi},
+\qquad
+a_\pi = \sqrt{\frac{1-\pi}{\pi}},
+\qquad
+b_\pi = \sqrt{\frac{\pi}{1-\pi}}.
+\]</span></p>
+<p>This prior satisfies</p>
+<p><span class="math display">\[
+\mathbb E[z_i] = c,
+\qquad
+\operatorname{Var}(z_i)=1.
+\]</span></p>
+<p>Its marginal log likelihood is</p>
+<p><span class="math display">\[
+\ell(c,\pi)
+=
+\sum_{i=1}^n
+\log
+\left[
+\pi\,\phi(x_i; c-a_\pi, s_i^2)
++
+(1-\pi)\,\phi(x_i; c+b_\pi, s_i^2)
+\right].
+\]</span></p>
+<p>The posterior is again a two-point distribution. Let</p>
+<p><span class="math display">\[
+\theta_- = c-a_\pi,
+\qquad
+\theta_+ = c+b_\pi,
+\qquad
+r_i = \Pr(z_i=\theta_+ \mid x_i).
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+r_i
+=
+\frac{
+(1-\pi)\phi(x_i; \theta_+, s_i^2)
+}{
+\pi\phi(x_i; \theta_-, s_i^2)
++
+(1-\pi)\phi(x_i; \theta_+, s_i^2)
+},
+\]</span></p>
+<p>and the posterior moments are</p>
+<p><span class="math display">\[
+\mathbb E[z_i \mid x_i]
+=
+(1-r_i)\theta_- + r_i\theta_+,
+\qquad
+\mathbb E[z_i^2 \mid x_i]
+=
+(1-r_i)\theta_-^2 + r_i\theta_+^2.
+\]</span></p>
+<p>Equivalently, if</p>
+<p><span class="math display">\[
+m_\pi = \frac{\theta_-+\theta_+}{2},
+\qquad
+h_\pi = \frac{\theta_+-\theta_-}{2}
+=
+\frac{1}{2\sqrt{\pi(1-\pi)}},
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+\mathbb E[z_i \mid x_i]
+=
+m_\pi
++
+h_\pi
+\tanh\left\{
+\frac12\log\frac{1-\pi}{\pi}
++
+\frac{x_i-m_\pi}{2s_i^2\sqrt{\pi(1-\pi)}}
+\right\}.
+\]</span></p>
 </div>
 <div id="first-look-at-shifted-generalized-rademacher"
 class="section level2">
 <h2>First look at shifted (generalized) Rademacher</h2>
 <pre class="r"><code>source(file.path(&quot;code&quot;, &quot;ebnm_shifted_rademacher.R&quot;))
+source(file.path(&quot;code&quot;, &quot;ebnm_normalized_rademacher.R&quot;))
 source(file.path(&quot;code&quot;, &quot;ebnm_rademacher.R&quot;))
 source(file.path(&quot;code&quot;, &quot;ica_functions.R&quot;))
 
-ebnm_shifted_rademacher_pi02 &lt;- ebnm_shifted_rademacher_fixed_pi(0.2)</code></pre>
+ebnm_shifted_rademacher_pi02 &lt;- ebnm_shifted_rademacher_fixed_pi(0.2)
+ebnm_normalized_rademacher_c0 &lt;- ebnm_normalized_rademacher_fixed_c(0)</code></pre>
 <p>We look at a 9-group unbalanced example.</p>
 <pre class="r"><code>K=9
 p = 1000
@@ -822,9 +942,9 @@ X_c &amp;= X(I_n - \boldsymbol{11}^\top/n) = UDV^\top \\
 <p>EBproj with shifted generalized Radmacher perfectly recovers a true
 source, with very high alignment. At the same time, the prior parameters
 are also almost perfectly estimated.</p>
-<pre class="r"><code>set.seed(30)
+<pre class="r"><code>set.seed(2)
 v.init = sample(c(-1,1),n,replace=TRUE)
-maxiter = 1000
+maxiter = 100
 fit.shifted = ebproj_rank1_update(
   P = Pcenter,
   v_init = v.init,
@@ -833,17 +953,52 @@ fit.shifted = ebproj_rank1_update(
   maxiter = maxiter
 )
 fit.shifted$rho</code></pre>
-<pre><code>[1] 0.9982579</code></pre>
+<pre><code>[1] 0.9983237</code></pre>
 <pre class="r"><code>fit.shifted$fitted_g</code></pre>
-<pre><code>   pi    c
-1 0.8 -0.6</code></pre>
+<pre><code>         pi    c
+1 0.7999996 -0.6</code></pre>
 <pre class="r"><code>cor(fit.shifted$vbar, L)</code></pre>
-<pre><code>              [,1]         [,2]    [,3] [,4]   [,5]    [,6]    [,7]  [,8]
-[1,] -2.602085e-17 2.862294e-17 -0.0625   -1 0.0625 -0.0625 -0.0625 0.125
-        [,9]
-[1,] -0.0625</code></pre>
+<pre><code>        [,1]          [,2]    [,3]  [,4]    [,5]   [,6]    [,7] [,8]  [,9]
+[1,] -0.0625 -1.214306e-16 -0.1875 0.125 -0.0625 0.0625 -0.0625   -1 0.125</code></pre>
 <pre class="r"><code>plot(fit.shifted$vbar)</code></pre>
 <p><img src="figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-5-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/5848c2e37a8849fb34cc2d2647020e2ffb563b2e/docs/figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-5-1.png" target="_blank">5848c2e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>I also tried <span class="math inline">\(\text{GSRad}(0.2,
 c)\)</span> where <span class="math inline">\(\pi=0.2\)</span> is fixed.
 The results are similar.</p>
@@ -855,17 +1010,131 @@ The results are similar.</p>
   maxiter = maxiter
 )
 fit.shifted.pi02$rho</code></pre>
-<pre><code>[1] 0.9985137</code></pre>
+<pre><code>[1] 0.9983436</code></pre>
 <pre class="r"><code>fit.shifted.pi02$fitted_g</code></pre>
 <pre><code>   pi   c
 1 0.2 0.6</code></pre>
 <pre class="r"><code>cor(fit.shifted.pi02$vbar, L)</code></pre>
-<pre><code>        [,1]         [,2] [,3]   [,4]         [,5]         [,6]   [,7]   [,8]
-[1,] -0.0625 5.551115e-17    1 0.0625 1.301043e-16 4.163336e-17 0.1875 0.1875
-      [,9]
-[1,] -0.25</code></pre>
+<pre><code>        [,1]    [,2]   [,3]   [,4]   [,5]    [,6] [,7]   [,8]    [,9]
+[1,] -0.0625 -0.0625 0.1875 0.0625 0.0625 -0.0625    1 0.0625 -0.0625</code></pre>
 <pre class="r"><code>plot(fit.shifted.pi02$vbar)</code></pre>
 <p><img src="figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-6-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/5848c2e37a8849fb34cc2d2647020e2ffb563b2e/docs/figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-6-1.png" target="_blank">5848c2e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now try the normalized Rademacher prior <span
+class="math inline">\(\text{NRad}(\pi,c)\)</span>, where the atom
+locations change with <span class="math inline">\(\pi\)</span> to keep
+prior variance equal to one.</p>
+<pre class="r"><code>fit.normalized = ebproj_rank1_update(
+  P = Pcenter,
+  v_init = v.init,
+  ebnm_fn = ebnm_normalized_rademacher,
+  k = 1,
+  maxiter = maxiter
+)
+fit.normalized$rho</code></pre>
+<pre><code>[1] 0.9983237</code></pre>
+<pre class="r"><code>fit.normalized$fitted_g</code></pre>
+<pre><code>         pi         c
+1 0.1235639 0.2322697</code></pre>
+<pre class="r"><code>cor(fit.normalized$vbar, L)</code></pre>
+<pre><code>        [,1]         [,2]    [,3]  [,4]    [,5]   [,6]    [,7] [,8]  [,9]
+[1,] -0.0625 5.309078e-17 -0.1875 0.125 -0.0625 0.0625 -0.0625   -1 0.125</code></pre>
+<pre class="r"><code>plot(fit.normalized$vbar)</code></pre>
+<p><img src="figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/5848c2e37a8849fb34cc2d2647020e2ffb563b2e/docs/figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-7-1.png" target="_blank">5848c2e</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>If the centering step is expected to remove the source mean, we can
+fix the normalized prior shift at <span
+class="math inline">\(c=0\)</span> and estimate only <span
+class="math inline">\(\pi\)</span>.</p>
+<pre class="r"><code>fit.normalized.c0 = ebproj_rank1_update(
+  P = Pcenter,
+  v_init = v.init,
+  ebnm_fn = ebnm_normalized_rademacher_c0,
+  k = 1,
+  maxiter = maxiter
+)
+fit.normalized.c0$rho</code></pre>
+<pre><code>[1] 0.9983237</code></pre>
+<pre class="r"><code>fit.normalized.c0$fitted_g</code></pre>
+<pre><code>   pi c
+1 0.2 0</code></pre>
+<pre class="r"><code>cor(fit.normalized.c0$vbar, L)</code></pre>
+<pre><code>        [,1]         [,2]    [,3]  [,4]    [,5]   [,6]    [,7] [,8]  [,9]
+[1,] -0.0625 1.457168e-17 -0.1875 0.125 -0.0625 0.0625 -0.0625   -1 0.125</code></pre>
+<pre class="r"><code>plot(fit.normalized.c0$vbar)</code></pre>
+<p><img src="figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-8-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>It would also be interesting to see what happens if we apply “EB ICA”
 with the shifted Rademacher. It appears that the solution is close to
 binary but with a bit of “noise”. Also the fitted prior proportion and
@@ -873,16 +1142,16 @@ shift are not as accurate as in EBproj. Is it because the low-rank
 <strong>plus iid noise</strong> model is misspecified?</p>
 <pre class="r"><code>fit.ebica = ebica_generalized_parallel(X1, K = 1, ebnm_fn = ebnm_generalized_shifted_rademacher, S_init = v.init, s= 1)
 cor(fit.ebica$S_plus, L)</code></pre>
-<pre><code>              [,1]         [,2]       [,3]       [,4]       [,5]        [,6]
-[1,] -0.0004447524 0.0009822824 -0.0672737 -0.9995208 0.05896827 -0.07032489
-           [,7]      [,8]        [,9]
-[1,] -0.0671285 0.1258289 -0.05916636</code></pre>
+<pre><code>            [,1]       [,2]       [,3]      [,4]        [,5]    [,6]
+[1,] -0.06723901 -0.0022547 -0.1821444 0.1242463 -0.06313158 0.06062
+            [,7]       [,8]      [,9]
+[1,] -0.05611998 -0.9997263 0.1232656</code></pre>
 <pre class="r"><code>plot(fit.ebica$S_plus)</code></pre>
-<p><img src="figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-7-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/shifted_rademacher_for_ebproj.Rmd/unnamed-chunk-9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>fit.ebica$fitted_priors</code></pre>
 <pre><code>[[1]]
          pi          c
-1 0.8414123 -0.6828246</code></pre>
+1 0.8412884 -0.6825767</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
