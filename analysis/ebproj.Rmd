@@ -216,7 +216,7 @@ $$
 \widehat{F}_{\text{EB-spiked-proj}}(q,g,\eta)
 = \frac p2\log(1-\eta)
 -\frac n2\log(1-\eta\hat\rho(q))
--\mathrm{KL}(q \ \| \ g),
+-\mathrm{KL}(q \ \| \ g)+C,
 $$
 
 which is very similar to the EB-proj objective.
