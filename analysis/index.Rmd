@@ -11,15 +11,7 @@ bibliography: references.bib
 
 This repo contains misc explorations.
 
-# ICA
-
-See [here](ica.html)
+## [ICA](ica.html)
 
 
-
-# EBproj
-
-## Analyses
-
-- [Initial exploration of EBproj, with shifted Rademacher](shifted_rademacher_for_ebproj.html)
-  - TODO: It seems we need to choose the correct rank. Investigate this.
+## [EBproj](ebproj.html)

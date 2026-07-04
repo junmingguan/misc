@@ -1,0 +1,227 @@
+---
+title: "EB-proj"
+author: "Junming Guan"
+date: "2026-06-27"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+<style>
+.theorem,
+.lemma,
+.proof {
+  border-left: 4px solid #e95420;
+  margin: 1.25em 0;
+  padding: 0.85em 1em;
+  background: #f8f8f8;
+}
+
+.proof {
+  border-left-color: #666;
+}
+
+.theorem::before,
+.lemma::before,
+.proof::before {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.35em;
+}
+
+.theorem::before {
+  content: "Theorem.";
+}
+
+.lemma::before {
+  content: "Lemma.";
+}
+
+.proof::before {
+  content: "Proof.";
+}
+</style>
+
+## Motivation
+
+We have seen that the low-plus-noise assumed in flashier, when applied to centered and whitened data is generally not ideal. For example, if the data matrix is generated as
+
+$$
+Y=\ell f^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \text{Rad},\quad f_j\stackrel{iid}{\sim} N(0, \sigma_f^2),
+$$
+then the whitened and centered data matrix has rather complex distribution for which the above model is misspecified and in general not compatible with the iid noise assumption. Furthermore, the prior after the whitening transformation could also change: for example, in the simple case where $y=\ell$ and $\ell_i\sim \text{Rad}(p)$, centering and whitening changes the distribution to a normalized two point distribution such that shrinkage to a $\{\pm 1\}$ distribution seems unsatisfactory. A different and perhaps more principled route is to model the whitened data, or the projection matrix, directly.
+
+## The model
+
+Here we propose EB-proj, "**E**mpirical **B**ayes on **proj**ection", to model a given a rank-$K$ projection matrix $P$ in a probabilistic fashion and seek to extra latent directions from it. As an example, consider the case where the subspace spanned by the $P$ contains an "interesting" latent vector $v$, $P=vv^\top/\|v\|^2+V_0V_0^\top$, where $V$ is a random projection matrix onto the rank-$K-1$ subspace orthogonal to $v$. In this case, the alignment of $P$ with $v$, defined as
+
+$$
+\rho_v(P)=\frac{v^\top Pv}{\|v\|^2},
+$$
+
+is exactly $1$. Of course, it could also be the case that $P=\sum u_ku_k^\top$ and $v=\sum a_k u_k$. There are also situations where the alignment is not exact, in which case, $\rho_v(P)<1$. This could arise when one considers a low-rank whitening of a data matrix and some signals are removed in the process. This suggests that to probabilistically model $P$, we should also model the randomness in the alignment $\rho_v(P)$; this is analogous to assuming random Gaussian noise in the low-rank-plus-noise model. As is evident from the previous discussion, given a latent vector $v$ and an alignment index $\rho$, the choice of $P$ is not unique, leaving room for random modeling. We thus consider the probability measure on the ser of all rank-$K$ projection matrices, given $v$ and $\rho$: 
+
+$$
+p(P \mid v, \rho) = \frac{p(\rho \mid P, v) \,p(P \mid v)}{p(\rho \mid v)}.
+$$
+Given $P$ and $v$, $\rho$ is fixed, so $p(\rho \mid R, v)=\delta(\rho-\rho_{\text{obs}})$, where $\rho_{\text{obs}}=v^\top P v/\|v\|^2$. We assume that $P$ is uniformly drawn from the Haar measure on the Grassmannian maniford. Hence $p(P \mid v) \propto 1$ and 
+
+$$
+\rho \mid v \sim \text{Beta}(k/2, (n-k)/2).
+$$
+
+Under this model, 
+
+$$
+p(P \mid v, \rho) \propto \delta(\rho-\rho_{\text{obs}}) \rho^{k/2-1}(1-\rho)^{(n-k)/2-1}.
+$$
+Introducing a prior $\pi(p)\sim \text{Beta}(a,b)$, and letting $a=k/2$, we have
+
+$$
+p(P \mid v) = \int^1_0 p(P \mid v, \rho) \pi(d\rho) \propto (1-\rho_{\text{obs}})^{b-(n-k)/2}.
+$$
+We thus have the following "rank-1" data generating process:
+
+$$
+\begin{aligned}
+  v & \sim g^{\otimes n} \\
+  \rho \mid v & \sim \text{Beta}(k/2, b) \\
+  P \mid \rho, v & \sim \text{Unif}\,(\{\mathcal{P}_{n,K}:\ \rho_{\text{obs}}=\rho\}).
+\end{aligned}
+$$
+## Variational objective
+
+The marginal log likelihood is given by
+
+$$
+ \log \int p(P\mid v) g(dv).
+$$
+
+Consider a variational approach, the exact ElBO is
+
+$$
+F_{\text{EB-proj}}(q, g) = \mathbb{E}_q\left[-\frac{n-k-2b}{2}\log(1-\rho_{\text{obs}})\right] - \text{KL}(q \, \|\, g) +C,
+$$
+where $C=\log\Gamma\left(\frac{n-k}{2}\right)+\log\Gamma\left(\frac k2+b\right)-\log\Gamma\left(\frac{n}{2}\right)-
+\log\Gamma(b)$. The expectation is in general not in closed form. A easy-to-evaluate surrogate is
+
+$$
+\widehat{F}_{\text{EB-proj}}(q, g) = -\frac{n-k-2b}{2}\log\left(1-\frac{\mathbb{E}_q[v]^\top P \mathbb{E}_q[v]}{\mathbb{E}_q[v^\top v]}\right) - \text{KL}(q \, \|\, g) +C,
+$$
+and a more accurate one is
+
+$$
+\widetilde{F}_{\text{EB-proj}}(q, g) = -\frac{n-k-2b}{2}\log\left(1-\frac{\mathbb{E}_q[v^\top P v]}{\mathbb{E}_q[v^\top v]}\right) - \text{KL}(q \, \|\, g) +C.
+$$
+The following result follows from Jensen's inequality.
+
+::: {.lemma #lem:lower-bound-obj}
+$$
+\widehat{F}_{\text{EB-proj}}(q, g) \le \widetilde{F}_{\text{EB-proj}}(q, g) \le F_{\text{EB-proj}}(q, g).
+$$
+:::
+
+As a special case which we will investigate firther, consider the Rademacher prior $g=\text{Rad}(\tfrac12)$ on $v$. We write the surrogate EB-proj objective as
+
+$$
+\widehat{F}(\bar{v})\equiv \widehat{F}_{\text{EB-proj}}(q, \text{Rad}(\tfrac12)) = \frac{n-2k-b}{2}\log \left(1-\frac{\bar{v}^\top P\bar{v}}{n}\right)-\sum_{i=1}^n h(\bar{v}_i)+C,
+$$
+where $\bar{v}:=\mathbb{E}_q[v]$ and
+
+$$
+h(x)=\frac{1+x}{2}\log(1+x)+\frac{1-x}{2}\log(1-x).
+$$ 
+
+
+When analyzing a framework involving an optimization problem, there are two important questions:
+
+1. Does optimizing the objective give what we want?
+2. Does the algorithm optimize or approximately optimize the objective?
+
+We first answer the question. In particular, if the observed projection matrix $P$ does not contain any signal, i.e., $P\sim \text{Unif}(\mathcal{P}_{n, K})$, the uniform distribution on the set of all rank-$K$ $n$-by-$n$ projection matrices, is the null solution the optimum of the objective, at least locally?
+
+
+The following results says that: under the null, the Rademacher EB-proj surrogate objective does not favor a solution that is far away from 0.
+
+::: {.theorem #thm:global-null-stability}
+
+Suppose $K$ and $b$ are fixed as $n\to\infty$, and $P\sim\mathrm{Unif}(\mathcal P_{n,K})$. For every fixed $\varepsilon>0$, there exists $a_\varepsilon>0$ such that
+
+$$
+\mathbb{P}_{P\sim\mathrm{Unif}(\mathcal P_{n,K})}\left[
+\sup_{m\in[-1,1]^n, \ \ \|m\|_2\ge \varepsilon\sqrt n}
+\widehat{F}(m)
+\le
+-a_\varepsilon n
+\right]
+\to 1.
+$$
+
+:::
+
+However, this theorem does not rule out the near-zero (e.g., $o(\sqrt{n})$) solutions. In practice, we could either discard a solution with norm less than a prespecified threshold, as is done in flashier, or use the following result to reject it.
+
+
+::: {.theorem #thm:null-calibration}
+
+Suppose $P\sim \text{Unif}(\mathcal{P}_{n, K})$ and $v\sim g^{\otimes n}$. Then
+
+$$
+\mathbb{P}_{P\sim\text{Unif}(\mathcal{P}_{n, K})}\left[\sup_{q}\widehat{F}_{\text{EB-proj}}(q, g) \ge t\right] \le e^{-t}.
+$$
+:::
+
+
+
+## An alternative formulation
+
+We attempt to derive a similar framework from the spiked model assumed in flashier:
+
+$$
+Y=v z^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  v_i \stackrel{\text{iid}}{\sim} g,\quad z_j\stackrel{iid}{\sim} N(0, \sigma_z^2).
+$$
+Write
+
+$$
+v=r u,\qquad \|u\|=1,\qquad \gamma=\frac{\sigma_z^2r^2}{\sigma^2}.
+$$
+Integrating out $z$,
+
+$$
+y_j\mid v \sim N\left(0,\Sigma_v\right),
+\qquad \Sigma_v=\sigma^2 I_n+\sigma_z^2vv^\top =\sigma^2(I_n+\gamma uu^\top).
+$$
+Consider the projection $P=Y(Y^\top Y)^{-1}Y^\top$,
+then the induced density of $P$ on the Grassmannian has the form
+
+$$
+p(P\mid u,\eta) \propto
+(1-\eta)^{p/2}
+(1-\eta\,u^\top P u)^{-n/2},
+\qquad \eta=\frac{\gamma}{1+\gamma}\in[0,1).
+$$
+Equivalently,
+
+$$
+\log p(P\mid u,\eta)
+=
+C+\frac p2\log(1-\eta)
+-\frac n2\log(1-\eta\rho),
+\qquad \rho=u^\top P u.
+$$
+
+The approximate EB objective could be
+
+$$
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\eta)
+= \frac p2\log(1-\eta)
+-\frac n2\log(1-\eta\hat\rho(q))
+-\mathrm{KL}(q \ \| \ g),
+$$
+
+which is very similar to the EB-proj objective.
+
+## Analyses
+
+- [Initial exploration of EB-proj, with shifted Rademacher](shifted_rademacher_for_EB-proj.html)
+  - TODO: It seems we need to choose the correct rank. Investigate this.
