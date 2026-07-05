@@ -7,49 +7,37 @@ editor_options:
   chunk_output_type: console
 ---
 
-<style>
-.theorem,
-.lemma,
-.proof {
-  border-left: 4px solid #e95420;
-  margin: 1.25em 0;
-  padding: 0.85em 1em;
-  background: #f8f8f8;
-}
 
-.proof {
-  border-left-color: #666;
-}
 
-.theorem::before,
-.lemma::before,
-.proof::before {
-  display: block;
-  font-weight: 700;
-  margin-bottom: 0.35em;
-}
-
-.theorem::before {
-  content: "Theorem.";
-}
-
-.lemma::before {
-  content: "Lemma.";
-}
-
-.proof::before {
-  content: "Proof.";
-}
-</style>
+::: {.hidden}
+$$
+    \newcommand{\E}{\mathbb{E}}
+    \newcommand{\R}{\mathbb{R}}
+    \newcommand{\P}{\mathbb{P}}
+    \newcommand{\Rn}{\mathbb{R}^n}
+    \DeclareMathOperator{\Var}{Var}
+    \newcommand{\vbar}{\bar{v}}
+    \newcommand{\EBproj}{\text{EB-proj}}
+    \newcommand{\KL}[2]{\text{KL}\left(#1 \ \| \ #2\right)}
+    \newcommand{\Unif}{\text{Unif}}
+    \newcommand{\Rad}{\text{Rad}}
+    \newcommand{\Eq}{\mathbb{E}_q}
+    \newcommand{\Eqv}{\mathbb{E}_q[v]}
+    \newcommand{\Eqvv}{\mathbb{E}_q\|v\|^2}
+    \newcommand{\EqPv}{\mathbb{E}_q[v^\top P v]}
+    \newcommand{\norm}[1]{\left\|#1\right\|}
+    \DeclareMathOperator{\EBNM}{EBNM}
+$$
+:::
 
 ## Motivation
 
 We have seen that the low-plus-noise assumed in flashier, when applied to centered and whitened data is generally not ideal. For example, if the data matrix is generated as
 
 $$
-Y=\ell f^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \text{Rad},\quad f_j\stackrel{iid}{\sim} N(0, \sigma_f^2),
+Y=\ell f^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \Rad,\quad f_j\stackrel{iid}{\sim} N(0, \sigma_f^2),
 $$
-then the whitened and centered data matrix has rather complex distribution for which the above model is misspecified and in general not compatible with the iid noise assumption. Furthermore, the prior after the whitening transformation could also change: for example, in the simple case where $y=\ell$ and $\ell_i\sim \text{Rad}(p)$, centering and whitening changes the distribution to a normalized two point distribution such that shrinkage to a $\{\pm 1\}$ distribution seems unsatisfactory. A different and perhaps more principled route is to model the whitened data, or the projection matrix, directly.
+then the whitened and centered data matrix has rather complex distribution for which the above model is misspecified and in general not compatible with the iid noise assumption. Furthermore, the prior after the whitening transformation could also change: for example, in the simple case where $y=\ell$ and $\ell_i\sim \Rad(p)$, centering and whitening changes the distribution to a normalized two point distribution such that shrinkage to a $\{\pm 1\}$ distribution seems unsatisfactory. A different and perhaps more principled route is to model the whitened data, or the projection matrix, directly.
 
 ## The model
 
@@ -67,7 +55,7 @@ $$
 Given $P$ and $v$, $\rho$ is fixed, so $p(\rho \mid R, v)=\delta(\rho-\rho_{\text{obs}})$, where $\rho_{\text{obs}}=v^\top P v/\|v\|^2$. We assume that $P$ is uniformly drawn from the Haar measure on the Grassmannian maniford. Hence $p(P \mid v) \propto 1$ and 
 
 $$
-\rho \mid v \sim \text{Beta}(k/2, (n-k)/2).
+\rho \mid v \sim \operatorname{Beta}(k/2, (n-k)/2).
 $$
 
 Under this model, 
@@ -75,7 +63,7 @@ Under this model,
 $$
 p(P \mid v, \rho) \propto \delta(\rho-\rho_{\text{obs}}) \rho^{k/2-1}(1-\rho)^{(n-k)/2-1}.
 $$
-Introducing a prior $\pi(p)\sim \text{Beta}(a,b)$, and letting $a=k/2$, we have
+Introducing a prior $\pi(p)\sim \operatorname{Beta}(a,b)$, and letting $a=k/2$, we have
 
 $$
 p(P \mid v) = \int^1_0 p(P \mid v, \rho) \pi(d\rho) \propto (1-\rho_{\text{obs}})^{b-(n-k)/2}.
@@ -85,10 +73,12 @@ We thus have the following "rank-1" data generating process:
 $$
 \begin{aligned}
   v & \sim g^{\otimes n} \\
-  \rho \mid v & \sim \text{Beta}(k/2, b) \\
-  P \mid \rho, v & \sim \text{Unif}\,(\{\mathcal{P}_{n,K}:\ \rho_{\text{obs}}=\rho\}).
+  \rho \mid v & \sim \operatorname{Beta}(k/2, b) \\
+  P \mid \rho, v & \sim \Unif\,(\{\mathcal{P}_{n,K}:\ \rho_{\text{obs}}=\rho\}).
 \end{aligned}
 $$
+
+
 ## Variational objective
 
 The marginal log likelihood is given by
@@ -100,33 +90,36 @@ $$
 Consider a variational approach, the exact ElBO is
 
 $$
-F_{\text{EB-proj}}(q, g) = \mathbb{E}_q\left[-\frac{n-k-2b}{2}\log(1-\rho_{\text{obs}})\right] - \text{KL}(q \, \|\, g) +C,
+F_{\EBproj}(q, g) = \Eq\left[-\frac{n-k-2b}{2}\log(1-\rho_{\text{obs}})\right] - \KL{q}{g} +C,
 $$
-where $C=\log\Gamma\left(\frac{n-k}{2}\right)+\log\Gamma\left(\frac k2+b\right)-\log\Gamma\left(\frac{n}{2}\right)-
-\log\Gamma(b)$. The expectation is in general not in closed form. A easy-to-evaluate surrogate is
+
+where $C=\log\Gamma\left(\frac{n-k}{2}\right)+\log\Gamma\left(\frac{k}{2}+b\right)-\log\Gamma\left(\frac{n}{2}\right)-\log\Gamma(b)$. The expectation is in general not in closed form. A easy-to-evaluate surrogate is
 
 $$
-\widehat{F}_{\text{EB-proj}}(q, g) = -\frac{n-k-2b}{2}\log\left(1-\frac{\mathbb{E}_q[v]^\top P \mathbb{E}_q[v]}{\mathbb{E}_q[v^\top v]}\right) - \text{KL}(q \, \|\, g) +C,
+\widehat{F}_{\EBproj}(q, g) = -\frac{n-k-2b}{2}\log\left(1-\frac{\Eqv^\top P \Eqv}{\Eqvv}\right) - \KL{q}{g} +C,
 $$
+
 and a more accurate one is
 
 $$
-\widetilde{F}_{\text{EB-proj}}(q, g) = -\frac{n-k-2b}{2}\log\left(1-\frac{\mathbb{E}_q[v^\top P v]}{\mathbb{E}_q[v^\top v]}\right) - \text{KL}(q \, \|\, g) +C.
+\widetilde{F}_{\EBproj}(q, g) = -\frac{n-k-2b}{2}\log\left(1-\frac{\EqPv}{\Eqvv}\right) - \KL{q}{g} +C.
 $$
+
 The following result follows from Jensen's inequality.
 
 ::: {.lemma #lem:lower-bound-obj}
 $$
-\widehat{F}_{\text{EB-proj}}(q, g) \le \widetilde{F}_{\text{EB-proj}}(q, g) \le F_{\text{EB-proj}}(q, g).
+\widehat{F}_{\EBproj}(q, g) \le \widetilde{F}_{\EBproj}(q, g) \le F_{\EBproj}(q, g).
 $$
+
 :::
 
-As a special case which we will investigate firther, consider the Rademacher prior $g=\text{Rad}(\tfrac12)$ on $v$. We write the surrogate EB-proj objective as
+As a special case which we will investigate firther, consider the Rademacher prior $g=\Rad(\tfrac12)$ on $v$. We write the surrogate EB-proj objective as
 
 $$
-\widehat{F}(\bar{v})\equiv \widehat{F}_{\text{EB-proj}}(q, \text{Rad}(\tfrac12)) = \frac{n-2k-b}{2}\log \left(1-\frac{\bar{v}^\top P\bar{v}}{n}\right)-\sum_{i=1}^n h(\bar{v}_i)+C,
+\widehat{F}(\vbar)\equiv \widehat{F}_{\EBproj}(q, \Rad(\tfrac12)) = \frac{n-2k-b}{2}\log \left(1-\frac{\vbar^\top P\vbar}{n}\right)-\sum_{i=1}^n h(\vbar_i)+C,
 $$
-where $\bar{v}:=\mathbb{E}_q[v]$ and
+where $\vbar:=\Eqv$ and
 
 $$
 h(x)=\frac{1+x}{2}\log(1+x)+\frac{1-x}{2}\log(1-x).
@@ -138,17 +131,18 @@ When analyzing a framework involving an optimization problem, there are two impo
 1. Does optimizing the objective give what we want?
 2. Does the algorithm optimize or approximately optimize the objective?
 
-We first answer the question. In particular, if the observed projection matrix $P$ does not contain any signal, i.e., $P\sim \text{Unif}(\mathcal{P}_{n, K})$, the uniform distribution on the set of all rank-$K$ $n$-by-$n$ projection matrices, is the null solution the optimum of the objective, at least locally?
+We first answer the question. In particular, if the observed projection matrix $P$ does not contain any signal, i.e., $P\sim \Unif(\mathcal{P}_{n, K})$, the uniform distribution on the set of all rank-$K$ $n$-by-$n$ projection matrices, is the null solution the optimum of the objective, at least locally?
 
 
 The following results says that: under the null, the Rademacher EB-proj surrogate objective does not favor a solution that is far away from 0.
 
+
 ::: {.theorem #thm:global-null-stability}
 
-Suppose $K$ and $b$ are fixed as $n\to\infty$, and $P\sim\mathrm{Unif}(\mathcal P_{n,K})$. For every fixed $\varepsilon>0$, there exists $a_\varepsilon>0$ such that
+Suppose $K$ and $b$ are fixed as $n\to\infty$, and $P\sim\Unif(\mathcal P_{n,K})$. For every fixed $\varepsilon>0$, there exists $a_\varepsilon>0$ such that
 
 $$
-\mathbb{P}_{P\sim\mathrm{Unif}(\mathcal P_{n,K})}\left[
+\P_{P\sim\Unif(\mathcal P_{n,K})}\left[
 \sup_{m\in[-1,1]^n, \ \ \|m\|_2\ge \varepsilon\sqrt n}
 \widehat{F}(m)
 \le
@@ -164,10 +158,10 @@ However, this theorem does not rule out the near-zero (e.g., $o(\sqrt{n})$) solu
 
 ::: {.theorem #thm:null-calibration}
 
-Suppose $P\sim \text{Unif}(\mathcal{P}_{n, K})$ and $v\sim g^{\otimes n}$. Then
+Suppose $P\sim \Unif(\mathcal{P}_{n, K})$ and $v\sim g^{\otimes n}$. Then
 
 $$
-\mathbb{P}_{P\sim\text{Unif}(\mathcal{P}_{n, K})}\left[\sup_{q}\widehat{F}_{\text{EB-proj}}(q, g) \ge t\right] \le e^{-t}.
+\P_{P\sim\Unif(\mathcal{P}_{n, K})}\left[\sup_{q}\widehat{F}_{\EBproj}(q, g) \ge t\right] \le e^{-t}.
 $$
 :::
 
@@ -178,48 +172,167 @@ $$
 We attempt to derive a similar framework from the spiked model assumed in flashier:
 
 $$
-Y=v z^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  v_i \stackrel{\text{iid}}{\sim} g,\quad z_j\stackrel{iid}{\sim} N(0, \sigma_z^2).
+Y \in \R^{n\times K}=v z^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  v_i \stackrel{\text{iid}}{\sim} g,\quad z_j\stackrel{iid}{\sim} N(0, \sigma_z^2).
 $$
-Write
 
-$$
-v=r u,\qquad \|u\|=1,\qquad \gamma=\frac{\sigma_z^2r^2}{\sigma^2}.
-$$
-Integrating out $z$,
+Integrating out $z$, and denote $\kappa=\sigma_z^2/\sigma^2$, we have
 
 $$
 y_j\mid v \sim N\left(0,\Sigma_v\right),
-\qquad \Sigma_v=\sigma^2 I_n+\sigma_z^2vv^\top =\sigma^2(I_n+\gamma uu^\top).
+\qquad \Sigma_v=\sigma^2 I_n+\sigma_z^2vv^\top =\sigma^2(I_n+\kappa vv^\top).
 $$
-Consider the projection $P=Y(Y^\top Y)^{-1}Y^\top$,
-then the induced density of $P$ on the Grassmannian has the form
+
+
+Consider the projection $P=Y(Y^\top Y)^{-1}Y^\top$, the induced density of $P$ on the Grassmannian has the form
 
 $$
-p(P\mid u,\eta) \propto
-(1-\eta)^{p/2}
-(1-\eta\,u^\top P u)^{-n/2},
-\qquad \eta=\frac{\gamma}{1+\gamma}\in[0,1).
+\begin{aligned}
+p(P\mid v,\kappa)& \propto
+(1-\eta(v, \kappa))^{K/2}
+(1-\eta(v, \kappa)\, \frac{v^\top P v}{\|v\|^2})^{-n/2} \\
+&=(1+\kappa \norm{v}^2)^{-K/2}
+(1-\frac{\kappa v^\top P v}{1+\kappa \norm{v}^2})^{-n/2},
+\qquad \eta(v, \kappa)=\frac{\kappa \norm{v}^2}{1+\kappa \norm{v}^2}.
+\end{aligned}
 $$
+
 Equivalently,
 
 $$
-\log p(P\mid u,\eta)
-=
-C+\frac p2\log(1-\eta)
--\frac n2\log(1-\eta\rho),
-\qquad \rho=u^\top P u.
+\begin{aligned}
+\log p(P\mid v,\kappa)
+&=
+C+\frac K2\log(1-\eta(v, \kappa))
+-\frac n2\log(1-\eta(v, \kappa)\rho) \\
+&= C+\frac{n-K}{2}\log(1+\kappa \norm{v}^2)
+-\frac n2\log(1+\kappa \norm{v}^2-\kappa v^\top P v),
+\qquad \rho=\frac{v^\top P v}{\|v\|^2}.
+\end{aligned}
 $$
 
-The approximate EB objective could be
+The marginal log likelihood for a fixed $\kappa$ is given by
 
 $$
-\widehat{F}_{\text{EB-spiked-proj}}(q,g,\eta)
-= \frac p2\log(1-\eta)
--\frac n2\log(1-\eta\hat\rho(q))
--\mathrm{KL}(q \ \| \ g)+C,
+\log \int p(P\mid v,\kappa) g(dv).
 $$
 
-which is very similar to the EB-proj objective.
+Taking a variational approach gives the following variational objective:
+
+$$
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\kappa)
+= \frac K2\log(1-\eta(v, \kappa))
+-\frac n2\log(1-\eta(v, \kappa)\hat\rho(q))
+-\KL{q}{g}+C,
+$$
+
+or
+
+$$
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\kappa)
+= \frac{n-K}{2}\log(1+\kappa \Eqvv)
+-\frac n2\log\left(1+\kappa (\Eqvv- \vbar^\top P \vbar)\right)
+-\KL{q}{g}+C,
+$$
+
+Interestingly, when $\kappa\to\infty$, we have $\eta(v, \kappa)\to 1$ and the objective reduces to
+
+$$
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\infty)
+= -\frac n2\log(1-\hat\rho(q))
+-\KL{q}{g}+C,
+$$
+
+which is very similar to the Rademacher EB-proj objective. This suggests that the Rademacher EB-proj objective is a limiting case of the spiked model when the signal-to-noise ratio is large.
+
+We can also see the connection by profiling over $\kappa$. Taking derivative and setting it to 0 gives
+
+$$
+\kappa = \frac{(n\hat{\rho}-K)_+}{K(1-\hat{\rho})\Eqvv}.
+$$
+
+Plugging this back into the objective gives
+
+$$
+\begin{aligned}
+\widehat{F}^{\operatorname{prof}}_{\text{EB-spiked-proj}}(q,g)
+&=
+\begin{cases}
+-\KL{q}{g}+C,
+& \hat\rho(q)\le K/n,\\[6pt]
+\frac{n-K}{2}\log\left(\frac{(n-K)\hat\rho(q)}
+{K(1-\hat\rho(q))}\right)
+-\frac n2\log\left(\frac{n\hat\rho(q)}{K}\right)
+-\KL{q}{g}+C,
+& \hat\rho(q)>K/n,
+\end{cases} \\
+&=\begin{cases}
+-\KL{q}{g}+C,
+& \hat\rho(q)\le K/n,\\[6pt]
+-\frac{n-K}{2}\log(1-\hat\rho(q))
+-\frac{K}{2}\log\hat\rho(q)
+-\KL{q}{g}+C',
+& \hat\rho(q)>K/n.
+\end{cases}
+\end{aligned}
+$$
+
+
+Consider the convex conjugate of log: $-\log x = \max_{\tau > 0} \{\log \tau - \tau x + 1\}$, we have
+
+$$
+\log(1-\eta(v, \kappa)\hat\rho(q)) = \max_{\tau>0} \{\log \tau - \tau(1-\eta(v, \kappa)\hat\rho(q)) + 1\}.
+$$
+
+So the surrogate objective can be written as
+
+$$
+\widehat{F}^\tau_{\text{EB-spiked-proj}}(q,g,\kappa)
+= C_\tau + \frac K2\log(1-\eta(v, \kappa))
++\frac {\tau n}{2} \eta(v, \kappa)\hat\rho(q) - \KL{q}{g},
+$$
+
+which looks like the flashier objective with Normal prior on $z$, profiled over $z$ (eq. 54-55 in EBMF_cov_ideas):
+
+$$
+\widehat{F}^z_{\text{flashier}} = \frac{\alpha n\hat{\rho}(q)}{2\sigma^2} + \frac{K}{2}\log(1-\alpha) - \KL{q}{g} + C'',
+$$
+
+where $\alpha = \eta(v,\kappa)= \frac{\kappa \Eqvv}{1+\kappa \Eqvv}$. So for fixed $\kappa$ (hence fixed $\alpha$ and $\eta(\vbar, \kappa)\equiv \eta(\vbar)$), the update for $q$ is given by (Table 1 in EBMF_cov_ideas):
+
+$$
+\EBNM\left(\frac{nP \vbar}{\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{eff}}, \frac{\sigma^2_{eff} \Eqvv}{\eta(\vbar)(\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{eff})}\right),
+$$
+
+where
+
+$$
+\sigma^2_{eff} = \frac{1}{\tau}.
+$$
+
+The update for $\kappa$ is given by
+
+$$
+\hat\kappa_{\tau}=
+\frac{(n\tau\hat\rho-K)_+}{K\Eqvv}.
+$$
+
+Hence, the update for $\alpha=\eta$ is given by
+
+$$
+\hat\eta_\tau=\left(
+1-\frac{K}{N\tau\hat\rho}
+\right)_+,
+$$
+
+which matches the MLE update for $\alpha$ in Table 1 in EBMF_cov_ideas.
+
+The update for $\tau$ is given by
+
+$$
+\hat\tau
+=\frac{1}{1-\hat\eta\hat\rho(q)}.
+$$
+
 
 ## Analyses
 
