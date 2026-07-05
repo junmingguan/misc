@@ -75,6 +75,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="custom.css" type="text/css" />
 
 
 
@@ -437,15 +438,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree755a85876cf675f062a7c68c097ac500d0d8ed4btargetblank755a858a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea224caf3075d8998d23171a2ca6c30b04ff8ed70targetblanka224cafa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/755a85876cf675f062a7c68c097ac500d0d8ed4b" target="_blank">755a858</a>
+<a href="https://github.com/junmingguan/misc/tree/a224caf3075d8998d23171a2ca6c30b04ff8ed70" target="_blank">a224caf</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree755a85876cf675f062a7c68c097ac500d0d8ed4btargetblank755a858a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea224caf3075d8998d23171a2ca6c30b04ff8ed70targetblanka224cafa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -455,7 +456,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/755a85876cf675f062a7c68c097ac500d0d8ed4b" target="_blank">755a858</a>.
+<a href="https://github.com/junmingguan/misc/tree/a224caf3075d8998d23171a2ca6c30b04ff8ed70" target="_blank">a224caf</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -476,11 +477,12 @@ Ignored files:
     Ignored:    .luarc.json
     Ignored:    _extensions/
     Ignored:    analysis/.DS_Store
-    Ignored:    analysis/exploratiion_normal_prior_on_factor.html
+    Ignored:    analysis/math-env-refs.html
     Ignored:    analysis/presentation.html
 
 Untracked files:
     Untracked:  Rplots.pdf
+    Untracked:  analysis/custom.css
     Untracked:  analysis/draft.Rmd
     Untracked:  analysis/eb_ica_backup.Rmd
     Untracked:  analysis/ebica_math.md
@@ -500,6 +502,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   .gitignore
+    Modified:   analysis/_site.yml
     Modified:   analysis/eb_ica.Rmd
     Modified:   analysis/flashier_whitened_and_tree_example.Rmd
     Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
@@ -551,6 +554,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/a224caf3075d8998d23171a2ca6c30b04ff8ed70/analysis/ebproj.Rmd" target="_blank">a224caf</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-04
+</td>
+<td>
+wflow_publish("analysis/ebproj.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/98146189ec59d30162af55f489441de66fb16ced/docs/ebproj.html" target="_blank">9814618</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -609,40 +646,26 @@ wflow_publish(c("analysis/ebproj.Rmd", "analysis/index.Rmd"))
 </div>
 </div>
 </div>
-<style>
-.theorem,
-.lemma,
-.proof {
-  border-left: 4px solid #e95420;
-  margin: 1.25em 0;
-  padding: 0.85em 1em;
-  background: #f8f8f8;
-}
-
-.proof {
-  border-left-color: #666;
-}
-
-.theorem::before,
-.lemma::before,
-.proof::before {
-  display: block;
-  font-weight: 700;
-  margin-bottom: 0.35em;
-}
-
-.theorem::before {
-  content: "Theorem.";
-}
-
-.lemma::before {
-  content: "Lemma.";
-}
-
-.proof::before {
-  content: "Proof.";
-}
-</style>
+<div class="hidden">
+<p><span class="math display">\[
+    \newcommand{\E}{\mathbb{E}}
+    \newcommand{\R}{\mathbb{R}}
+    \newcommand{\P}{\mathbb{P}}
+    \newcommand{\Rn}{\mathbb{R}^n}
+    \DeclareMathOperator{\Var}{Var}
+    \newcommand{\vbar}{\bar{v}}
+    \newcommand{\EBproj}{\text{EB-proj}}
+    \newcommand{\KL}[2]{\text{KL}\left(#1 \ \| \ #2\right)}
+    \newcommand{\Unif}{\text{Unif}}
+    \newcommand{\Rad}{\text{Rad}}
+    \newcommand{\Eq}{\mathbb{E}_q}
+    \newcommand{\Eqv}{\mathbb{E}_q[v]}
+    \newcommand{\Eqvv}{\mathbb{E}_q\|v\|^2}
+    \newcommand{\EqPv}{\mathbb{E}_q[v^\top P v]}
+    \newcommand{\norm}[1]{\left\|#1\right\|}
+    \DeclareMathOperator{\EBNM}{EBNM}
+\]</span></p>
+</div>
 <div id="motivation" class="section level2">
 <h2>Motivation</h2>
 <p>We have seen that the low-plus-noise assumed in flashier, when
@@ -650,15 +673,15 @@ applied to centered and whitened data is generally not ideal. For
 example, if the data matrix is generated as</p>
 <p><span class="math display">\[
 Y=\ell f^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0,
-\sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \text{Rad},\quad
+\sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \Rad,\quad
 f_j\stackrel{iid}{\sim} N(0, \sigma_f^2),
 \]</span> then the whitened and centered data matrix has rather complex
 distribution for which the above model is misspecified and in general
 not compatible with the iid noise assumption. Furthermore, the prior
 after the whitening transformation could also change: for example, in
 the simple case where <span class="math inline">\(y=\ell\)</span> and
-<span class="math inline">\(\ell_i\sim \text{Rad}(p)\)</span>, centering
-and whitening changes the distribution to a normalized two point
+<span class="math inline">\(\ell_i\sim \Rad(p)\)</span>, centering and
+whitening changes the distribution to a normalized two point
 distribution such that shrinkage to a <span class="math inline">\(\{\pm
 1\}\)</span> distribution seems unsatisfactory. A different and perhaps
 more principled route is to model the whitened data, or the projection
@@ -716,14 +739,14 @@ assume that <span class="math inline">\(P\)</span> is uniformly drawn
 from the Haar measure on the Grassmannian maniford. Hence <span
 class="math inline">\(p(P \mid v) \propto 1\)</span> and</p>
 <p><span class="math display">\[
-\rho \mid v \sim \text{Beta}(k/2, (n-k)/2).
+\rho \mid v \sim \operatorname{Beta}(k/2, (n-k)/2).
 \]</span></p>
 <p>Under this model,</p>
 <p><span class="math display">\[
 p(P \mid v, \rho) \propto \delta(\rho-\rho_{\text{obs}})
 \rho^{k/2-1}(1-\rho)^{(n-k)/2-1}.
 \]</span> Introducing a prior <span class="math inline">\(\pi(p)\sim
-\text{Beta}(a,b)\)</span>, and letting <span
+\operatorname{Beta}(a,b)\)</span>, and letting <span
 class="math inline">\(a=k/2\)</span>, we have</p>
 <p><span class="math display">\[
 p(P \mid v) = \int^1_0 p(P \mid v, \rho) \pi(d\rho) \propto
@@ -733,53 +756,54 @@ process:</p>
 <p><span class="math display">\[
 \begin{aligned}
   v &amp; \sim g^{\otimes n} \\
-  \rho \mid v &amp; \sim \text{Beta}(k/2, b) \\
-  P \mid \rho, v &amp; \sim \text{Unif}\,(\{\mathcal{P}_{n,K}:\
+  \rho \mid v &amp; \sim \operatorname{Beta}(k/2, b) \\
+  P \mid \rho, v &amp; \sim \Unif\,(\{\mathcal{P}_{n,K}:\
 \rho_{\text{obs}}=\rho\}).
 \end{aligned}
-\]</span> ## Variational objective</p>
+\]</span></p>
+</div>
+<div id="variational-objective" class="section level2">
+<h2>Variational objective</h2>
 <p>The marginal log likelihood is given by</p>
 <p><span class="math display">\[
 \log \int p(P\mid v) g(dv).
 \]</span></p>
 <p>Consider a variational approach, the exact ElBO is</p>
 <p><span class="math display">\[
-F_{\text{EB-proj}}(q, g) =
-\mathbb{E}_q\left[-\frac{n-k-2b}{2}\log(1-\rho_{\text{obs}})\right] -
-\text{KL}(q \, \|\, g) +C,
-\]</span> where <span
-class="math inline">\(C=\log\Gamma\left(\frac{n-k}{2}\right)+\log\Gamma\left(\frac
-k2+b\right)-\log\Gamma\left(\frac{n}{2}\right)-
-\log\Gamma(b)\)</span>. The expectation is in general not in closed
-form. A easy-to-evaluate surrogate is</p>
-<p><span class="math display">\[
-\widehat{F}_{\text{EB-proj}}(q, g) =
--\frac{n-k-2b}{2}\log\left(1-\frac{\mathbb{E}_q[v]^\top P
-\mathbb{E}_q[v]}{\mathbb{E}_q[v^\top v]}\right) - \text{KL}(q \, \|\, g)
+F_{\EBproj}(q, g) =
+\Eq\left[-\frac{n-k-2b}{2}\log(1-\rho_{\text{obs}})\right] - \KL{q}{g}
 +C,
-\]</span> and a more accurate one is</p>
+\]</span></p>
+<p>where <span
+class="math inline">\(C=\log\Gamma\left(\frac{n-k}{2}\right)+\log\Gamma\left(\frac{k}{2}+b\right)-\log\Gamma\left(\frac{n}{2}\right)-\log\Gamma(b)\)</span>.
+The expectation is in general not in closed form. A easy-to-evaluate
+surrogate is</p>
 <p><span class="math display">\[
-\widetilde{F}_{\text{EB-proj}}(q, g) =
--\frac{n-k-2b}{2}\log\left(1-\frac{\mathbb{E}_q[v^\top P
-v]}{\mathbb{E}_q[v^\top v]}\right) - \text{KL}(q \, \|\, g) +C.
-\]</span> The following result follows from Jensen’s inequality.</p>
+\widehat{F}_{\EBproj}(q, g) =
+-\frac{n-k-2b}{2}\log\left(1-\frac{\Eqv^\top P \Eqv}{\Eqvv}\right) -
+\KL{q}{g} +C,
+\]</span></p>
+<p>and a more accurate one is</p>
+<p><span class="math display">\[
+\widetilde{F}_{\EBproj}(q, g) =
+-\frac{n-k-2b}{2}\log\left(1-\frac{\EqPv}{\Eqvv}\right) - \KL{q}{g} +C.
+\]</span></p>
+<p>The following result follows from Jensen’s inequality.</p>
 <div id="lem:lower-bound-obj" class="lemma">
 <p><span class="math display">\[
-\widehat{F}_{\text{EB-proj}}(q, g) \le \widetilde{F}_{\text{EB-proj}}(q,
-g) \le F_{\text{EB-proj}}(q, g).
+\widehat{F}_{\EBproj}(q, g) \le \widetilde{F}_{\EBproj}(q, g) \le
+F_{\EBproj}(q, g).
 \]</span></p>
 </div>
 <p>As a special case which we will investigate firther, consider the
-Rademacher prior <span
-class="math inline">\(g=\text{Rad}(\tfrac12)\)</span> on <span
-class="math inline">\(v\)</span>. We write the surrogate EB-proj
-objective as</p>
+Rademacher prior <span class="math inline">\(g=\Rad(\tfrac12)\)</span>
+on <span class="math inline">\(v\)</span>. We write the surrogate
+EB-proj objective as</p>
 <p><span class="math display">\[
-\widehat{F}(\bar{v})\equiv \widehat{F}_{\text{EB-proj}}(q,
-\text{Rad}(\tfrac12)) = \frac{n-2k-b}{2}\log \left(1-\frac{\bar{v}^\top
-P\bar{v}}{n}\right)-\sum_{i=1}^n h(\bar{v}_i)+C,
-\]</span> where <span
-class="math inline">\(\bar{v}:=\mathbb{E}_q[v]\)</span> and</p>
+\widehat{F}(\vbar)\equiv \widehat{F}_{\EBproj}(q, \Rad(\tfrac12)) =
+\frac{n-2k-b}{2}\log \left(1-\frac{\vbar^\top
+P\vbar}{n}\right)-\sum_{i=1}^n h(\vbar_i)+C,
+\]</span> where <span class="math inline">\(\vbar:=\Eqv\)</span> and</p>
 <p><span class="math display">\[
 h(x)=\frac{1+x}{2}\log(1+x)+\frac{1-x}{2}\log(1-x).
 \]</span></p>
@@ -793,8 +817,8 @@ objective?</li>
 <p>We first answer the question. In particular, if the observed
 projection matrix <span class="math inline">\(P\)</span> does not
 contain any signal, i.e., <span class="math inline">\(P\sim
-\text{Unif}(\mathcal{P}_{n, K})\)</span>, the uniform distribution on
-the set of all rank-<span class="math inline">\(K\)</span> <span
+\Unif(\mathcal{P}_{n, K})\)</span>, the uniform distribution on the set
+of all rank-<span class="math inline">\(K\)</span> <span
 class="math inline">\(n\)</span>-by-<span
 class="math inline">\(n\)</span> projection matrices, is the null
 solution the optimum of the objective, at least locally?</p>
@@ -805,12 +829,12 @@ from 0.</p>
 <p>Suppose <span class="math inline">\(K\)</span> and <span
 class="math inline">\(b\)</span> are fixed as <span
 class="math inline">\(n\to\infty\)</span>, and <span
-class="math inline">\(P\sim\mathrm{Unif}(\mathcal P_{n,K})\)</span>. For
-every fixed <span class="math inline">\(\varepsilon&gt;0\)</span>, there
+class="math inline">\(P\sim\Unif(\mathcal P_{n,K})\)</span>. For every
+fixed <span class="math inline">\(\varepsilon&gt;0\)</span>, there
 exists <span class="math inline">\(a_\varepsilon&gt;0\)</span> such
 that</p>
 <p><span class="math display">\[
-\mathbb{P}_{P\sim\mathrm{Unif}(\mathcal P_{n,K})}\left[
+\P_{P\sim\Unif(\mathcal P_{n,K})}\left[
 \sup_{m\in[-1,1]^n, \ \ \|m\|_2\ge \varepsilon\sqrt n}
 \widehat{F}(m)
 \le
@@ -825,13 +849,12 @@ could either discard a solution with norm less than a prespecified
 threshold, as is done in flashier, or use the following result to reject
 it.</p>
 <div id="thm:null-calibration" class="theorem">
-<p>Suppose <span class="math inline">\(P\sim \text{Unif}(\mathcal{P}_{n,
+<p>Suppose <span class="math inline">\(P\sim \Unif(\mathcal{P}_{n,
 K})\)</span> and <span class="math inline">\(v\sim g^{\otimes
 n}\)</span>. Then</p>
 <p><span class="math display">\[
-\mathbb{P}_{P\sim\text{Unif}(\mathcal{P}_{n,
-K})}\left[\sup_{q}\widehat{F}_{\text{EB-proj}}(q, g) \ge t\right] \le
-e^{-t}.
+\P_{P\sim\Unif(\mathcal{P}_{n,
+K})}\left[\sup_{q}\widehat{F}_{\EBproj}(q, g) \ge t\right] \le e^{-t}.
 \]</span></p>
 </div>
 </div>
@@ -840,41 +863,164 @@ e^{-t}.
 <p>We attempt to derive a similar framework from the spiked model
 assumed in flashier:</p>
 <p><span class="math display">\[
-Y=v z^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0,
-\sigma^2),\quad  v_i \stackrel{\text{iid}}{\sim} g,\quad
-z_j\stackrel{iid}{\sim} N(0, \sigma_z^2).
-\]</span> Write</p>
-<p><span class="math display">\[
-v=r u,\qquad \|u\|=1,\qquad \gamma=\frac{\sigma_z^2r^2}{\sigma^2}.
-\]</span> Integrating out <span class="math inline">\(z\)</span>,</p>
+Y \in \R^{n\times K}=v z^\top + E, \quad
+E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  v_i
+\stackrel{\text{iid}}{\sim} g,\quad z_j\stackrel{iid}{\sim} N(0,
+\sigma_z^2).
+\]</span></p>
+<p>Integrating out <span class="math inline">\(z\)</span>, and denote
+<span class="math inline">\(\kappa=\sigma_z^2/\sigma^2\)</span>, we
+have</p>
 <p><span class="math display">\[
 y_j\mid v \sim N\left(0,\Sigma_v\right),
-\qquad \Sigma_v=\sigma^2 I_n+\sigma_z^2vv^\top =\sigma^2(I_n+\gamma
-uu^\top).
-\]</span> Consider the projection <span class="math inline">\(P=Y(Y^\top
-Y)^{-1}Y^\top\)</span>, then the induced density of <span
+\qquad \Sigma_v=\sigma^2 I_n+\sigma_z^2vv^\top =\sigma^2(I_n+\kappa
+vv^\top).
+\]</span></p>
+<p>Consider the projection <span class="math inline">\(P=Y(Y^\top
+Y)^{-1}Y^\top\)</span>, the induced density of <span
 class="math inline">\(P\)</span> on the Grassmannian has the form</p>
 <p><span class="math display">\[
-p(P\mid u,\eta) \propto
-(1-\eta)^{p/2}
-(1-\eta\,u^\top P u)^{-n/2},
-\qquad \eta=\frac{\gamma}{1+\gamma}\in[0,1).
-\]</span> Equivalently,</p>
-<p><span class="math display">\[
-\log p(P\mid u,\eta)
-=
-C+\frac p2\log(1-\eta)
--\frac n2\log(1-\eta\rho),
-\qquad \rho=u^\top P u.
+\begin{aligned}
+p(P\mid v,\kappa)&amp; \propto
+(1-\eta(v, \kappa))^{K/2}
+(1-\eta(v, \kappa)\, \frac{v^\top P v}{\|v\|^2})^{-n/2} \\
+&amp;=(1+\kappa \norm{v}^2)^{-K/2}
+(1-\frac{\kappa v^\top P v}{1+\kappa \norm{v}^2})^{-n/2},
+\qquad \eta(v, \kappa)=\frac{\kappa \norm{v}^2}{1+\kappa \norm{v}^2}.
+\end{aligned}
 \]</span></p>
-<p>The approximate EB objective could be</p>
+<p>Equivalently,</p>
 <p><span class="math display">\[
-\widehat{F}_{\text{EB-spiked-proj}}(q,g,\eta)
-= \frac p2\log(1-\eta)
--\frac n2\log(1-\eta\hat\rho(q))
--\mathrm{KL}(q \ \| \ g)+C,
+\begin{aligned}
+\log p(P\mid v,\kappa)
+&amp;=
+C+\frac K2\log(1-\eta(v, \kappa))
+-\frac n2\log(1-\eta(v, \kappa)\rho) \\
+&amp;= C+\frac{n-K}{2}\log(1+\kappa \norm{v}^2)
+-\frac n2\log(1+\kappa \norm{v}^2-\kappa v^\top P v),
+\qquad \rho=\frac{v^\top P v}{\|v\|^2}.
+\end{aligned}
 \]</span></p>
-<p>which is very similar to the EB-proj objective.</p>
+<p>The marginal log likelihood for a fixed <span
+class="math inline">\(\kappa\)</span> is given by</p>
+<p><span class="math display">\[
+\log \int p(P\mid v,\kappa) g(dv).
+\]</span></p>
+<p>Taking a variational approach gives the following variational
+objective:</p>
+<p><span class="math display">\[
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\kappa)
+= \frac K2\log(1-\eta(v, \kappa))
+-\frac n2\log(1-\eta(v, \kappa)\hat\rho(q))
+-\KL{q}{g}+C,
+\]</span></p>
+<p>or</p>
+<p><span class="math display">\[
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\kappa)
+= \frac{n-K}{2}\log(1+\kappa \Eqvv)
+-\frac n2\log\left(1+\kappa (\Eqvv- \vbar^\top P \vbar)\right)
+-\KL{q}{g}+C,
+\]</span></p>
+<p>Interestingly, when <span
+class="math inline">\(\kappa\to\infty\)</span>, we have <span
+class="math inline">\(\eta(v, \kappa)\to 1\)</span> and the objective
+reduces to</p>
+<p><span class="math display">\[
+\widehat{F}_{\text{EB-spiked-proj}}(q,g,\infty)
+= -\frac n2\log(1-\hat\rho(q))
+-\KL{q}{g}+C,
+\]</span></p>
+<p>which is very similar to the Rademacher EB-proj objective. This
+suggests that the Rademacher EB-proj objective is a limiting case of the
+spiked model when the signal-to-noise ratio is large.</p>
+<p>We can also see the connection by profiling over <span
+class="math inline">\(\kappa\)</span>. Taking derivative and setting it
+to 0 gives</p>
+<p><span class="math display">\[
+\kappa = \frac{(n\hat{\rho}-K)_+}{K(1-\hat{\rho})\Eqvv}.
+\]</span></p>
+<p>Plugging this back into the objective gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{F}^{\operatorname{prof}}_{\text{EB-spiked-proj}}(q,g)
+&amp;=
+\begin{cases}
+-\KL{q}{g}+C,
+&amp; \hat\rho(q)\le K/n,\\[6pt]
+\frac{n-K}{2}\log\left(\frac{(n-K)\hat\rho(q)}
+{K(1-\hat\rho(q))}\right)
+-\frac n2\log\left(\frac{n\hat\rho(q)}{K}\right)
+-\KL{q}{g}+C,
+&amp; \hat\rho(q)&gt;K/n,
+\end{cases} \\
+&amp;=\begin{cases}
+-\KL{q}{g}+C,
+&amp; \hat\rho(q)\le K/n,\\[6pt]
+-\frac{n-K}{2}\log(1-\hat\rho(q))
+-\frac{K}{2}\log\hat\rho(q)
+-\KL{q}{g}+C&#39;,
+&amp; \hat\rho(q)&gt;K/n.
+\end{cases}
+\end{aligned}
+\]</span></p>
+<p>Consider the convex conjugate of log: <span
+class="math inline">\(-\log x = \max_{\tau &gt; 0} \{\log \tau - \tau x
++ 1\}\)</span>, we have</p>
+<p><span class="math display">\[
+\log(1-\eta(v, \kappa)\hat\rho(q)) = \max_{\tau&gt;0} \{\log \tau -
+\tau(1-\eta(v, \kappa)\hat\rho(q)) + 1\}.
+\]</span></p>
+<p>So the surrogate objective can be written as</p>
+<p><span class="math display">\[
+\widehat{F}^\tau_{\text{EB-spiked-proj}}(q,g,\kappa)
+= C_\tau + \frac K2\log(1-\eta(v, \kappa))
++\frac {\tau n}{2} \eta(v, \kappa)\hat\rho(q) - \KL{q}{g},
+\]</span></p>
+<p>which looks like the flashier objective with Normal prior on <span
+class="math inline">\(z\)</span>, profiled over <span
+class="math inline">\(z\)</span> (eq. 54-55 in EBMF_cov_ideas):</p>
+<p><span class="math display">\[
+\widehat{F}^z_{\text{flashier}} = \frac{\alpha
+n\hat{\rho}(q)}{2\sigma^2} + \frac{K}{2}\log(1-\alpha) - \KL{q}{g} +
+C&#39;&#39;,
+\]</span></p>
+<p>where <span class="math inline">\(\alpha = \eta(v,\kappa)=
+\frac{\kappa \Eqvv}{1+\kappa \Eqvv}\)</span>. So for fixed <span
+class="math inline">\(\kappa\)</span> (hence fixed <span
+class="math inline">\(\alpha\)</span> and <span
+class="math inline">\(\eta(\vbar, \kappa)\equiv \eta(\vbar)\)</span>),
+the update for <span class="math inline">\(q\)</span> is given by (Table
+1 in EBMF_cov_ideas):</p>
+<p><span class="math display">\[
+\EBNM\left(\frac{nP \vbar}{\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{eff}},
+\frac{\sigma^2_{eff} \Eqvv}{\eta(\vbar)(\eta(\vbar)n\hat{\rho}(q)+K
+\sigma^2_{eff})}\right),
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\sigma^2_{eff} = \frac{1}{\tau}.
+\]</span></p>
+<p>The update for <span class="math inline">\(\kappa\)</span> is given
+by</p>
+<p><span class="math display">\[
+\hat\kappa_{\tau}=
+\frac{(n\tau\hat\rho-K)_+}{K\Eqvv}.
+\]</span></p>
+<p>Hence, the update for <span
+class="math inline">\(\alpha=\eta\)</span> is given by</p>
+<p><span class="math display">\[
+\hat\eta_\tau=\left(
+1-\frac{K}{N\tau\hat\rho}
+\right)_+,
+\]</span></p>
+<p>which matches the MLE update for <span
+class="math inline">\(\alpha\)</span> in Table 1 in EBMF_cov_ideas.</p>
+<p>The update for <span class="math inline">\(\tau\)</span> is given
+by</p>
+<p><span class="math display">\[
+\hat\tau
+=\frac{1}{1-\hat\eta\hat\rho(q)}.
+\]</span></p>
 </div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
@@ -893,6 +1039,163 @@ this.</li>
 </div>
 </div>
 
+<script>
+(function () {
+  var theoremTypes = [
+    { className: "theorem", prefixes: ["thm"], label: "Theorem" },
+    { className: "lemma", prefixes: ["lem"], label: "Lemma" },
+    { className: "proposition", prefixes: ["prop", "prp"], label: "Proposition" },
+    { className: "remark", prefixes: ["rem"], label: "Remark" }
+  ];
+
+  function getType(block) {
+    for (var i = 0; i < theoremTypes.length; i += 1) {
+      if (block.classList.contains(theoremTypes[i].className)) {
+        return theoremTypes[i];
+      }
+    }
+    return null;
+  }
+
+  function addAlias(refs, alias, target) {
+    if (alias && !refs[alias]) {
+      refs[alias] = target;
+    }
+  }
+
+  function addAliases(refs, id, type, target) {
+    addAlias(refs, id, target);
+    addAlias(refs, id.replace(/:/g, "-"), target);
+
+    for (var i = 0; i < type.prefixes.length; i += 1) {
+      var prefix = type.prefixes[i];
+      var prefixPattern = new RegExp("^" + prefix + "[:-]");
+      var bareId = id.replace(prefixPattern, "");
+
+      addAlias(refs, prefix + "-" + bareId, target);
+      addAlias(refs, prefix + ":" + bareId, target);
+    }
+  }
+
+  function makeLink(ref) {
+    var link = document.createElement("a");
+    link.href = "#" + ref.id;
+    link.className = "theorem-ref";
+    link.textContent = ref.label + " " + ref.number;
+    return link;
+  }
+
+  function replaceCitationSpan(span, refs) {
+    var citeIds = (span.getAttribute("data-cites") || "").trim().split(/\s+/);
+    var replacements = citeIds.map(function (id) {
+      return refs[id];
+    });
+
+    if (!replacements.length || replacements.some(function (ref) { return !ref; })) {
+      return;
+    }
+
+    var fragment = document.createDocumentFragment();
+    replacements.forEach(function (ref, index) {
+      if (index > 0) {
+        fragment.appendChild(document.createTextNode(", "));
+      }
+      fragment.appendChild(makeLink(ref));
+    });
+    span.parentNode.replaceChild(fragment, span);
+  }
+
+  function replaceTextRefs(node, refs) {
+    var pattern = /\\?@ref\(([^)]+)\)|[@#]((?:thm|lem|prop|prp|rem)[:-][A-Za-z0-9_-]+)/g;
+    var text = node.nodeValue;
+    var match;
+    var lastIndex = 0;
+    var fragment = document.createDocumentFragment();
+
+    while ((match = pattern.exec(text)) !== null) {
+      var id = match[1] || match[2];
+      var ref = refs[id];
+
+      if (!ref) {
+        continue;
+      }
+
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      fragment.appendChild(makeLink(ref));
+      lastIndex = pattern.lastIndex;
+    }
+
+    if (lastIndex === 0) {
+      return;
+    }
+
+    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    node.parentNode.replaceChild(fragment, node);
+  }
+
+  function shouldSkip(node) {
+    var parent = node.parentElement;
+    return parent && parent.closest("a, code, pre, script, style, textarea, .math");
+  }
+
+  function replacePlainTextRefs(root, refs) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        return shouldSkip(node) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var nodes = [];
+    var node;
+
+    while ((node = walker.nextNode())) {
+      nodes.push(node);
+    }
+    nodes.forEach(function (textNode) {
+      replaceTextRefs(textNode, refs);
+    });
+  }
+
+  function buildRefs() {
+    var refs = {};
+    var blocks = document.querySelectorAll(".theorem, .lemma, .proposition, .remark");
+
+    blocks.forEach(function (block, index) {
+      var type = getType(block);
+
+      if (!type || !block.id) {
+        return;
+      }
+
+      var ref = {
+        id: block.id,
+        label: type.label,
+        number: index + 1
+      };
+
+      block.setAttribute("data-theorem-number", ref.number);
+      addAliases(refs, block.id, type, ref);
+    });
+
+    return refs;
+  }
+
+  function initTheoremRefs() {
+    var refs = buildRefs();
+    var citationSpans = document.querySelectorAll("span.citation[data-cites]");
+
+    citationSpans.forEach(function (span) {
+      replaceCitationSpan(span, refs);
+    });
+    replacePlainTextRefs(document.body, refs);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTheoremRefs);
+  } else {
+    initTheoremRefs();
+  }
+}());
+</script>
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
 TeX fonts only; see

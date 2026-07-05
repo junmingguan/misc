@@ -1,0 +1,64 @@
+body {
+  counter-reset: theorem-like;
+}
+
+.theorem,
+.lemma,
+.proposition,
+.remark,
+.proof {
+  border-left: 4px solid #e95420;
+  margin: 1.25em 0;
+  padding: 0.85em 1em;
+  background: #f8f8f8;
+}
+
+.theorem,
+.lemma,
+.proposition,
+.remark {
+  counter-increment: theorem-like;
+}
+
+.remark,
+.proof {
+  border-left-color: #666;
+}
+
+.theorem::before,
+.lemma::before,
+.proposition::before,
+.remark::before,
+.proof::before {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.35em;
+}
+
+.theorem::before {
+  content: "Theorem " counter(theorem-like) ".";
+}
+
+.lemma::before {
+  content: "Lemma " counter(theorem-like) ".";
+}
+
+.proposition::before {
+  content: "Proposition " counter(theorem-like) ".";
+}
+
+.remark::before {
+  content: "Remark " counter(theorem-like) ".";
+}
+
+.proof::before {
+  content: "Proof.";
+}
+
+.theorem:target,
+.lemma:target,
+.proposition:target,
+.remark:target {
+  scroll-margin-top: 5em;
+  box-shadow: 0 0 0 2px rgba(233, 84, 32, 0.2);
+}
