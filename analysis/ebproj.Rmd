@@ -480,3 +480,6 @@ $$
 
 - [Initial exploration of EB-proj, with shifted Rademacher](shifted_rademacher_for_ebproj.html)
   - TODO: It seems we need to choose the correct rank. Investigate this.
+
+
+## References
