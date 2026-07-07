@@ -522,15 +522,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree446141d8b54bfcebd5db11061532f7651f15536atargetblank446141da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree90dcd78327d0ce3ca238f018bc8813b45f06084dtargetblank90dcd78a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/446141d8b54bfcebd5db11061532f7651f15536a" target="_blank">446141d</a>
+<a href="https://github.com/junmingguan/misc/tree/90dcd78327d0ce3ca238f018bc8813b45f06084d" target="_blank">90dcd78</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree446141d8b54bfcebd5db11061532f7651f15536atargetblank446141da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree90dcd78327d0ce3ca238f018bc8813b45f06084dtargetblank90dcd78a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/446141d8b54bfcebd5db11061532f7651f15536a" target="_blank">446141d</a>.
+<a href="https://github.com/junmingguan/misc/tree/90dcd78327d0ce3ca238f018bc8813b45f06084d" target="_blank">90dcd78</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -638,6 +638,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/90dcd78327d0ce3ca238f018bc8813b45f06084d/analysis/ebproj.Rmd" target="_blank">90dcd78</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+wflow_publish("analysis/ebproj.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/31dd84b0a6fc3b073f70d2b47e7416890bf4512c/docs/ebproj.html" target="_blank">31dd84b</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1029,6 +1063,22 @@ C+\frac K2\log(1-\eta(v, \kappa))
 \qquad \rho=\frac{v^\top P v}{\|v\|^2}.
 \end{aligned}
 \]</span></p>
+<div class="proof">
+<p>Take</p>
+<p><span class="math display">\[
+H:=Y(Y^\top Y)^{-1/2}\in \mathcal{V}_{K,n},
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal{V}_{K,n}\)</span> is the
+Stiefel manifold of <span class="math inline">\(n\)</span>-by-<span
+class="math inline">\(K\)</span> matrices with orthonormal columns. Then
+<span class="math inline">\(P=HH^\top\)</span>. Then <span
+class="math inline">\(H\)</span> follows a matrix angular central
+Gaussian distribution (MACG) with parameter <span
+class="math inline">\(\Sigma_v\)</span> @[Chikuse2003-gg]:</p>
+<p><span class="math display">\[
+H \mid v \sim \operatorname{MACG}(\Sigma_v),
+\]</span></p>
+</div>
 <p>The marginal log likelihood for a fixed <span
 class="math inline">\(\kappa\)</span> is given by</p>
 <p><span class="math display">\[
@@ -1082,6 +1132,43 @@ v)}\widetilde{\pi}_{v,\kappa}(d\rho).
 <p>is a Beta-like prior on <span class="math inline">\(\rho\)</span>,
 tilted by alignment with <span class="math inline">\(v\)</span>.</p>
 <p><img src="figure/ebproj.Rmd/unnamed-chunk-1-1.png" alt="" width="576" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-1">
+Past versions of unnamed-chunk-1-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/31dd84b0a6fc3b073f70d2b47e7416890bf4512c/docs/figure/ebproj.Rmd/unnamed-chunk-1-1.png" target="_blank">31dd84b</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Hence, we can write the DGP as</p>
 <p><span class="math display">\[
 \begin{equation}
