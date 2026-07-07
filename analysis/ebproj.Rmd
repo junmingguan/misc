@@ -228,7 +228,7 @@ $$
 H:=Y(Y^\top Y)^{-1/2}\in \mathcal{V}_{K,n},
 $$
 
-where $\mathcal{V}_{K,n}$ is the Stiefel manifold of $n$-by-$K$ matrices with orthonormal columns. Then $P=HH^\top$. Then $H$ follows a matrix angular central Gaussian distribution (MACG) with parameter $\Sigma_v$ @[Chikuse2003-gg]:
+where $\mathcal{V}_{K,n}$ is the Stiefel manifold of $n$-by-$K$ matrices with orthonormal columns. Then $P=HH^\top$. Then $H$ follows a matrix angular central Gaussian distribution (MACG) with parameter $\Sigma_v$ [@Chikuse2003-gg]:
 
 $$
 H \mid v \sim \operatorname{MACG}(\Sigma_v),
