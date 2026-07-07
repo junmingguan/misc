@@ -27,6 +27,8 @@ $$
     \newcommand{\EqPv}{\mathbb{E}_q[v^\top P v]}
     \newcommand{\norm}[1]{\left\|#1\right\|}
     \DeclareMathOperator{\EBNM}{EBNM}
+    \newcommand{\eff}{\text{eff}}
+    \newcommand{\obs}{\text{obs}}
 $$
 :::
 
@@ -37,6 +39,7 @@ We have seen that the low-plus-noise assumed in flashier, when applied to center
 $$
 Y=\ell f^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0, \sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \Rad,\quad f_j\stackrel{iid}{\sim} N(0, \sigma_f^2),
 $$
+
 then the whitened and centered data matrix has rather complex distribution for which the above model is misspecified and in general not compatible with the iid noise assumption. Furthermore, the prior after the whitening transformation could also change: for example, in the simple case where $y=\ell$ and $\ell_i\sim \Rad(p)$, centering and whitening changes the distribution to a normalized two point distribution such that shrinkage to a $\{\pm 1\}$ distribution seems unsatisfactory. A different and perhaps more principled route is to model the whitened data, or the projection matrix, directly.
 
 ## The model
@@ -52,6 +55,7 @@ is exactly $1$. Of course, it could also be the case that $P=\sum u_ku_k^\top$ a
 $$
 p(P \mid v, \rho) = \frac{p(\rho \mid P, v) \,p(P \mid v)}{p(\rho \mid v)}.
 $$
+
 Given $P$ and $v$, $\rho$ is fixed, so $p(\rho \mid R, v)=\delta(\rho-\rho_{\text{obs}})$, where $\rho_{\text{obs}}=v^\top P v/\|v\|^2$. We assume that $P$ is uniformly drawn from the Haar measure on the Grassmannian maniford. Hence $p(P \mid v) \propto 1$ and 
 
 $$
@@ -71,11 +75,14 @@ $$
 We thus have the following "rank-1" data generating process:
 
 $$
+\begin{equation}
 \begin{aligned}
   v & \sim g^{\otimes n} \\
   \rho \mid v & \sim \operatorname{Beta}(k/2, b) \\
   P \mid \rho, v & \sim \Unif\,(\{\mathcal{P}_{n,K}:\ \rho_{\text{obs}}=\rho\}).
 \end{aligned}
+\label{eq:dgp-eb-proj}
+\end{equation}
 $$
 
 
@@ -186,14 +193,17 @@ $$
 Consider the projection $P=Y(Y^\top Y)^{-1}Y^\top$, the induced density of $P$ on the Grassmannian has the form
 
 $$
+\begin{equation}
 \begin{aligned}
-p(P\mid v,\kappa)& \propto
+p(P\mid v,\kappa)& = \frac{1}{Z_{n,K}}
 (1-\eta(v, \kappa))^{K/2}
 (1-\eta(v, \kappa)\, \frac{v^\top P v}{\|v\|^2})^{-n/2} \\
-&=(1+\kappa \norm{v}^2)^{-K/2}
+&= \frac{1}{Z_{n,K}} (1+\kappa \norm{v}^2)^{(n-K)/2}
 (1-\frac{\kappa v^\top P v}{1+\kappa \norm{v}^2})^{-n/2},
 \qquad \eta(v, \kappa)=\frac{\kappa \norm{v}^2}{1+\kappa \norm{v}^2}.
 \end{aligned}
+\label{eq:spike-pdf}
+\end{equation}
 $$
 
 Equivalently,
@@ -234,6 +244,117 @@ $$
 -\KL{q}{g}+C,
 $$
 
+
+### Alternative form of the DGP
+
+In fact, let $\rho_{\obs}=\frac{v^\top Pv}{\|v\|^2}$, then $\eqref{eq:spike-pdf}$ can be written as the following form:
+
+$$
+\begin{aligned}
+p(P\mid v, \kappa) &= \int_0^1 \frac{\delta(\rho-\rho_{\obs})}{Z_{n,K}}
+\frac{\overbrace{\frac{1}{B(K/2,(n-K)/2)}
+\rho^{K/2-1}
+(1-\rho)^{(n-K)/2-1}
+(1-\eta(v, \kappa))^{K/2}
+(1-\eta(v, \kappa)\rho)^{-n/2}}^{\widetilde{\pi}_v(\rho)}}{\frac{1}{B(K/2,(n-K)/2)}
+\rho^{K/2-1}
+(1-\rho)^{(n-K)/2-1}} d\rho \\
+&= \int_0^1 \frac{p(\rho \mid P, v) p(P\mid v)}{p(\rho \mid v)}\widetilde{\pi}_{v,\kappa}(d\rho).
+\end{aligned}
+$$
+
+where
+$$
+\widetilde{\pi}_{v,\kappa}(\rho)=\frac{1}{B(K/2,(n-K)/2)}
+\rho^{K/2-1}
+(1-\rho)^{(n-K)/2-1}
+(1-\eta(v, \kappa))^{K/2}
+(1-\eta(v, \kappa)\rho)^{-n/2}, \qquad \eta(v, \kappa)=\frac{\kappa \norm{v}^2}{1+\kappa \norm{v}^2},
+$$
+
+is a Beta-like prior on $\rho$, tilted by alignment with $v$. 
+
+```{r, echo=FALSE, fig.width=6, fig.height=4}
+n <- 100
+K <- 5
+eta_grid <- c(0.25, 0.5, 0.75, 0.9)
+rho_grid <- seq(1e-4, 1 - 1e-4, length.out = 1000)
+
+beta_pdf <- dbeta(rho_grid, shape1 = K / 2, shape2 = (n - K) / 2)
+beta_mean <- K / n
+tilted_beta_pdf <- function(rho, eta) {
+  dbeta(rho, shape1 = K / 2, shape2 = (n - K) / 2) *
+    (1 - eta)^(K / 2) *
+    (1 - eta * rho)^(-n / 2)
+}
+tilted_beta_mean <- function(eta) {
+  integrate(function(rho) rho * tilted_beta_pdf(rho, eta), 0, 1)$value
+}
+
+tilted_pdf <- sapply(eta_grid, function(eta) tilted_beta_pdf(rho_grid, eta))
+tilted_mean <- vapply(eta_grid, tilted_beta_mean, numeric(1))
+ylim <- range(beta_pdf, tilted_pdf)
+
+plot(
+  rho_grid, beta_pdf,
+  type = "l", lwd = 2, col = "black", ylim = ylim,
+  xlab = expression(rho), ylab = "density",
+  main = sprintf("Beta and tilted Beta densities (n = %s, K = %s)", n, K)
+)
+matlines(
+  rho_grid, tilted_pdf,
+  lty = 1, lwd = 2,
+  col = hcl.colors(length(eta_grid), "Dark 3")
+)
+# abline(
+#   v = eta_grid,
+#   lty = 3, lwd = 1.5,
+#   col = hcl.colors(length(eta_grid), "Dark 3")
+# )
+abline(v = beta_mean, lty = 2, lwd = 2, col = "black")
+abline(
+  v = tilted_mean,
+  lty = 2, lwd = 1.5,
+  col = hcl.colors(length(eta_grid), "Dark 3")
+)
+legend(
+  "topright",
+  legend = c(
+    expression(Beta(K / 2, (n - K) / 2)),
+    paste0("tilted Beta, eta = ", eta_grid),
+    expression(E[rho] == K / n),
+    "tilted Beta mean"
+    # expression(rho == eta)
+  ),
+  col = c("black", hcl.colors(length(eta_grid), "Dark 3"), "black", "gray40", "gray40"),
+  lty = c(1, rep(1, length(eta_grid)), 2, 2, 3),
+  lwd = c(rep(2, length(eta_grid) + 2), 1.5, 1.5),
+  bty = "n"
+)
+```
+
+Hence, we can write the DGP as 
+
+$$
+\begin{equation}
+\begin{aligned}
+  v & \sim g^{\otimes n} \\
+  \rho \mid v & \sim \widetilde{\pi}_{v,\kappa} \\
+  P \mid \rho, v & \sim \Unif\,(\{\mathcal{P}_{n,K}:\ \rho_{\text{obs}}=\rho\}).
+\end{aligned}
+\label{eq:dgp-eb-spiked-proj}
+\end{equation}
+$$
+
+::: {.remark}
+
+$\eqref{eq:dgp-eb-spiked-proj}$ is exact if we retain the full column space of $Y$, and $n > K$. But we could probably use this model for any rank-$K$ projection matrix $P$.
+
+:::
+
+
+### Connection with EB-proj
+
 Interestingly, when $\kappa\to\infty$, we have $\eta(v, \kappa)\to 1$ and the objective reduces to
 
 $$
@@ -242,7 +363,7 @@ $$
 -\KL{q}{g}+C,
 $$
 
-which is very similar to the Rademacher EB-proj objective. This suggests that the Rademacher EB-proj objective is a limiting case of the spiked model when the signal-to-noise ratio is large.
+which is very similar to the EB-proj objective. This suggests that the EB-proj objective is a limiting case of the spiked model when the signal-to-noise ratio is large.
 
 We can also see the connection by profiling over $\kappa$. Taking derivative and setting it to 0 gives
 
@@ -277,6 +398,10 @@ $$
 $$
 
 
+
+
+### Variational updates
+
 Consider the convex conjugate of log: $-\log x = \max_{\tau > 0} \{\log \tau - \tau x + 1\}$, we have
 
 $$
@@ -300,13 +425,13 @@ $$
 where $\alpha = \eta(v,\kappa)= \frac{\kappa \Eqvv}{1+\kappa \Eqvv}$. So for fixed $\kappa$ (hence fixed $\alpha$ and $\eta(\vbar, \kappa)\equiv \eta(\vbar)$), the update for $q$ is given by (Table 1 in EBMF_cov_ideas):
 
 $$
-\EBNM\left(\frac{nP \vbar}{\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{eff}}, \frac{\sigma^2_{eff} \Eqvv}{\eta(\vbar)(\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{eff})}\right),
+\EBNM\left(\frac{nP \vbar}{\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{\eff}}, \frac{\sigma^2_{\eff} \Eqvv}{\eta(\vbar)(\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{\eff})}\right),
 $$
 
 where
 
 $$
-\sigma^2_{eff} = \frac{1}{\tau}.
+\sigma^2_{\eff} = \frac{1}{\tau}.
 $$
 
 The update for $\kappa$ is given by
@@ -336,5 +461,5 @@ $$
 
 ## Analyses
 
-- [Initial exploration of EB-proj, with shifted Rademacher](shifted_rademacher_for_EB-proj.html)
+- [Initial exploration of EB-proj, with shifted Rademacher](shifted_rademacher_for_ebproj.html)
   - TODO: It seems we need to choose the correct rank. Investigate this.
