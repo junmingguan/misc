@@ -5,6 +5,7 @@ date: "2026-06-27"
 output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
+bibliography: "references.bib"
 ---
 
 
