@@ -391,11 +391,11 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-07-04
+<strong>Last updated:</strong> 2026-07-07
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span> 0
 </p>
@@ -438,15 +438,99 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea224caf3075d8998d23171a2ca6c30b04ff8ed70targetblanka224cafa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251108code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251108code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251108)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree446141d8b54bfcebd5db11061532f7651f15536atargetblank446141da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/a224caf3075d8998d23171a2ca6c30b04ff8ed70" target="_blank">a224caf</a>
+<a href="https://github.com/junmingguan/misc/tree/446141d8b54bfcebd5db11061532f7651f15536a" target="_blank">446141d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreea224caf3075d8998d23171a2ca6c30b04ff8ed70targetblanka224cafa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree446141d8b54bfcebd5db11061532f7651f15536atargetblank446141da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -456,7 +540,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/a224caf3075d8998d23171a2ca6c30b04ff8ed70" target="_blank">a224caf</a>.
+<a href="https://github.com/junmingguan/misc/tree/446141d8b54bfcebd5db11061532f7651f15536a" target="_blank">446141d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -477,7 +561,6 @@ Ignored files:
     Ignored:    .luarc.json
     Ignored:    _extensions/
     Ignored:    analysis/.DS_Store
-    Ignored:    analysis/math-env-refs.html
     Ignored:    analysis/presentation.html
 
 Untracked files:
@@ -487,13 +570,14 @@ Untracked files:
     Untracked:  analysis/eb_ica_backup.Rmd
     Untracked:  analysis/ebica_math.md
     Untracked:  analysis/ebproj_on_random_proj.Rmd
-    Untracked:  analysis/fastica_with_intercept.Rmd
     Untracked:  analysis/flashier_whitened_and_tree_example_tese.Rmd
     Untracked:  analysis/generalized_rademacher.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
     Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
     Untracked:  analysis/index_bacup.Rmd
+    Untracked:  analysis/math-env-refs.html
+    Untracked:  analysis/notes.Rmd
     Untracked:  analysis/preemble.tex
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/references.bib
@@ -554,6 +638,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/446141d8b54bfcebd5db11061532f7651f15536a/analysis/ebproj.Rmd" target="_blank">446141d</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+wflow_publish("analysis/ebproj.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/57729265735a9aea8258278ff8226d7d1cd5f3b3/docs/ebproj.html" target="_blank">5772926</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -664,6 +782,8 @@ wflow_publish(c("analysis/ebproj.Rmd", "analysis/index.Rmd"))
     \newcommand{\EqPv}{\mathbb{E}_q[v^\top P v]}
     \newcommand{\norm}[1]{\left\|#1\right\|}
     \DeclareMathOperator{\EBNM}{EBNM}
+    \newcommand{\eff}{\text{eff}}
+    \newcommand{\obs}{\text{obs}}
 \]</span></p>
 </div>
 <div id="motivation" class="section level2">
@@ -675,7 +795,8 @@ example, if the data matrix is generated as</p>
 Y=\ell f^\top + E, \quad E_{ij}\stackrel{\text{iid}}{\sim} N(0,
 \sigma^2),\quad  \ell_i \stackrel{\text{iid}}{\sim} \Rad,\quad
 f_j\stackrel{iid}{\sim} N(0, \sigma_f^2),
-\]</span> then the whitened and centered data matrix has rather complex
+\]</span></p>
+<p>then the whitened and centered data matrix has rather complex
 distribution for which the above model is misspecified and in general
 not compatible with the iid noise assumption. Furthermore, the prior
 after the whitening transformation could also change: for example, in
@@ -729,7 +850,8 @@ class="math inline">\(\rho\)</span>:</p>
 <p><span class="math display">\[
 p(P \mid v, \rho) = \frac{p(\rho \mid P, v) \,p(P \mid v)}{p(\rho \mid
 v)}.
-\]</span> Given <span class="math inline">\(P\)</span> and <span
+\]</span></p>
+<p>Given <span class="math inline">\(P\)</span> and <span
 class="math inline">\(v\)</span>, <span
 class="math inline">\(\rho\)</span> is fixed, so <span
 class="math inline">\(p(\rho \mid R,
@@ -754,12 +876,15 @@ p(P \mid v) = \int^1_0 p(P \mid v, \rho) \pi(d\rho) \propto
 \]</span> We thus have the following “rank-1” data generating
 process:</p>
 <p><span class="math display">\[
+\begin{equation}
 \begin{aligned}
   v &amp; \sim g^{\otimes n} \\
   \rho \mid v &amp; \sim \operatorname{Beta}(k/2, b) \\
   P \mid \rho, v &amp; \sim \Unif\,(\{\mathcal{P}_{n,K}:\
 \rho_{\text{obs}}=\rho\}).
 \end{aligned}
+\label{eq:dgp-eb-proj}
+\end{equation}
 \]</span></p>
 </div>
 <div id="variational-objective" class="section level2">
@@ -880,14 +1005,17 @@ vv^\top).
 Y)^{-1}Y^\top\)</span>, the induced density of <span
 class="math inline">\(P\)</span> on the Grassmannian has the form</p>
 <p><span class="math display">\[
+\begin{equation}
 \begin{aligned}
-p(P\mid v,\kappa)&amp; \propto
+p(P\mid v,\kappa)&amp; = \frac{1}{Z_{n,K}}
 (1-\eta(v, \kappa))^{K/2}
 (1-\eta(v, \kappa)\, \frac{v^\top P v}{\|v\|^2})^{-n/2} \\
-&amp;=(1+\kappa \norm{v}^2)^{-K/2}
+&amp;= \frac{1}{Z_{n,K}} (1+\kappa \norm{v}^2)^{(n-K)/2}
 (1-\frac{\kappa v^\top P v}{1+\kappa \norm{v}^2})^{-n/2},
 \qquad \eta(v, \kappa)=\frac{\kappa \norm{v}^2}{1+\kappa \norm{v}^2}.
 \end{aligned}
+\label{eq:spike-pdf}
+\end{equation}
 \]</span></p>
 <p>Equivalently,</p>
 <p><span class="math display">\[
@@ -921,6 +1049,62 @@ objective:</p>
 -\frac n2\log\left(1+\kappa (\Eqvv- \vbar^\top P \vbar)\right)
 -\KL{q}{g}+C,
 \]</span></p>
+<div id="alternative-form-of-the-dgp" class="section level3">
+<h3>Alternative form of the DGP</h3>
+<p>In fact, let <span class="math inline">\(\rho_{\obs}=\frac{v^\top
+Pv}{\|v\|^2}\)</span>, then <span
+class="math inline">\(\eqref{eq:spike-pdf}\)</span> can be written as
+the following form:</p>
+<p><span class="math display">\[
+\begin{aligned}
+p(P\mid v, \kappa) &amp;= \int_0^1
+\frac{\delta(\rho-\rho_{\obs})}{Z_{n,K}}
+\frac{\overbrace{\frac{1}{B(K/2,(n-K)/2)}
+\rho^{K/2-1}
+(1-\rho)^{(n-K)/2-1}
+(1-\eta(v, \kappa))^{K/2}
+(1-\eta(v,
+\kappa)\rho)^{-n/2}}^{\widetilde{\pi}_v(\rho)}}{\frac{1}{B(K/2,(n-K)/2)}
+\rho^{K/2-1}
+(1-\rho)^{(n-K)/2-1}} d\rho \\
+&amp;= \int_0^1 \frac{p(\rho \mid P, v) p(P\mid v)}{p(\rho \mid
+v)}\widetilde{\pi}_{v,\kappa}(d\rho).
+\end{aligned}
+\]</span></p>
+<p>where <span class="math display">\[
+\widetilde{\pi}_{v,\kappa}(\rho)=\frac{1}{B(K/2,(n-K)/2)}
+\rho^{K/2-1}
+(1-\rho)^{(n-K)/2-1}
+(1-\eta(v, \kappa))^{K/2}
+(1-\eta(v, \kappa)\rho)^{-n/2}, \qquad \eta(v, \kappa)=\frac{\kappa
+\norm{v}^2}{1+\kappa \norm{v}^2},
+\]</span></p>
+<p>is a Beta-like prior on <span class="math inline">\(\rho\)</span>,
+tilted by alignment with <span class="math inline">\(v\)</span>.</p>
+<p><img src="figure/ebproj.Rmd/unnamed-chunk-1-1.png" alt="" width="576" style="display: block; margin: auto;" /></p>
+<p>Hence, we can write the DGP as</p>
+<p><span class="math display">\[
+\begin{equation}
+\begin{aligned}
+  v &amp; \sim g^{\otimes n} \\
+  \rho \mid v &amp; \sim \widetilde{\pi}_{v,\kappa} \\
+  P \mid \rho, v &amp; \sim \Unif\,(\{\mathcal{P}_{n,K}:\
+\rho_{\text{obs}}=\rho\}).
+\end{aligned}
+\label{eq:dgp-eb-spiked-proj}
+\end{equation}
+\]</span></p>
+<div class="remark">
+<p><span class="math inline">\(\eqref{eq:dgp-eb-spiked-proj}\)</span> is
+exact if we retain the full column space of <span
+class="math inline">\(Y\)</span>, and <span class="math inline">\(n &gt;
+K\)</span>. But we could probably use this model for any rank-<span
+class="math inline">\(K\)</span> projection matrix <span
+class="math inline">\(P\)</span>.</p>
+</div>
+</div>
+<div id="connection-with-eb-proj" class="section level3">
+<h3>Connection with EB-proj</h3>
 <p>Interestingly, when <span
 class="math inline">\(\kappa\to\infty\)</span>, we have <span
 class="math inline">\(\eta(v, \kappa)\to 1\)</span> and the objective
@@ -930,9 +1114,9 @@ reduces to</p>
 = -\frac n2\log(1-\hat\rho(q))
 -\KL{q}{g}+C,
 \]</span></p>
-<p>which is very similar to the Rademacher EB-proj objective. This
-suggests that the Rademacher EB-proj objective is a limiting case of the
-spiked model when the signal-to-noise ratio is large.</p>
+<p>which is very similar to the EB-proj objective. This suggests that
+the EB-proj objective is a limiting case of the spiked model when the
+signal-to-noise ratio is large.</p>
 <p>We can also see the connection by profiling over <span
 class="math inline">\(\kappa\)</span>. Taking derivative and setting it
 to 0 gives</p>
@@ -963,6 +1147,9 @@ to 0 gives</p>
 \end{cases}
 \end{aligned}
 \]</span></p>
+</div>
+<div id="variational-updates" class="section level3">
+<h3>Variational updates</h3>
 <p>Consider the convex conjugate of log: <span
 class="math inline">\(-\log x = \max_{\tau &gt; 0} \{\log \tau - \tau x
 + 1\}\)</span>, we have</p>
@@ -992,13 +1179,13 @@ class="math inline">\(\eta(\vbar, \kappa)\equiv \eta(\vbar)\)</span>),
 the update for <span class="math inline">\(q\)</span> is given by (Table
 1 in EBMF_cov_ideas):</p>
 <p><span class="math display">\[
-\EBNM\left(\frac{nP \vbar}{\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{eff}},
-\frac{\sigma^2_{eff} \Eqvv}{\eta(\vbar)(\eta(\vbar)n\hat{\rho}(q)+K
-\sigma^2_{eff})}\right),
+\EBNM\left(\frac{nP \vbar}{\eta(\vbar)n\hat{\rho}(q)+K \sigma^2_{\eff}},
+\frac{\sigma^2_{\eff} \Eqvv}{\eta(\vbar)(\eta(\vbar)n\hat{\rho}(q)+K
+\sigma^2_{\eff})}\right),
 \]</span></p>
 <p>where</p>
 <p><span class="math display">\[
-\sigma^2_{eff} = \frac{1}{\tau}.
+\sigma^2_{\eff} = \frac{1}{\tau}.
 \]</span></p>
 <p>The update for <span class="math inline">\(\kappa\)</span> is given
 by</p>
@@ -1022,22 +1209,75 @@ by</p>
 =\frac{1}{1-\hat\eta\hat\rho(q)}.
 \]</span></p>
 </div>
+</div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
 <ul>
-<li><a href="shifted_rademacher_for_EB-proj.html">Initial exploration of
+<li><a href="shifted_rademacher_for_ebproj.html">Initial exploration of
 EB-proj, with shifted Rademacher</a>
 <ul>
 <li>TODO: It seems we need to choose the correct rank. Investigate
 this.</li>
 </ul></li>
 </ul>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 26.5.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] workflowr_1.7.2
+
+loaded via a namespace (and not attached):
+ [1] vctrs_0.6.5       httr_1.4.8        cli_3.6.5         knitr_1.51       
+ [5] rlang_1.1.6       xfun_0.57         stringi_1.8.7     otel_0.2.0       
+ [9] processx_3.8.7    promises_1.5.0    jsonlite_2.0.0    glue_1.8.0       
+[13] rprojroot_2.1.1   git2r_0.36.2      htmltools_0.5.9   httpuv_1.6.17    
+[17] sass_0.4.10       rmarkdown_2.31    jquerylib_0.1.4   tibble_3.3.1     
+[21] evaluate_1.0.5    fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  
+[25] whisker_0.4.1     stringr_1.6.0     compiler_4.3.1    fs_1.6.6         
+[29] pkgconfig_2.0.3   Rcpp_1.1.0        rstudioapi_0.18.0 later_1.4.8      
+[33] digest_0.6.37     R6_2.6.1          pillar_1.11.1     callr_3.7.6      
+[37] magrittr_2.0.5    bslib_0.10.0      tools_4.3.1       cachem_1.1.0     
+[41] getPass_0.2-4    </code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 </div>
+</div>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    }
+  });
+</script>
 
 <script>
 (function () {
