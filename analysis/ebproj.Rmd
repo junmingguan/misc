@@ -463,7 +463,7 @@ Hence, the update for $\alpha=\eta$ is given by
 
 $$
 \hat\eta_\tau=\left(
-1-\frac{K}{N\tau\hat\rho}
+1-\frac{K}{n\tau\hat\rho}
 \right)_+,
 $$
 
