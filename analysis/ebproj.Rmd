@@ -274,7 +274,7 @@ p(P\mid v, \kappa) &= \int_0^1 \frac{\delta(\rho-\rho_{\obs})}{Z_{n,K}}
 \rho^{K/2-1}
 (1-\rho)^{(n-K)/2-1}
 (1-\eta(v, \kappa))^{K/2}
-(1-\eta(v, \kappa)\rho)^{-n/2}}^{\widetilde{\pi}_v(\rho)}}{\frac{1}{B(K/2,(n-K)/2)}
+(1-\eta(v, \kappa)\rho)^{-n/2}}^{\widetilde{\pi}_{v, \kappa}(\rho)}}{\frac{1}{B(K/2,(n-K)/2)}
 \rho^{K/2-1}
 (1-\rho)^{(n-K)/2-1}} d\rho \\
 &= \int_0^1 \frac{p(\rho \mid P, v) p(P\mid v)}{p(\rho \mid v)}\widetilde{\pi}_{v,\kappa}(d\rho).
