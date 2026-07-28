@@ -413,7 +413,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-07-08
+<strong>Last updated:</strong> 2026-07-28
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -544,15 +544,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreecf27dec43abce1daaf14544d4476b0509883298ftargetblankcf27deca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb0e7750ff18cdba0a7bf62b407b22dda3f202847targetblankb0e7750a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/cf27dec43abce1daaf14544d4476b0509883298f" target="_blank">cf27dec</a>
+<a href="https://github.com/junmingguan/misc/tree/b0e7750ff18cdba0a7bf62b407b22dda3f202847" target="_blank">b0e7750</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreecf27dec43abce1daaf14544d4476b0509883298ftargetblankcf27deca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb0e7750ff18cdba0a7bf62b407b22dda3f202847targetblankb0e7750a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -562,7 +562,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/cf27dec43abce1daaf14544d4476b0509883298f" target="_blank">cf27dec</a>.
+<a href="https://github.com/junmingguan/misc/tree/b0e7750ff18cdba0a7bf62b407b22dda3f202847" target="_blank">b0e7750</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -591,7 +591,10 @@ Untracked files:
     Untracked:  analysis/draft.Rmd
     Untracked:  analysis/eb_ica_backup.Rmd
     Untracked:  analysis/ebica_math.md
+    Untracked:  analysis/ebproj_on_null.Rmd
     Untracked:  analysis/ebproj_on_random_proj.Rmd
+    Untracked:  analysis/ebproj_single_cell_experiment.Rmd
+    Untracked:  analysis/ebproj_zhengmix4eq.Rmd
     Untracked:  analysis/flashier_whitened_and_tree_example_tese.Rmd
     Untracked:  analysis/generalized_rademacher.Rmd
     Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
@@ -599,11 +602,13 @@ Untracked files:
     Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
     Untracked:  analysis/index_bacup.Rmd
     Untracked:  analysis/math-env-refs.html
+    Untracked:  analysis/note.md
     Untracked:  analysis/notes.Rmd
     Untracked:  analysis/preemble.tex
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/references.bib
     Untracked:  analysis/tree_example.Rmd
+    Untracked:  code/ebproj_functions.R
     Untracked:  code/references.bib
 
 Unstaged changes:
@@ -617,6 +622,7 @@ Unstaged changes:
     Modified:   analysis/on_flashier_and_whitened_data.Rmd
     Modified:   analysis/on_generalized_rademacher.Rmd
     Modified:   analysis/shifted_rademacher_for_ebproj.Rmd
+    Modified:   code/ica_functions.R
     Modified:   code/utils.R
 
 </code></pre>
@@ -661,6 +667,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/b0e7750ff18cdba0a7bf62b407b22dda3f202847/analysis/ebproj.Rmd" target="_blank">b0e7750</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-28
+</td>
+<td>
+wflow_publish("analysis/ebproj.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/b8313822f5745790be24d7c789b853c05854bd54/docs/ebproj.html" target="_blank">b831382</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1560,6 +1600,309 @@ by</p>
 \]</span></p>
 </div>
 </div>
+<div id="weighted-eb-proj" class="section level2">
+<h2>Weighted EB-proj</h2>
+<p>We try to model</p>
+<p><span class="math inline">\(V\in\mathbb R^{p\times k}\)</span>, <span
+class="math inline">\(\tilde{X}=VD\)</span>, and define</p>
+<p><span class="math display">\[
+W_D=\frac{\tilde{X}\tilde{X}^\top}{d_1^2}
+   =V\Lambda V^\top,\qquad
+\Lambda=\operatorname{diag}\left(
+1,\frac{d_2^2}{d_1^2},\ldots,\frac{d_k^2}{d_1^2}
+\right).
+\]</span></p>
+<p>Let</p>
+<p><span class="math display">\[
+v\sim g_0^{\otimes p},\qquad
+u=\frac{v}{\|v\|},
+\]</span> assuming <span class="math inline">\(P(v=0)=0\)</span>, or
+conditioning on <span class="math inline">\(v\neq0\)</span>. Define</p>
+<p><span class="math display">\[
+\rho_W(u)=u^\top Wu
+=\frac{v^\top Wv}{v^\top v}.
+\]</span></p>
+<p>Conditional on <span class="math inline">\(D\)</span>, let the base
+distribution of <span class="math inline">\(V\)</span> be Haar-uniform
+on the Stiefel manifold; equivalently, <span
+class="math inline">\(W_D\)</span> is uniform on its fixed-spectrum
+orbit.</p>
+<p>Under this base model,</p>
+<p><span class="math display">\[
+(T_1,\ldots,T_k,T_0)
+\sim
+\operatorname{Dirichlet}
+\left(
+\frac{1}{2},
+\ldots,
+\frac{1}{2},
+\frac{p-k}{2}
+\right),
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\rho_D
+=
+\sum_{j=1}^k
+\frac{d_j^2}{d_1^2}T_j.
+\]</span></p>
+<p>Thus, the base alignment law <span
+class="math inline">\(f_D(\rho)\)</span> is a weighted Dirichlet sum. It
+is Beta only when all retained singular values are equal.</p>
+<p>The fully general EBproj-style construction is</p>
+<p><span class="math display">\[
+\frac{dP(W_D\mid v,D)}{d\mu_D(W_D)}
+=
+\frac{\pi_D\{\rho_D(v,W_D)\}}
+     {f_D\{\rho_D(v,W_D)\}},
+\]</span></p>
+<p>where <span class="math inline">\(\mu_D\)</span> is the uniform
+fixed-D base measure and <span class="math inline">\(\pi_D\)</span> is
+the desired alignment distribution.</p>
+<p>A particularly convenient choice is the power tilt</p>
+<p><span class="math display">\[
+\frac{dP(W_D\mid v,D,\gamma)}{d\mu_D(W_D)}
+=
+\frac{(1-\rho_D)^{-\gamma}}{Z_\gamma(D)},
+\]</span></p>
+<p>with</p>
+<p><span class="math display">\[
+Z_\gamma(D)
+=
+E_{\mu_D}\left[(1-\rho_D)^{-\gamma}\right].
+\]</span></p>
+<p>This is a proper latent-<span class="math inline">\(v\)</span> DGP
+whenever <span class="math inline">\(Z_\gamma(D)&lt;\infty\)</span>.</p>
+<p>When <span class="math inline">\(D=dI_k\)</span>, <span
+class="math inline">\(W_D=VV^\top=P\)</span>, the base law is</p>
+<p><span class="math display">\[
+\rho
+\sim
+\operatorname{Beta}
+\left(
+\frac{k}{2},
+\frac{p-k}{2}
+\right).
+\]</span></p>
+<p>Choosing</p>
+<p><span class="math display">\[
+\gamma
+=
+\frac{p-k}{2}-b
+=
+\frac{p-k-2b}{2}
+\]</span></p>
+<p>changes this to <span
+class="math inline">\(\operatorname{Beta}(k/2,b)\)</span>, exactly
+recovering EBproj.</p>
+<div id="variational-objective-1" class="section level3">
+<h3>variational objective</h3>
+<p>For <span class="math inline">\(q(v)=\prod_i q_i(v_i)\)</span>,</p>
+<p><span class="math display">\[
+\mathcal{F}_{\mathrm{exact}}(q,g)
+=
+-\gamma E_q\left[
+\log\left(
+1-\frac{v^\top W_Dv}{v^\top v}
+\right)
+\right]
+-
+\operatorname{KL}(q\|g^{\otimes p})
+-
+\log Z_\gamma(D).
+\]</span></p>
+</div>
+<div id="approximate-objective" class="section level3">
+<h3>approximate objective</h3>
+<p>Define</p>
+<p><span class="math display">\[
+m=E_q[v],
+\qquad
+M=E_q[v^\top v],
+\qquad
+\widehat{\rho}
+=
+\frac{m^\top W_Dm}{M}.
+\]</span></p>
+<p>Apply the same approximation as EBproj:</p>
+<p><span class="math display">\[
+E_q[-\log(1-\rho_D(v))]
+\approx
+-\log(1-\widehat{\rho}).
+\]</span></p>
+<p>This gives</p>
+<p><span class="math display">\[
+\widetilde{\mathcal{F}}(q,g)
+=
+-\gamma\log(1-\widehat{\rho})
+-
+\operatorname{KL}(q\|g^{\otimes p})
+-
+\log Z_\gamma(D).
+\]</span></p>
+<p>Introduce the EBproj auxiliary parameter:</p>
+<p><span class="math display">\[
+-\log(1-\widehat{\rho})
+=
+\max_{\tau&gt;0}
+\left\{
+\log\tau-\tau(1-\widehat{\rho})+1
+\right\},
+\]</span></p>
+<p>so</p>
+<p><span class="math display">\[
+\tau
+\leftarrow
+\frac{1}{1-\widehat{\rho}}.
+\]</span></p>
+</div>
+<div id="ebnm-update" class="section level3">
+<h3>EBNM update</h3>
+<p>At iteration <span class="math inline">\(t\)</span>, let <span
+class="math inline">\(m_t\)</span>, <span
+class="math inline">\(M_t\)</span>, and <span
+class="math inline">\(\rho_t\)</span> be the current moments. The
+quadratic-over-linear alignment has the minorization</p>
+<p><span class="math display">\[
+\frac{m^\top W_Dm}{M}
+\ge
+\frac{2m^\top W_Dm_t}{M_t}
+-
+\frac{\rho_tM}{M_t}.
+\]</span></p>
+<p>Matching this to a normal-means ELBO gives</p>
+<p><span class="math display">\[
+x_t
+=
+\frac{W_Dm_t}{\rho_t},
+\qquad
+s_t^2
+=
+\frac{M_t}{2\gamma\tau_t\rho_t},
+\]</span></p>
+<p>and therefore</p>
+<p><span class="math display">\[
+(q_{t+1},g_{t+1})
+\leftarrow
+\operatorname{EBNM}(x_t,s_t^2;\mathcal{G}).
+\]</span></p>
+<p>Equivalently, define</p>
+<p><span class="math display">\[
+\sigma_{\mathrm{eff}}^2
+=
+\frac{p}{2\gamma\tau_t};
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+(q_{t+1},g_{t+1})
+\leftarrow
+\operatorname{EBNM}\left(
+\frac{W_Dm_t}{\rho_t},
+\frac{\sigma_{\mathrm{eff}}^2M_t}{p\rho_t}
+\right),
+\]</span></p>
+<p>which is exactly the EBproj update with <span
+class="math inline">\(P\)</span> replaced by <span
+class="math inline">\(W_D\)</span>.</p>
+<p>For a Rademacher prior, <span class="math inline">\(M_t=p\)</span>,
+so</p>
+<p><span class="math display">\[
+m_{t+1}
+=
+\tanh\left(
+\frac{2\gamma}{p}
+\frac{W_Dm_t}{1-\rho_t}
+\right).
+\]</span></p>
+<p>With <span class="math inline">\(\gamma=(p-k-2b)/2\)</span>,</p>
+<p><span class="math display">\[
+m_{t+1}
+=
+\tanh\left[
+\frac{p-k-2b}{p}
+\frac{W_Dm_t}{1-\rho_t}
+\right].
+\]</span></p>
+</div>
+<div id="exponential-tilt" class="section level3">
+<h3>Exponential tilt</h3>
+<p>Alternatively,</p>
+<p>For <span class="math inline">\(\eta&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\frac{dP_{\exp}(W\mid u,D,\eta)}
+     {d\mu_D(W)}
+=
+\exp\{\eta\rho_W(u)-\psi_D(\eta)\},
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\psi_D(\eta)
+=
+\log\int_{\mathcal O_D}
+\exp\{\eta\rho_A(u)\}\,\mu_D(dA).
+\]</span></p>
+<p>For <span class="math inline">\(q(v)=\prod_i q_i(v_i)\)</span>, the
+exact ELBO is</p>
+<p><span class="math display">\[
+\mathcal{L}(q,g)
+=
+\eta E_q\left[
+\frac{v^\top W_k v}{v^\top v}
+\right]
+-
+\sum_i \operatorname{KL}(q_i\|g)
+-
+\psi_D(\eta).
+\]</span></p>
+<p>Using the same approximation as EB-proj, define</p>
+<p><span class="math display">\[
+m=E_q[v],
+\qquad
+M=E_q[v^\top v],
+\qquad
+\widehat{\rho}
+=
+\frac{m^\top W_k m}{M},
+\]</span></p>
+<p>and optimize</p>
+<p><span class="math display">\[
+\widetilde{\mathcal{L}}(q,g)
+=
+\eta\widehat{\rho}
+-
+\sum_i \operatorname{KL}(q_i\|g).
+\]</span></p>
+<p>Because <span class="math inline">\(W_k\succeq 0\)</span>, the
+quadratic-over-linear inequality</p>
+<p><span class="math display">\[
+\frac{{m&#39;}^\top W_k m&#39;}{M&#39;}
+\ge
+\frac{2{m&#39;}^\top W_k m}{M}
+-
+\frac{\widehat{\rho}M&#39;}{M}
+\]</span></p>
+<p>gives a tight MM minorizer. That minorizer is exactly an EBNM
+objective with</p>
+<p><span class="math display">\[
+x
+=
+\frac{W_k m}{\widehat{\rho}},
+\qquad
+s^2
+=
+\frac{M}{2\eta\widehat{\rho}}.
+\]</span></p>
+<p>Thus, the iteration is</p>
+<p><span class="math display">\[
+(q^{+},g^{+})
+=
+\operatorname{EBNM}\left(
+\frac{W_k m}{\widehat{\rho}},
+\frac{M}{2\eta\widehat{\rho}}
+\right).
+\]</span></p>
+</div>
+</div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
 <ul>
@@ -1571,8 +1914,8 @@ this.</li>
 </ul></li>
 </ul>
 </div>
-<div id="references" class="section level2">
-<h2>References</h2>
+<div id="reference" class="section level2">
+<h2>Reference</h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Chikuse2003-gg" class="csl-entry">
 Chikuse, Yasuko. 2003. <em>Statistics on Special Manifolds</em>. 2003rd
