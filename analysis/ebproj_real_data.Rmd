@@ -1,0 +1,566 @@
+---
+title: "Real data experiments"
+author: "Junming Guan"
+date: "2026-07-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Setup
+
+```{r}
+library(Matrix)
+library(fastTopics)
+library(DuoClustering2018)
+library(irlba)
+
+source(file.path("code", "ebnm_rademacher.R"))
+source(file.path("code", "ebnm_shifted_rademacher.R"))
+source(file.path("code", "ebproj_functions.R"))
+source(file.path("code", "ica_functions.R"))
+
+set.seed(3)
+```
+
+# PBMC FACS
+
+## Prepare the data
+
+This follows the preprocessing in the
+[flashier single-cell vignette](https://willwerscheid.github.io/flashier/articles/flashier_single_cell.html).
+
+```{r}
+data("pbmc_facs")
+
+counts <- pbmc_facs$counts
+colnames(counts) <- make.names(pbmc_facs$genes$symbol, unique = TRUE)
+
+a <- 1
+size_factors <- rowSums(counts)
+size_factors <- size_factors / mean(size_factors)
+shifted_log_counts <- log1p(counts / (a * size_factors))
+
+dim(shifted_log_counts)
+```
+
+## Construct the projection
+
+Center the shifted-log data, use the leading eight left singular vectors, and
+form the cell-space projection matrix \(P=UU^\top\).
+
+```{r}
+K <- 8
+gene_means <- colMeans(shifted_log_counts)
+svd_fit <- irlba(
+  shifted_log_counts,
+  nv = K,
+  nu = K,
+  center = gene_means
+)
+U <- svd_fit$u
+P <- tcrossprod(U)
+```
+
+## Run EB-proj
+
+Initialize from the sign of the first centered singular vector and run one
+rank-one EB-proj update with the symmetric Rademacher prior.
+
+```{r}
+v_init <- sign(U[, 1])
+v_init[v_init == 0] <- 1
+
+fit_ebproj <- eb_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  b = 1,
+  maxiter = 100
+)
+
+c(rho = fit_ebproj$rho, niter = fit_ebproj$niter)
+fit_ebproj$fitted_g
+```
+
+## Run EB-spiked-proj
+
+Use the same initialization and Rademacher prior, with \(\kappa=1\).
+
+```{r}
+fit_ebspikedproj <- eb_spiked_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  kappa = 1,
+  maxiter = 100
+)
+
+c(
+  rho = fit_ebspikedproj$rho,
+  niter = fit_ebspikedproj$niter,
+  eta = fit_ebspikedproj$eta,
+  kappa = fit_ebspikedproj$kappa
+)
+```
+
+## Run FastICA
+
+The whitened cell matrix is \(X_1=\sqrt{n}U^\top\). Use the same initial
+cell direction as EB-proj.
+
+```{r}
+n <- nrow(U)
+X1 <- sqrt(n) * t(U)
+
+w_init <- as.vector(X1 %*% v_init)
+w_init <- w_init / sqrt(sum(w_init^2))
+
+w_fastica <- fastica_rank_one_update(
+  X1 = X1,
+  init_w = w_init,
+  n_iter = 100
+)
+score_fastica <- as.vector(t(X1) %*% w_fastica)
+```
+
+## Run FastICA with an intercept
+
+Add an all-ones row to the whitened data and estimate its coefficient jointly
+with the FastICA direction.
+
+```{r}
+X1_intercept <- rbind(intercept = rep(1, ncol(X1)), X1)
+w_init_intercept <- c(0, w_init)
+
+w_fastica_intercept <- fastica_rank_one_update(
+  X1 = X1_intercept,
+  init_w = w_init_intercept,
+  n_iter = 100
+)
+score_fastica_intercept <- as.vector(
+  t(X1_intercept) %*% w_fastica_intercept
+)
+
+c(intercept_weight = w_fastica_intercept[1])
+```
+
+## Compare the fitted contrasts
+
+Signs and scales are arbitrary. Align the other scores to EB-proj and
+standardize all four before comparing them.
+
+```{r}
+orient_and_scale <- function(x, reference) {
+  if (cor(x, reference) < 0) {
+    x <- -x
+  }
+  as.vector(scale(x))
+}
+
+scores <- list(
+  "EB-proj" = as.vector(scale(fit_ebproj$vbar)),
+  "EB-spiked-proj" = orient_and_scale(
+    fit_ebspikedproj$vbar,
+    fit_ebproj$vbar
+  ),
+  "FastICA" = orient_and_scale(score_fastica, fit_ebproj$vbar),
+  "FastICA + intercept" = orient_and_scale(
+    score_fastica_intercept,
+    fit_ebproj$vbar
+  )
+)
+
+subpop <- pbmc_facs$samples$subpop
+round(sapply(scores, function(x) tapply(x, subpop, mean)), 2)
+round(cor(do.call(cbind, scores)), 2)
+
+old_par <- par(mfrow = c(2, 2), mar = c(8, 4, 3, 1))
+for (method in names(scores)) {
+  boxplot(
+    scores[[method]] ~ subpop,
+    main = method,
+    xlab = "",
+    ylab = "Standardized score",
+    las = 2
+  )
+}
+par(old_par)
+```
+
+At \(\kappa=1\), EB-spiked-proj has \(\eta=0.9997\) and recovers
+essentially the same direction as EB-proj (score correlation 1.00). Both place
+CD14+ and NK cells on one side, B and CD34+ cells on the other, and T cells
+near the center. Their score correlations are 0.56 with ordinary FastICA and
+0.70 with FastICA plus an intercept.
+
+# Zhengmix4eq
+
+## Prepare the data
+
+`Zhengmix4eq` contains four pre-sorted immune-cell populations mixed in
+approximately equal proportions. Use the version retaining the top 10% of
+highly variable genes; all cells and their pre-sorting labels are retained.
+
+```{r}
+sce <- sce_filteredHVG10_Zhengmix4eq()
+counts <- t(SummarizedExperiment::assay(sce, "counts"))
+cell_type <- factor(sce$phenoid)
+
+dim(counts)
+table(cell_type)
+
+size_factors <- rowSums(counts)
+size_factors <- size_factors / mean(size_factors)
+shifted_log_counts <- log1p(counts / size_factors)
+```
+
+## Construct the projection
+
+Center genes, retain the first eight left singular vectors, and construct the
+cell-space projection \(P=UU^\top\).
+
+```{r}
+K <- 8
+svd_fit <- irlba(
+  shifted_log_counts,
+  nv = K,
+  nu = K,
+  center = colMeans(shifted_log_counts)
+)
+U <- svd_fit$u
+P <- tcrossprod(U)
+```
+
+## Run EB-proj
+
+Initialize from the sign of the first centered singular vector and use the
+generalized shifted Rademacher prior.
+
+```{r}
+v_init <- sign(U[, 1])
+v_init[v_init == 0] <- 1
+
+fit_ebproj <- eb_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  b = 1,
+  maxiter = 100
+)
+
+c(rho = fit_ebproj$rho, niter = fit_ebproj$niter)
+fit_ebproj$fitted_g
+```
+
+## Run EB-spiked-proj
+
+Use the same initialization and prior, with \(\kappa=1\).
+
+```{r}
+fit_ebspikedproj <- eb_spiked_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  kappa = 1,
+  maxiter = 100
+)
+
+c(
+  rho = fit_ebspikedproj$rho,
+  niter = fit_ebspikedproj$niter,
+  eta = fit_ebspikedproj$eta,
+  kappa = fit_ebspikedproj$kappa
+)
+fit_ebspikedproj$fitted_g
+```
+
+## Run FastICA
+
+Use the whitened cell matrix \(X_1=\sqrt{n}U^\top\) and the same initial
+direction.
+
+```{r}
+n <- nrow(U)
+X1 <- sqrt(n) * t(U)
+
+w_init <- as.vector(X1 %*% v_init)
+w_init <- w_init / sqrt(sum(w_init^2))
+
+w_fastica <- fastica_rank_one_update(
+  X1 = X1,
+  init_w = w_init,
+  n_iter = 100
+)
+score_fastica <- as.vector(t(X1) %*% w_fastica)
+```
+
+## Run FastICA with an intercept
+
+```{r}
+X1_intercept <- rbind(intercept = rep(1, ncol(X1)), X1)
+w_init_intercept <- c(0, w_init)
+
+w_fastica_intercept <- fastica_rank_one_update(
+  X1 = X1_intercept,
+  init_w = w_init_intercept,
+  n_iter = 100
+)
+score_fastica_intercept <- as.vector(
+  t(X1_intercept) %*% w_fastica_intercept
+)
+
+intercept_diagnostics <- c(
+  intercept_weight = w_fastica_intercept[1],
+  direction_norm = sqrt(sum(w_fastica_intercept[-1]^2)),
+  raw_score_sd = sd(score_fastica_intercept)
+)
+intercept_diagnostics
+
+intercept_degenerate <- intercept_diagnostics["direction_norm"] < 1e-8
+```
+
+## Compare with the pre-sorting labels
+
+Signs and scales are arbitrary. Align the other scores to EB-proj and
+standardize all nondegenerate methods. `label_R2` is the fraction of each
+score's variance explained by the four known cell labels.
+
+```{r}
+scores <- list(
+  "EB-proj" = as.vector(scale(fit_ebproj$vbar)),
+  "EB-spiked-proj" = orient_and_scale(
+    fit_ebspikedproj$vbar,
+    fit_ebproj$vbar
+  ),
+  "FastICA" = orient_and_scale(score_fastica, fit_ebproj$vbar)
+)
+if (!intercept_degenerate) {
+  scores[["FastICA + intercept"]] <- orient_and_scale(
+    score_fastica_intercept,
+    fit_ebproj$vbar
+  )
+}
+
+round(sapply(scores, function(x) tapply(x, cell_type, mean)), 2)
+round(cor(do.call(cbind, scores)), 2)
+
+label_R2 <- sapply(
+  scores,
+  function(x) summary(lm(x ~ cell_type))$r.squared
+)
+round(label_R2, 3)
+
+old_par <- par(mfrow = c(2, 2), mar = c(8, 4, 3, 1))
+for (method in names(scores)) {
+  boxplot(
+    scores[[method]] ~ cell_type,
+    main = method,
+    xlab = "",
+    ylab = "Standardized score",
+    las = 2
+  )
+}
+par(old_par)
+```
+
+Because four labels span a three-dimensional contrast space, a single
+rank-one component can recover only one split among the populations. Thus,
+`label_R2` measures association with the known labels, not complete recovery
+of the four-class structure. The intercept FastICA fit is excluded from these
+comparisons if it converges to an intercept-only, constant-score solution.
+
+With the generalized shifted Rademacher prior, both EB methods isolate CD14
+monocytes from the other three populations and produce identical scores. Their
+label \(R^2\) is 0.978, compared with 0.845 for FastICA, and the EB--FastICA
+score correlation is 0.67. FastICA with an intercept converges to an
+intercept-only solution and therefore has no usable cell score.
+
+# Zhengmix4uneq
+
+## Prepare the data
+
+`Zhengmix4uneq` contains the same four pre-sorted immune-cell populations in
+deliberately unequal proportions. Use the version retaining the top 10% of
+highly variable genes; all retained cells and their pre-sorting labels are
+included.
+
+```{r}
+sce <- sce_filteredHVG10_Zhengmix4uneq()
+counts <- t(SummarizedExperiment::assay(sce, "counts"))
+cell_type <- factor(sce$phenoid)
+
+dim(counts)
+table(cell_type)
+
+size_factors <- rowSums(counts)
+size_factors <- size_factors / mean(size_factors)
+shifted_log_counts <- log1p(counts / size_factors)
+```
+
+## Construct the projection
+
+Center genes, retain the first eight left singular vectors, and construct the
+cell-space projection \(P=UU^\top\).
+
+```{r}
+K <- 8
+svd_fit <- irlba(
+  shifted_log_counts,
+  nv = K,
+  nu = K,
+  center = colMeans(shifted_log_counts)
+)
+U <- svd_fit$u
+P <- tcrossprod(U)
+```
+
+## Run EB-proj
+
+Initialize from the sign of the first centered singular vector and use the
+generalized shifted Rademacher prior.
+
+```{r}
+v_init <- sign(U[, 1])
+v_init[v_init == 0] <- 1
+
+fit_ebproj <- eb_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  b = 1,
+  maxiter = 100
+)
+
+c(rho = fit_ebproj$rho, niter = fit_ebproj$niter)
+fit_ebproj$fitted_g
+```
+
+## Run EB-spiked-proj
+
+Use the same initialization and prior, with \(\kappa=1\).
+
+```{r}
+fit_ebspikedproj <- eb_spiked_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  kappa = 1,
+  maxiter = 100
+)
+
+c(
+  rho = fit_ebspikedproj$rho,
+  niter = fit_ebspikedproj$niter,
+  eta = fit_ebspikedproj$eta,
+  kappa = fit_ebspikedproj$kappa
+)
+fit_ebspikedproj$fitted_g
+```
+
+## Run FastICA
+
+Use the whitened cell matrix \(X_1=\sqrt{n}U^\top\) and the same initial
+direction.
+
+```{r}
+n <- nrow(U)
+X1 <- sqrt(n) * t(U)
+
+w_init <- as.vector(X1 %*% v_init)
+w_init <- w_init / sqrt(sum(w_init^2))
+
+w_fastica <- fastica_rank_one_update(
+  X1 = X1,
+  init_w = w_init,
+  n_iter = 100
+)
+score_fastica <- as.vector(t(X1) %*% w_fastica)
+```
+
+## Run FastICA with an intercept
+
+```{r}
+X1_intercept <- rbind(intercept = rep(1, ncol(X1)), X1)
+w_init_intercept <- c(0, w_init)
+
+w_fastica_intercept <- fastica_rank_one_update(
+  X1 = X1_intercept,
+  init_w = w_init_intercept,
+  n_iter = 100
+)
+score_fastica_intercept <- as.vector(
+  t(X1_intercept) %*% w_fastica_intercept
+)
+
+intercept_diagnostics <- c(
+  intercept_weight = w_fastica_intercept[1],
+  direction_norm = sqrt(sum(w_fastica_intercept[-1]^2)),
+  raw_score_sd = sd(score_fastica_intercept)
+)
+intercept_diagnostics
+
+intercept_degenerate <- intercept_diagnostics["direction_norm"] < 1e-8
+```
+
+## Compare with the pre-sorting labels
+
+Signs and scales are arbitrary. Align the other scores to EB-proj and
+standardize all nondegenerate methods. `label_R2` is the fraction of each
+score's variance explained by the four known cell labels.
+
+```{r}
+scores <- list(
+  "EB-proj" = as.vector(scale(fit_ebproj$vbar)),
+  "EB-spiked-proj" = orient_and_scale(
+    fit_ebspikedproj$vbar,
+    fit_ebproj$vbar
+  ),
+  "FastICA" = orient_and_scale(score_fastica, fit_ebproj$vbar)
+)
+if (!intercept_degenerate) {
+  scores[["FastICA + intercept"]] <- orient_and_scale(
+    score_fastica_intercept,
+    fit_ebproj$vbar
+  )
+}
+
+round(sapply(scores, function(x) tapply(x, cell_type, mean)), 2)
+round(cor(do.call(cbind, scores)), 2)
+
+label_R2 <- sapply(
+  scores,
+  function(x) summary(lm(x ~ cell_type))$r.squared
+)
+round(label_R2, 3)
+
+old_par <- par(mfrow = c(2, 2), mar = c(8, 4, 3, 1))
+for (method in names(scores)) {
+  boxplot(
+    scores[[method]] ~ cell_type,
+    main = method,
+    xlab = "",
+    ylab = "Standardized score",
+    las = 2
+  )
+}
+par(old_par)
+```
+
+As in the equal-mixture experiment, a single rank-one component can recover
+only one split among the four known populations. The unequal mixture tests
+whether the learned mixture weight and shift adapt to class imbalance.
+
+The filtered dataset contains 5,079 cells, including 1,600 CD14 monocytes.
+Both EB methods isolate CD14 monocytes from the other three populations and
+produce identical scores, with \(\rho=0.980\) and label \(R^2=0.976\). The
+fitted prior weight is \(\pi=0.310\), close to the observed CD14 proportion
+\(1600/5079=0.315\). Ordinary FastICA finds a somewhat different contrast
+(\(R^2=0.950\), correlation 0.72 with EB), whereas FastICA with an intercept
+closely matches EB (\(R^2=0.969\), correlation 0.99) and does not degenerate.
