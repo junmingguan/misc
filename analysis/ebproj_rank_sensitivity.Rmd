@@ -1,0 +1,352 @@
+---
+title: "Rank sensitivity of EB projection methods and FastICA"
+author: "Junming Guan"
+date: "2026-07-20"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Goal
+
+
+```{r include-estimator-code, include=FALSE, purl=FALSE}
+knitr::read_chunk(file.path("code", "ica_functions.R"))
+knitr::read_chunk(file.path("code", "ebproj_functions.R"))
+```
+
+## Setup
+
+```{r}
+source(file.path("code", "ebnm_rademacher.R"))
+source(file.path("code", "ebnm_shifted_rademacher.R"))
+source(file.path("code", "ica_functions.R"))
+source(file.path("code", "ebproj_functions.R"))
+
+n_starts <- 20
+kappa <- 1
+sigma <- 0.1
+k_pca <- 20
+power_tilt_gap <- 0.01
+```
+
+
+
+## Experiment runner
+
+The reference simulations use
+
+$$
+X = A S + E,\qquad
+A_{jk} \sim N(0,1),\quad E_{ij}\sim N(0,0.1^2).
+$$
+
+Here $X$ is stored as features by samples in the reference document and
+transposed below so our estimators receive samples by features. The first
+test uses $n=200$; Tests 2--4 use $n=100$; all tests use $p=1000$. The
+reference retains 20 PCs, so our rank grids start at the true signal rank and
+end at 20. Increasing $K$ therefore only adds noise PCs.
+
+```{r}
+recovery_correlation <- function(v, S) {
+  if (!all(is.finite(v)) || sd(v) == 0) {
+    return(0)
+  }
+  max(abs(cor(v, S)))
+}
+
+run_rank_test <- function(X, S, k_grid, test_name, ebnm_fn) {
+  X <- scale(X, center = TRUE, scale = FALSE)
+  n_samples <- nrow(X)
+  set.seed(1)
+  v_inits <- replicate(
+    n_starts,
+    sample(rep(c(-1, 1), length.out = n_samples)),
+    simplify = FALSE
+  )
+
+  sv <- svd(X, nu = max(k_grid), nv = 0)
+  results <- data.frame()
+
+  for (K in k_grid) {
+    U <- sv$u[, seq_len(K), drop = FALSE]
+    P <- tcrossprod(U)
+    d <- sv$d[seq_len(K)]
+    W <- tcrossprod(sweep(U, 2, d / d[1], "*"))
+    W_power <- (1 - power_tilt_gap) * W
+    Z_whitened <- sqrt(n_samples) * t(U)
+    Z_nonwhitened <- sweep(t(U), 1, d, "*")
+
+    for (start in seq_len(n_starts)) {
+      w_init <- as.vector(crossprod(U, v_inits[[start]]))
+
+      fit_ebproj <- eb_proj_rank1_update(
+        P = P,
+        v_init = v_inits[[start]],
+        ebnm_fn = ebnm_fn,
+        k = K,
+        b = 1,
+        maxiter = 100
+      )
+
+      fit_spiked <- eb_spiked_proj_rank1_update(
+        P = P,
+        v_init = v_inits[[start]],
+        ebnm_fn = ebnm_fn,
+        k = K,
+        kappa = kappa,
+        maxiter = 100
+      )
+
+      fit_weighted <- eb_weighted_proj_rank1_update(
+        W = W,
+        eta = n_samples / 2,
+        m_init = v_inits[[start]],
+        M_init = sum(v_inits[[start]]^2),
+        ebnm_fn = ebnm_fn,
+        maxiter = 100
+      )
+
+      fit_power_tilt <- eb_weighted_proj_pow_tilt_rank1_update(
+        W = W_power,
+        gamma = (n_samples - K - 2) / 2,
+        m_init = v_inits[[start]],
+        M_init = sum(v_inits[[start]]^2),
+        ebnm_fn = ebnm_fn,
+        maxiter = 100
+      )
+
+      w_fastica <- fastica_rank_one_update(
+        X1 = Z_whitened,
+        init_w = w_init,
+        n_iter = 100
+      )
+
+      w_fastica_nw <- fastica_rank_one_update_nonwhitened(
+        Z = Z_nonwhitened,
+        d2 = d^2,
+        init_w = w_init,
+        n_iter = 100
+      )
+
+      cor_ebproj <- recovery_correlation(fit_ebproj$vbar, S)
+      cor_spiked <- recovery_correlation(fit_spiked$vbar, S)
+      cor_weighted <- recovery_correlation(fit_weighted$vbar, S)
+      cor_power_tilt <- recovery_correlation(fit_power_tilt$vbar, S)
+      cor_fastica <- recovery_correlation(
+        as.vector(t(Z_whitened) %*% w_fastica),
+        S
+      )
+      cor_fastica_nw <- recovery_correlation(
+        as.vector(t(Z_nonwhitened) %*% w_fastica_nw),
+        S
+      )
+
+      results <- rbind(
+        results,
+        data.frame(
+          test = test_name,
+          rank = K,
+          start = start,
+          method = c(
+            "EB-proj",
+            "EB-spiked-proj",
+            "EB-weighted-proj",
+            "EB-weighted-proj-pow-tilt",
+            "FastICA (whitened)",
+            "FastICA (non-whitened)"
+          ),
+          correlation = c(
+            cor_ebproj,
+            cor_spiked,
+            cor_weighted,
+            cor_power_tilt,
+            cor_fastica,
+            cor_fastica_nw
+          )
+        )
+      )
+    }
+  }
+
+  results$success <- results$correlation > 0.9
+  list(
+    results = results,
+    singular_values = sv$d,
+    k_grid = k_grid,
+    true_rank = ncol(S)
+  )
+}
+```
+
+## Test 1: one symmetric binary source
+
+```{r}
+set.seed(10)
+n1 <- 200
+p1 <- 1000
+k_true1 <- 1
+A1 <- matrix(rnorm(p1 * k_true1), nrow = p1)
+S_rad <- matrix(sample(c(-1, 1), n1, replace = TRUE), nrow = 1)
+X_rad <- A1 %*% S_rad +
+  matrix(rnorm(p1 * n1, sd = sigma), nrow = p1)
+
+test1 <- run_rank_test(
+  X = t(X_rad),
+  S = t(S_rad),
+  k_grid = c(1, 2, 5, 10, 15, k_pca),
+  test_name = "Symmetric binary source",
+  ebnm_fn = ebnm_rademacher
+)
+```
+
+## Test 2: four non-overlapping groups
+
+Each source selects one group of 25 observations. After centering, each source
+has a shifted binary distribution, so we use the shifted Rademacher EBNM
+family for all three EB methods.
+
+```{r}
+set.seed(1)
+n2 <- 100
+p2 <- 1000
+k_true2 <- 4
+A2 <- matrix(rnorm(p2 * k_true2), nrow = p2)
+S_groups <- matrix(0, nrow = k_true2, ncol = n2)
+S_groups[1, 1:25] <- 1
+S_groups[2, 26:50] <- 1
+S_groups[3, 51:75] <- 1
+S_groups[4, 76:100] <- 1
+X_groups <- A2 %*% S_groups +
+  matrix(rnorm(p2 * n2, sd = sigma), nrow = p2)
+
+test2 <- run_rank_test(
+  X = t(X_groups),
+  S = t(S_groups),
+  k_grid = c(4, 5, 10, 15, k_pca),
+  test_name = "Four non-overlapping groups",
+  ebnm_fn = ebnm_generalized_shifted_rademacher
+)
+```
+
+## Test 3: four sparse binary sources
+
+Each source is active in 20 randomly chosen observations, independently across
+sources.
+
+```{r}
+set.seed(2)
+n3 <- 100
+p3 <- 1000
+k_true3 <- 4
+prob_active <- 0.2
+A3 <- matrix(rnorm(p3 * k_true3), nrow = p3)
+S_sparse <- matrix(0, nrow = k_true3, ncol = n3)
+for (j in seq_len(k_true3)) {
+  S_sparse[j, sample(n3, round(prob_active * n3))] <- 1
+}
+X_sparse <- A3 %*% S_sparse +
+  matrix(rnorm(p3 * n3, sd = sigma), nrow = p3)
+
+test3 <- run_rank_test(
+  X = t(X_sparse),
+  S = t(S_sparse),
+  k_grid = c(4, 5, 10, 15, k_pca),
+  test_name = "Four sparse sources",
+  ebnm_fn = ebnm_generalized_shifted_rademacher
+)
+```
+
+## Test 4: nine overlapping groups
+
+This is the larger overlapping-group setting from the reference experiment.
+Each of the nine sources is active in 20 observations.
+
+```{r}
+set.seed(1)
+n4 <- 100
+p4 <- 1000
+k_true4 <- 9
+L <- matrix(0, nrow = n4, ncol = k_true4)
+for (j in seq_len(k_true4)) {
+  L[sample(n4, 20), j] <- 1
+}
+FF <- matrix(rnorm(p4 * k_true4), nrow = p4, ncol = k_true4)
+X9 <- t(
+  L %*% t(FF) +
+    matrix(rnorm(n4 * p4, sd = sigma), nrow = n4)
+)
+
+test4 <- run_rank_test(
+  X = t(X9),
+  S = L,
+  k_grid = c(9, 10, 15, k_pca),
+  test_name = "Nine overlapping groups",
+  ebnm_fn = ebnm_generalized_shifted_rademacher
+)
+```
+
+## Check the signal and noise PCs
+
+```{r, fig.width=8, fig.height=7}
+tests <- list(test1, test2, test3, test4)
+test_names <- vapply(tests, function(x) x$results$test[1], character(1))
+
+old_par <- par(mfrow = c(2, 2))
+for (i in seq_along(tests)) {
+  x <- tests[[i]]
+  plot(
+    x$singular_values[seq_len(max(x$k_grid))],
+    type = "b",
+    pch = 19,
+    xlab = "PC index",
+    ylab = "Singular value",
+    main = test_names[i]
+  )
+  abline(v = x$true_rank + 0.5, lty = 2, col = "grey50")
+}
+par(old_par)
+```
+
+## Summarize rank sensitivity
+
+```{r, results='asis'}
+results <- do.call(rbind, lapply(tests, `[[`, "results"))
+
+mean_cor <- aggregate(
+  correlation ~ test + rank + method,
+  data = results,
+  FUN = mean
+)
+names(mean_cor)[4] <- "mean_correlation"
+
+success_rate <- aggregate(
+  success ~ test + rank + method,
+  data = results,
+  FUN = mean
+)
+
+summary_results <- merge(mean_cor, success_rate)
+summary_results <- summary_results[
+  order(summary_results$test, summary_results$rank, summary_results$method),
+]
+
+for (test_name in test_names) {
+  test_table <- summary_results[
+    summary_results$test == test_name,
+    c("rank", "method", "mean_correlation", "success")
+  ]
+
+  cat("\n\n### ", test_name, "\n\n", sep = "")
+  cat(
+    knitr::kable(
+      test_table,
+      format = "pipe",
+      digits = 3,
+      row.names = FALSE
+    ),
+    sep = "\n"
+  )
+  cat("\n\n")
+}
+```
