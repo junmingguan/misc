@@ -477,10 +477,360 @@ $$
 $$
 
 
+## Weighted EB-proj
+
+We try to model
+
+$V\in\mathbb R^{p\times k}$, $\tilde{X}=VD$, and define
+
+$$
+W_D=\frac{\tilde{X}\tilde{X}^\top}{d_1^2}
+   =V\Lambda V^\top,\qquad
+\Lambda=\operatorname{diag}\left(
+1,\frac{d_2^2}{d_1^2},\ldots,\frac{d_k^2}{d_1^2}
+\right).
+$$
+
+Let
+
+$$
+v\sim g_0^{\otimes p},\qquad
+u=\frac{v}{\|v\|},
+$$
+assuming \(P(v=0)=0\), or conditioning on \(v\neq0\). Define
+
+$$
+\rho_W(u)=u^\top Wu
+=\frac{v^\top Wv}{v^\top v}.
+$$
+
+Conditional on $D$, let the base distribution of $V$ be Haar-uniform on the Stiefel manifold; equivalently, $W_D$ is uniform on its fixed-spectrum orbit.
+
+Under this base model,
+
+$$
+(T_1,\ldots,T_k,T_0)
+\sim
+\operatorname{Dirichlet}
+\left(
+\frac{1}{2},
+\ldots,
+\frac{1}{2},
+\frac{p-k}{2}
+\right),
+$$
+
+and
+
+$$
+\rho_D
+=
+\sum_{j=1}^k
+\frac{d_j^2}{d_1^2}T_j.
+$$
+
+Thus, the base alignment law $f_D(\rho)$ is a weighted Dirichlet sum. It is Beta only when all retained singular values are equal.
+
+The fully general EBproj-style construction is
+
+$$
+\frac{dP(W_D\mid v,D)}{d\mu_D(W_D)}
+=
+\frac{\pi_D\{\rho_D(v,W_D)\}}
+     {f_D\{\rho_D(v,W_D)\}},
+$$
+
+where $\mu_D$ is the uniform fixed-D base measure and $\pi_D$ is the desired alignment distribution.
+
+A particularly convenient choice is the power tilt
+
+$$
+\frac{dP(W_D\mid v,D,\gamma)}{d\mu_D(W_D)}
+=
+\frac{(1-\rho_D)^{-\gamma}}{Z_\gamma(D)},
+$$
+
+with
+
+$$
+Z_\gamma(D)
+=
+E_{\mu_D}\left[(1-\rho_D)^{-\gamma}\right].
+$$
+
+This is a proper latent-$v$ DGP whenever $Z_\gamma(D)<\infty$.
+
+When $D=dI_k$, $W_D=VV^\top=P$, the base law is
+
+$$
+\rho
+\sim
+\operatorname{Beta}
+\left(
+\frac{k}{2},
+\frac{p-k}{2}
+\right).
+$$
+
+Choosing
+
+$$
+\gamma
+=
+\frac{p-k}{2}-b
+=
+\frac{p-k-2b}{2}
+$$
+
+changes this to $\operatorname{Beta}(k/2,b)$, exactly recovering EBproj.
+
+### variational objective
+
+For $q(v)=\prod_i q_i(v_i)$,
+
+$$
+\mathcal{F}_{\mathrm{exact}}(q,g)
+=
+-\gamma E_q\left[
+\log\left(
+1-\frac{v^\top W_Dv}{v^\top v}
+\right)
+\right]
+-
+\operatorname{KL}(q\|g^{\otimes p})
+-
+\log Z_\gamma(D).
+$$
+
+
+### approximate objective
+
+Define
+
+$$
+m=E_q[v],
+\qquad
+M=E_q[v^\top v],
+\qquad
+\widehat{\rho}
+=
+\frac{m^\top W_Dm}{M}.
+$$
+
+Apply the same approximation as EBproj:
+
+$$
+E_q[-\log(1-\rho_D(v))]
+\approx
+-\log(1-\widehat{\rho}).
+$$
+
+This gives
+
+$$
+\widetilde{\mathcal{F}}(q,g)
+=
+-\gamma\log(1-\widehat{\rho})
+-
+\operatorname{KL}(q\|g^{\otimes p})
+-
+\log Z_\gamma(D).
+$$
+
+Introduce the EBproj auxiliary parameter:
+
+$$
+-\log(1-\widehat{\rho})
+=
+\max_{\tau>0}
+\left\{
+\log\tau-\tau(1-\widehat{\rho})+1
+\right\},
+$$
+
+so
+
+$$
+\tau
+\leftarrow
+\frac{1}{1-\widehat{\rho}}.
+$$
+
+### EBNM update
+
+At iteration $t$, let $m_t$, $M_t$, and $\rho_t$ be the current moments. The quadratic-over-linear alignment has the minorization
+
+$$
+\frac{m^\top W_Dm}{M}
+\ge
+\frac{2m^\top W_Dm_t}{M_t}
+-
+\frac{\rho_tM}{M_t}.
+$$
+
+Matching this to a normal-means ELBO gives
+
+$$
+x_t
+=
+\frac{W_Dm_t}{\rho_t},
+\qquad
+s_t^2
+=
+\frac{M_t}{2\gamma\tau_t\rho_t},
+$$
+
+and therefore
+
+$$
+(q_{t+1},g_{t+1})
+\leftarrow
+\operatorname{EBNM}(x_t,s_t^2;\mathcal{G}).
+$$
+
+Equivalently, define
+
+$$
+\sigma_{\mathrm{eff}}^2
+=
+\frac{p}{2\gamma\tau_t};
+$$
+
+then
+
+$$
+(q_{t+1},g_{t+1})
+\leftarrow
+\operatorname{EBNM}\left(
+\frac{W_Dm_t}{\rho_t},
+\frac{\sigma_{\mathrm{eff}}^2M_t}{p\rho_t}
+\right),
+$$
+
+which is exactly the EBproj update with $P$ replaced by $W_D$.
+
+For a Rademacher prior, $M_t=p$, so
+
+$$
+m_{t+1}
+=
+\tanh\left(
+\frac{2\gamma}{p}
+\frac{W_Dm_t}{1-\rho_t}
+\right).
+$$
+
+With $\gamma=(p-k-2b)/2$,
+
+$$
+m_{t+1}
+=
+\tanh\left[
+\frac{p-k-2b}{p}
+\frac{W_Dm_t}{1-\rho_t}
+\right].
+$$
+
+
+### Exponential tilt
+
+Alternatively,
+
+For $\eta>0$,
+
+$$
+\frac{dP_{\exp}(W\mid u,D,\eta)}
+     {d\mu_D(W)}
+=
+\exp\{\eta\rho_W(u)-\psi_D(\eta)\},
+$$
+
+where
+
+$$
+\psi_D(\eta)
+=
+\log\int_{\mathcal O_D}
+\exp\{\eta\rho_A(u)\}\,\mu_D(dA).
+$$
+
+
+For $q(v)=\prod_i q_i(v_i)$, the exact ELBO is
+
+$$
+\mathcal{L}(q,g)
+=
+\eta E_q\left[
+\frac{v^\top W_k v}{v^\top v}
+\right]
+-
+\sum_i \operatorname{KL}(q_i\|g)
+-
+\psi_D(\eta).
+$$
+
+
+Using the same approximation as EB-proj, define
+
+$$
+m=E_q[v],
+\qquad
+M=E_q[v^\top v],
+\qquad
+\widehat{\rho}
+=
+\frac{m^\top W_k m}{M},
+$$
+
+and optimize
+
+$$
+\widetilde{\mathcal{L}}(q,g)
+=
+\eta\widehat{\rho}
+-
+\sum_i \operatorname{KL}(q_i\|g).
+$$
+
+Because $W_k\succeq 0$, the quadratic-over-linear inequality
+
+$$
+\frac{{m'}^\top W_k m'}{M'}
+\ge
+\frac{2{m'}^\top W_k m}{M}
+-
+\frac{\widehat{\rho}M'}{M}
+$$
+
+gives a tight MM minorizer. That minorizer is exactly an EBNM objective with
+
+$$
+x
+=
+\frac{W_k m}{\widehat{\rho}},
+\qquad
+s^2
+=
+\frac{M}{2\eta\widehat{\rho}}.
+$$
+
+Thus, the iteration is
+
+$$
+(q^{+},g^{+})
+=
+\operatorname{EBNM}\left(
+\frac{W_k m}{\widehat{\rho}},
+\frac{M}{2\eta\widehat{\rho}}
+\right).
+$$
+
+
+
 ## Analyses
 
 - [Initial exploration of EB-proj, with shifted Rademacher](shifted_rademacher_for_ebproj.html)
   - TODO: It seems we need to choose the correct rank. Investigate this.
 
 
-## References
+## Reference
