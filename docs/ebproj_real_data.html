@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Junming Guan" />
+
+<meta name="date" content="2026-07-07" />
+
+<title>Real data experiments</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">misc</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/junmingguan/misc">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Real data experiments</h1>
+<h4 class="author">Junming Guan</h4>
+<h4 class="date">2026-07-07</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-07-28
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>misc/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251108code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251108)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251108code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251108)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree3bffbb9546f44388a34c509b9fb566c39a246453targetblank3bffbb9a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/junmingguan/misc/tree/3bffbb9546f44388a34c509b9fb566c39a246453" target="_blank">3bffbb9</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree3bffbb9546f44388a34c509b9fb566c39a246453targetblank3bffbb9a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/junmingguan/misc/tree/3bffbb9546f44388a34c509b9fb566c39a246453" target="_blank">3bffbb9</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    .luarc.json
+    Ignored:    _extensions/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/presentation.html
+
+Untracked files:
+    Untracked:  Rplots.pdf
+    Untracked:  analysis/custom.css
+    Untracked:  analysis/draft.Rmd
+    Untracked:  analysis/eb_ica_backup.Rmd
+    Untracked:  analysis/ebica_math.md
+    Untracked:  analysis/ebproj_on_null.Rmd
+    Untracked:  analysis/ebproj_on_random_proj.Rmd
+    Untracked:  analysis/ebproj_rank_sensitivity.Rmd
+    Untracked:  analysis/ebproj_single_cell_experiment.Rmd
+    Untracked:  analysis/ebproj_zhengmix4eq.Rmd
+    Untracked:  analysis/flashier_whitened_and_tree_example_tese.Rmd
+    Untracked:  analysis/generalized_rademacher.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad copy.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_rad.Rmd
+    Untracked:  analysis/ica_vs_flash_r1_update_2.Rmd
+    Untracked:  analysis/index_bacup.Rmd
+    Untracked:  analysis/math-env-refs.html
+    Untracked:  analysis/note.md
+    Untracked:  analysis/notes.Rmd
+    Untracked:  analysis/preemble.tex
+    Untracked:  analysis/presentation.qmd
+    Untracked:  analysis/references.bib
+    Untracked:  analysis/tree_example.Rmd
+    Untracked:  code/ebproj_functions.R
+    Untracked:  code/references.bib
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/_site.yml
+    Modified:   analysis/eb_ica.Rmd
+    Modified:   analysis/ebproj.Rmd
+    Modified:   analysis/flashier_whitened_and_tree_example.Rmd
+    Modified:   analysis/ica_vs_flash_r1_update_1.Rmd
+    Modified:   analysis/ica_vs_flashier_r1_rad.Rmd
+    Modified:   analysis/ica_with_noise.Rmd
+    Modified:   analysis/on_flashier_and_whitened_data.Rmd
+    Modified:   analysis/on_generalized_rademacher.Rmd
+    Modified:   analysis/shifted_rademacher_for_ebproj.Rmd
+    Modified:   code/ica_functions.R
+    Modified:   code/utils.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/ebproj_real_data.Rmd</code>) and
+HTML (<code>docs/ebproj_real_data.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/3bffbb9546f44388a34c509b9fb566c39a246453/analysis/ebproj_real_data.Rmd" target="_blank">3bffbb9</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-07-28
+</td>
+<td>
+wflow_publish("analysis/ebproj_real_data.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<pre class="r"><code>library(Matrix)
+library(fastTopics)
+library(DuoClustering2018)
+library(irlba)
+
+source(file.path(&quot;code&quot;, &quot;ebnm_rademacher.R&quot;))
+source(file.path(&quot;code&quot;, &quot;ebnm_shifted_rademacher.R&quot;))
+source(file.path(&quot;code&quot;, &quot;ebproj_functions.R&quot;))
+source(file.path(&quot;code&quot;, &quot;ica_functions.R&quot;))
+
+set.seed(3)</code></pre>
+</div>
+<div id="pbmc-facs" class="section level1">
+<h1>PBMC FACS</h1>
+<div id="prepare-the-data" class="section level2">
+<h2>Prepare the data</h2>
+<p>This follows the preprocessing in the <a
+href="https://willwerscheid.github.io/flashier/articles/flashier_single_cell.html">flashier
+single-cell vignette</a>.</p>
+<pre class="r"><code>data(&quot;pbmc_facs&quot;)
+
+counts &lt;- pbmc_facs$counts
+colnames(counts) &lt;- make.names(pbmc_facs$genes$symbol, unique = TRUE)
+
+a &lt;- 1
+size_factors &lt;- rowSums(counts)
+size_factors &lt;- size_factors / mean(size_factors)
+shifted_log_counts &lt;- log1p(counts / (a * size_factors))
+
+dim(shifted_log_counts)</code></pre>
+<pre><code>[1]  3774 16791</code></pre>
+</div>
+<div id="construct-the-projection" class="section level2">
+<h2>Construct the projection</h2>
+<p>Center the shifted-log data, use the leading eight left singular
+vectors, and form the cell-space projection matrix <span
+class="math inline">\(P=UU^\top\)</span>.</p>
+<pre class="r"><code>K &lt;- 8
+gene_means &lt;- colMeans(shifted_log_counts)
+svd_fit &lt;- irlba(
+  shifted_log_counts,
+  nv = K,
+  nu = K,
+  center = gene_means
+)
+U &lt;- svd_fit$u
+P &lt;- tcrossprod(U)</code></pre>
+</div>
+<div id="run-eb-proj" class="section level2">
+<h2>Run EB-proj</h2>
+<p>Initialize from the sign of the first centered singular vector and
+run one rank-one EB-proj update with the symmetric Rademacher prior.</p>
+<pre class="r"><code>v_init &lt;- sign(U[, 1])
+v_init[v_init == 0] &lt;- 1
+
+fit_ebproj &lt;- eb_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  b = 1,
+  maxiter = 100
+)
+
+c(rho = fit_ebproj$rho, niter = fit_ebproj$niter)</code></pre>
+<pre><code>       rho      niter 
+ 0.9188129 15.0000000 </code></pre>
+<pre class="r"><code>fit_ebproj$fitted_g</code></pre>
+<pre><code>         pi        c
+1 0.2445604 0.510888</code></pre>
+</div>
+<div id="run-eb-spiked-proj" class="section level2">
+<h2>Run EB-spiked-proj</h2>
+<p>Use the same initialization and Rademacher prior, with <span
+class="math inline">\(\kappa=1\)</span>.</p>
+<pre class="r"><code>fit_ebspikedproj &lt;- eb_spiked_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  kappa = 1,
+  maxiter = 100
+)
+
+c(
+  rho = fit_ebspikedproj$rho,
+  niter = fit_ebspikedproj$niter,
+  eta = fit_ebspikedproj$eta,
+  kappa = fit_ebspikedproj$kappa
+)</code></pre>
+<pre><code>       rho      niter        eta      kappa 
+ 0.9188120 15.0000000  0.9996416  1.0000000 </code></pre>
+</div>
+<div id="run-fastica" class="section level2">
+<h2>Run FastICA</h2>
+<p>The whitened cell matrix is <span
+class="math inline">\(X_1=\sqrt{n}U^\top\)</span>. Use the same initial
+cell direction as EB-proj.</p>
+<pre class="r"><code>n &lt;- nrow(U)
+X1 &lt;- sqrt(n) * t(U)
+
+w_init &lt;- as.vector(X1 %*% v_init)
+w_init &lt;- w_init / sqrt(sum(w_init^2))
+
+w_fastica &lt;- fastica_rank_one_update(
+  X1 = X1,
+  init_w = w_init,
+  n_iter = 100
+)
+score_fastica &lt;- as.vector(t(X1) %*% w_fastica)</code></pre>
+</div>
+<div id="run-fastica-with-an-intercept" class="section level2">
+<h2>Run FastICA with an intercept</h2>
+<p>Add an all-ones row to the whitened data and estimate its coefficient
+jointly with the FastICA direction.</p>
+<pre class="r"><code>X1_intercept &lt;- rbind(intercept = rep(1, ncol(X1)), X1)
+w_init_intercept &lt;- c(0, w_init)
+
+w_fastica_intercept &lt;- fastica_rank_one_update(
+  X1 = X1_intercept,
+  init_w = w_init_intercept,
+  n_iter = 100
+)
+score_fastica_intercept &lt;- as.vector(
+  t(X1_intercept) %*% w_fastica_intercept
+)
+
+c(intercept_weight = w_fastica_intercept[1])</code></pre>
+<pre><code>intercept_weight 
+      -0.5359315 </code></pre>
+</div>
+<div id="compare-the-fitted-contrasts" class="section level2">
+<h2>Compare the fitted contrasts</h2>
+<p>Signs and scales are arbitrary. Align the other scores to EB-proj and
+standardize all four before comparing them.</p>
+<pre class="r"><code>orient_and_scale &lt;- function(x, reference) {
+  if (cor(x, reference) &lt; 0) {
+    x &lt;- -x
+  }
+  as.vector(scale(x))
+}
+
+scores &lt;- list(
+  &quot;EB-proj&quot; = as.vector(scale(fit_ebproj$vbar)),
+  &quot;EB-spiked-proj&quot; = orient_and_scale(
+    fit_ebspikedproj$vbar,
+    fit_ebproj$vbar
+  ),
+  &quot;FastICA&quot; = orient_and_scale(score_fastica, fit_ebproj$vbar),
+  &quot;FastICA + intercept&quot; = orient_and_scale(
+    score_fastica_intercept,
+    fit_ebproj$vbar
+  )
+)
+
+subpop &lt;- pbmc_facs$samples$subpop
+round(sapply(scores, function(x) tapply(x, subpop, mean)), 2)</code></pre>
+<pre><code>        EB-proj EB-spiked-proj FastICA FastICA + intercept
+B cell    -0.57          -0.57   -1.13               -0.62
+CD14+      1.76           1.76   -1.12                1.76
+CD34+     -0.42          -0.42   -1.14               -0.40
+NK cell    1.75           1.75    0.87                1.73
+T cell    -0.50          -0.50    0.84               -0.47</code></pre>
+<pre class="r"><code>round(cor(do.call(cbind, scores)), 2)</code></pre>
+<pre><code>                    EB-proj EB-spiked-proj FastICA FastICA + intercept
+EB-proj                1.00           1.00    0.24                0.96
+EB-spiked-proj         1.00           1.00    0.24                0.96
+FastICA                0.24           0.24    1.00                0.26
+FastICA + intercept    0.96           0.96    0.26                1.00</code></pre>
+<pre class="r"><code>old_par &lt;- par(mfrow = c(2, 2), mar = c(8, 4, 3, 1))
+for (method in names(scores)) {
+  boxplot(
+    scores[[method]] ~ subpop,
+    main = method,
+    xlab = &quot;&quot;,
+    ylab = &quot;Standardized score&quot;,
+    las = 2
+  )
+}</code></pre>
+<p><img src="figure/ebproj_real_data.Rmd/unnamed-chunk-8-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(old_par)</code></pre>
+<p>At <span class="math inline">\(\kappa=1\)</span>, EB-spiked-proj has
+<span class="math inline">\(\eta=0.9997\)</span> and recovers
+essentially the same direction as EB-proj (score correlation 1.00). Both
+place CD14+ and NK cells on one side, B and CD34+ cells on the other,
+and T cells near the center. Their score correlations are 0.56 with
+ordinary FastICA and 0.70 with FastICA plus an intercept.</p>
+</div>
+</div>
+<div id="zhengmix4eq" class="section level1">
+<h1>Zhengmix4eq</h1>
+<div id="prepare-the-data-1" class="section level2">
+<h2>Prepare the data</h2>
+<p><code>Zhengmix4eq</code> contains four pre-sorted immune-cell
+populations mixed in approximately equal proportions. Use the version
+retaining the top 10% of highly variable genes; all cells and their
+pre-sorting labels are retained.</p>
+<pre class="r"><code>sce &lt;- sce_filteredHVG10_Zhengmix4eq()</code></pre>
+<pre><code>see ?DuoClustering2018 and browseVignettes(&#39;DuoClustering2018&#39;) for documentation</code></pre>
+<pre><code>loading from cache</code></pre>
+<pre><code>require(&quot;SingleCellExperiment&quot;)</code></pre>
+<pre><code>Warning: package &#39;SingleCellExperiment&#39; was built under R version 4.3.2</code></pre>
+<pre><code>Warning: package &#39;SummarizedExperiment&#39; was built under R version 4.3.2</code></pre>
+<pre><code>Warning: package &#39;matrixStats&#39; was built under R version 4.3.3</code></pre>
+<pre><code>Warning: package &#39;S4Vectors&#39; was built under R version 4.3.2</code></pre>
+<pre><code>Warning: package &#39;GenomeInfoDb&#39; was built under R version 4.3.3</code></pre>
+<pre class="r"><code>counts &lt;- t(SummarizedExperiment::assay(sce, &quot;counts&quot;))
+cell_type &lt;- factor(sce$phenoid)
+
+dim(counts)</code></pre>
+<pre><code>[1] 3300 1557</code></pre>
+<pre class="r"><code>table(cell_type)</code></pre>
+<pre><code>cell_type
+        b.cells  cd14.monocytes naive.cytotoxic    regulatory.t 
+            822             859             789             830 </code></pre>
+<pre class="r"><code>size_factors &lt;- rowSums(counts)
+size_factors &lt;- size_factors / mean(size_factors)
+shifted_log_counts &lt;- log1p(counts / size_factors)</code></pre>
+</div>
+<div id="construct-the-projection-1" class="section level2">
+<h2>Construct the projection</h2>
+<p>Center genes, retain the first eight left singular vectors, and
+construct the cell-space projection <span
+class="math inline">\(P=UU^\top\)</span>.</p>
+<pre class="r"><code>K &lt;- 8
+svd_fit &lt;- irlba(
+  shifted_log_counts,
+  nv = K,
+  nu = K,
+  center = colMeans(shifted_log_counts)
+)
+U &lt;- svd_fit$u
+P &lt;- tcrossprod(U)</code></pre>
+</div>
+<div id="run-eb-proj-1" class="section level2">
+<h2>Run EB-proj</h2>
+<p>Initialize from the sign of the first centered singular vector and
+use the generalized shifted Rademacher prior.</p>
+<pre class="r"><code>v_init &lt;- sign(U[, 1])
+v_init[v_init == 0] &lt;- 1
+
+fit_ebproj &lt;- eb_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  b = 1,
+  maxiter = 100
+)
+
+c(rho = fit_ebproj$rho, niter = fit_ebproj$niter)</code></pre>
+<pre><code>      rho     niter 
+0.9787593 4.0000000 </code></pre>
+<pre class="r"><code>fit_ebproj$fitted_g</code></pre>
+<pre><code>         pi          c
+1 0.7439394 -0.4878788</code></pre>
+</div>
+<div id="run-eb-spiked-proj-1" class="section level2">
+<h2>Run EB-spiked-proj</h2>
+<p>Use the same initialization and prior, with <span
+class="math inline">\(\kappa=1\)</span>.</p>
+<pre class="r"><code>fit_ebspikedproj &lt;- eb_spiked_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  kappa = 1,
+  maxiter = 100
+)
+
+c(
+  rho = fit_ebspikedproj$rho,
+  niter = fit_ebspikedproj$niter,
+  eta = fit_ebspikedproj$eta,
+  kappa = fit_ebspikedproj$kappa
+)</code></pre>
+<pre><code>      rho     niter       eta     kappa 
+0.9787593 4.0000000 0.9996025 1.0000000 </code></pre>
+<pre class="r"><code>fit_ebspikedproj$fitted_g</code></pre>
+<pre><code>         pi          c
+1 0.7439394 -0.4878788</code></pre>
+</div>
+<div id="run-fastica-1" class="section level2">
+<h2>Run FastICA</h2>
+<p>Use the whitened cell matrix <span
+class="math inline">\(X_1=\sqrt{n}U^\top\)</span> and the same initial
+direction.</p>
+<pre class="r"><code>n &lt;- nrow(U)
+X1 &lt;- sqrt(n) * t(U)
+
+w_init &lt;- as.vector(X1 %*% v_init)
+w_init &lt;- w_init / sqrt(sum(w_init^2))
+
+w_fastica &lt;- fastica_rank_one_update(
+  X1 = X1,
+  init_w = w_init,
+  n_iter = 100
+)
+score_fastica &lt;- as.vector(t(X1) %*% w_fastica)</code></pre>
+</div>
+<div id="run-fastica-with-an-intercept-1" class="section level2">
+<h2>Run FastICA with an intercept</h2>
+<pre class="r"><code>X1_intercept &lt;- rbind(intercept = rep(1, ncol(X1)), X1)
+w_init_intercept &lt;- c(0, w_init)
+
+w_fastica_intercept &lt;- fastica_rank_one_update(
+  X1 = X1_intercept,
+  init_w = w_init_intercept,
+  n_iter = 100
+)
+score_fastica_intercept &lt;- as.vector(
+  t(X1_intercept) %*% w_fastica_intercept
+)
+
+intercept_diagnostics &lt;- c(
+  intercept_weight = w_fastica_intercept[1],
+  direction_norm = sqrt(sum(w_fastica_intercept[-1]^2)),
+  raw_score_sd = sd(score_fastica_intercept)
+)
+intercept_diagnostics</code></pre>
+<pre><code>intercept_weight   direction_norm     raw_score_sd 
+    1.000000e+00     3.109304e-14     3.110142e-14 </code></pre>
+<pre class="r"><code>intercept_degenerate &lt;- intercept_diagnostics[&quot;direction_norm&quot;] &lt; 1e-8</code></pre>
+</div>
+<div id="compare-with-the-pre-sorting-labels" class="section level2">
+<h2>Compare with the pre-sorting labels</h2>
+<p>Signs and scales are arbitrary. Align the other scores to EB-proj and
+standardize all nondegenerate methods. <code>label_R2</code> is the
+fraction of each score’s variance explained by the four known cell
+labels.</p>
+<pre class="r"><code>scores &lt;- list(
+  &quot;EB-proj&quot; = as.vector(scale(fit_ebproj$vbar)),
+  &quot;EB-spiked-proj&quot; = orient_and_scale(
+    fit_ebspikedproj$vbar,
+    fit_ebproj$vbar
+  ),
+  &quot;FastICA&quot; = orient_and_scale(score_fastica, fit_ebproj$vbar)
+)
+if (!intercept_degenerate) {
+  scores[[&quot;FastICA + intercept&quot;]] &lt;- orient_and_scale(
+    score_fastica_intercept,
+    fit_ebproj$vbar
+  )
+}
+
+round(sapply(scores, function(x) tapply(x, cell_type, mean)), 2)</code></pre>
+<pre><code>                EB-proj EB-spiked-proj FastICA
+b.cells            0.59           0.59    1.01
+cd14.monocytes    -1.67          -1.67   -1.13
+naive.cytotoxic    0.59           0.59    0.83
+regulatory.t       0.59           0.59   -0.62</code></pre>
+<pre class="r"><code>round(cor(do.call(cbind, scores)), 2)</code></pre>
+<pre><code>               EB-proj EB-spiked-proj FastICA
+EB-proj           1.00           1.00    0.67
+EB-spiked-proj    1.00           1.00    0.67
+FastICA           0.67           0.67    1.00</code></pre>
+<pre class="r"><code>label_R2 &lt;- sapply(
+  scores,
+  function(x) summary(lm(x ~ cell_type))$r.squared
+)
+round(label_R2, 3)</code></pre>
+<pre><code>       EB-proj EB-spiked-proj        FastICA 
+         0.978          0.978          0.845 </code></pre>
+<pre class="r"><code>old_par &lt;- par(mfrow = c(2, 2), mar = c(8, 4, 3, 1))
+for (method in names(scores)) {
+  boxplot(
+    scores[[method]] ~ cell_type,
+    main = method,
+    xlab = &quot;&quot;,
+    ylab = &quot;Standardized score&quot;,
+    las = 2
+  )
+}
+par(old_par)</code></pre>
+<p><img src="figure/ebproj_real_data.Rmd/unnamed-chunk-15-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>Because four labels span a three-dimensional contrast space, a single
+rank-one component can recover only one split among the populations.
+Thus, <code>label_R2</code> measures association with the known labels,
+not complete recovery of the four-class structure. The intercept FastICA
+fit is excluded from these comparisons if it converges to an
+intercept-only, constant-score solution.</p>
+<p>With the generalized shifted Rademacher prior, both EB methods
+isolate CD14 monocytes from the other three populations and produce
+identical scores. Their label <span class="math inline">\(R^2\)</span>
+is 0.978, compared with 0.845 for FastICA, and the EB–FastICA score
+correlation is 0.67. FastICA with an intercept converges to an
+intercept-only solution and therefore has no usable cell score.</p>
+</div>
+</div>
+<div id="zhengmix4uneq" class="section level1">
+<h1>Zhengmix4uneq</h1>
+<div id="prepare-the-data-2" class="section level2">
+<h2>Prepare the data</h2>
+<p><code>Zhengmix4uneq</code> contains the same four pre-sorted
+immune-cell populations in deliberately unequal proportions. Use the
+version retaining the top 10% of highly variable genes; all retained
+cells and their pre-sorting labels are included.</p>
+<pre class="r"><code>sce &lt;- sce_filteredHVG10_Zhengmix4uneq()</code></pre>
+<pre><code>see ?DuoClustering2018 and browseVignettes(&#39;DuoClustering2018&#39;) for documentation</code></pre>
+<pre><code>loading from cache</code></pre>
+<pre class="r"><code>counts &lt;- t(SummarizedExperiment::assay(sce, &quot;counts&quot;))
+cell_type &lt;- factor(sce$phenoid)
+
+dim(counts)</code></pre>
+<pre><code>[1] 5079 1644</code></pre>
+<pre class="r"><code>table(cell_type)</code></pre>
+<pre><code>cell_type
+        b.cells  cd14.monocytes naive.cytotoxic    regulatory.t 
+            783            1600             364            2332 </code></pre>
+<pre class="r"><code>size_factors &lt;- rowSums(counts)
+size_factors &lt;- size_factors / mean(size_factors)
+shifted_log_counts &lt;- log1p(counts / size_factors)</code></pre>
+</div>
+<div id="construct-the-projection-2" class="section level2">
+<h2>Construct the projection</h2>
+<p>Center genes, retain the first eight left singular vectors, and
+construct the cell-space projection <span
+class="math inline">\(P=UU^\top\)</span>.</p>
+<pre class="r"><code>K &lt;- 8
+svd_fit &lt;- irlba(
+  shifted_log_counts,
+  nv = K,
+  nu = K,
+  center = colMeans(shifted_log_counts)
+)
+U &lt;- svd_fit$u
+P &lt;- tcrossprod(U)</code></pre>
+</div>
+<div id="run-eb-proj-2" class="section level2">
+<h2>Run EB-proj</h2>
+<p>Initialize from the sign of the first centered singular vector and
+use the generalized shifted Rademacher prior.</p>
+<pre class="r"><code>v_init &lt;- sign(U[, 1])
+v_init[v_init == 0] &lt;- 1
+
+fit_ebproj &lt;- eb_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  b = 1,
+  maxiter = 100
+)
+
+c(rho = fit_ebproj$rho, niter = fit_ebproj$niter)</code></pre>
+<pre><code>      rho     niter 
+0.9796743 4.0000000 </code></pre>
+<pre class="r"><code>fit_ebproj$fitted_g</code></pre>
+<pre><code>         pi         c
+1 0.3097183 0.3805864</code></pre>
+</div>
+<div id="run-eb-spiked-proj-2" class="section level2">
+<h2>Run EB-spiked-proj</h2>
+<p>Use the same initialization and prior, with <span
+class="math inline">\(\kappa=1\)</span>.</p>
+<pre class="r"><code>fit_ebspikedproj &lt;- eb_spiked_proj_rank1_update(
+  P = P,
+  v_init = v_init,
+  ebnm_fn = ebnm_generalized_shifted_rademacher,
+  k = K,
+  kappa = 1,
+  maxiter = 100
+)
+
+c(
+  rho = fit_ebspikedproj$rho,
+  niter = fit_ebspikedproj$niter,
+  eta = fit_ebspikedproj$eta,
+  kappa = fit_ebspikedproj$kappa
+)</code></pre>
+<pre><code>      rho     niter       eta     kappa 
+0.9796743 4.0000000 0.9997698 1.0000000 </code></pre>
+<pre class="r"><code>fit_ebspikedproj$fitted_g</code></pre>
+<pre><code>        pi         c
+1 0.309718 0.3805864</code></pre>
+</div>
+<div id="run-fastica-2" class="section level2">
+<h2>Run FastICA</h2>
+<p>Use the whitened cell matrix <span
+class="math inline">\(X_1=\sqrt{n}U^\top\)</span> and the same initial
+direction.</p>
+<pre class="r"><code>n &lt;- nrow(U)
+X1 &lt;- sqrt(n) * t(U)
+
+w_init &lt;- as.vector(X1 %*% v_init)
+w_init &lt;- w_init / sqrt(sum(w_init^2))
+
+w_fastica &lt;- fastica_rank_one_update(
+  X1 = X1,
+  init_w = w_init,
+  n_iter = 100
+)
+score_fastica &lt;- as.vector(t(X1) %*% w_fastica)</code></pre>
+</div>
+<div id="run-fastica-with-an-intercept-2" class="section level2">
+<h2>Run FastICA with an intercept</h2>
+<pre class="r"><code>X1_intercept &lt;- rbind(intercept = rep(1, ncol(X1)), X1)
+w_init_intercept &lt;- c(0, w_init)
+
+w_fastica_intercept &lt;- fastica_rank_one_update(
+  X1 = X1_intercept,
+  init_w = w_init_intercept,
+  n_iter = 100
+)
+score_fastica_intercept &lt;- as.vector(
+  t(X1_intercept) %*% w_fastica_intercept
+)
+
+intercept_diagnostics &lt;- c(
+  intercept_weight = w_fastica_intercept[1],
+  direction_norm = sqrt(sum(w_fastica_intercept[-1]^2)),
+  raw_score_sd = sd(score_fastica_intercept)
+)
+intercept_diagnostics</code></pre>
+<pre><code>intercept_weight   direction_norm     raw_score_sd 
+      -0.3919312        0.9199945        0.9200851 </code></pre>
+<pre class="r"><code>intercept_degenerate &lt;- intercept_diagnostics[&quot;direction_norm&quot;] &lt; 1e-8</code></pre>
+</div>
+<div id="compare-with-the-pre-sorting-labels-1" class="section level2">
+<h2>Compare with the pre-sorting labels</h2>
+<p>Signs and scales are arbitrary. Align the other scores to EB-proj and
+standardize all nondegenerate methods. <code>label_R2</code> is the
+fraction of each score’s variance explained by the four known cell
+labels.</p>
+<pre class="r"><code>scores &lt;- list(
+  &quot;EB-proj&quot; = as.vector(scale(fit_ebproj$vbar)),
+  &quot;EB-spiked-proj&quot; = orient_and_scale(
+    fit_ebspikedproj$vbar,
+    fit_ebproj$vbar
+  ),
+  &quot;FastICA&quot; = orient_and_scale(score_fastica, fit_ebproj$vbar)
+)
+if (!intercept_degenerate) {
+  scores[[&quot;FastICA + intercept&quot;]] &lt;- orient_and_scale(
+    score_fastica_intercept,
+    fit_ebproj$vbar
+  )
+}
+
+round(sapply(scores, function(x) tapply(x, cell_type, mean)), 2)</code></pre>
+<pre><code>                EB-proj EB-spiked-proj FastICA FastICA + intercept
+b.cells           -0.67          -0.67    1.00               -0.65
+cd14.monocytes     1.46           1.46    1.05                1.45
+naive.cytotoxic   -0.67          -0.67   -0.78               -0.66
+regulatory.t      -0.67          -0.67   -0.94               -0.67</code></pre>
+<pre class="r"><code>round(cor(do.call(cbind, scores)), 2)</code></pre>
+<pre><code>                    EB-proj EB-spiked-proj FastICA FastICA + intercept
+EB-proj                1.00           1.00    0.72                0.99
+EB-spiked-proj         1.00           1.00    0.72                0.99
+FastICA                0.72           0.72    1.00                0.73
+FastICA + intercept    0.99           0.99    0.73                1.00</code></pre>
+<pre class="r"><code>label_R2 &lt;- sapply(
+  scores,
+  function(x) summary(lm(x ~ cell_type))$r.squared
+)
+round(label_R2, 3)</code></pre>
+<pre><code>            EB-proj      EB-spiked-proj             FastICA FastICA + intercept 
+              0.976               0.976               0.950               0.969 </code></pre>
+<pre class="r"><code>old_par &lt;- par(mfrow = c(2, 2), mar = c(8, 4, 3, 1))
+for (method in names(scores)) {
+  boxplot(
+    scores[[method]] ~ cell_type,
+    main = method,
+    xlab = &quot;&quot;,
+    ylab = &quot;Standardized score&quot;,
+    las = 2
+  )
+}</code></pre>
+<p><img src="figure/ebproj_real_data.Rmd/unnamed-chunk-22-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(old_par)</code></pre>
+<p>As in the equal-mixture experiment, a single rank-one component can
+recover only one split among the four known populations. The unequal
+mixture tests whether the learned mixture weight and shift adapt to
+class imbalance.</p>
+<p>The filtered dataset contains 5,079 cells, including 1,600 CD14
+monocytes. Both EB methods isolate CD14 monocytes from the other three
+populations and produce identical scores, with <span
+class="math inline">\(\rho=0.980\)</span> and label <span
+class="math inline">\(R^2=0.976\)</span>. The fitted prior weight is
+<span class="math inline">\(\pi=0.310\)</span>, close to the observed
+CD14 proportion <span class="math inline">\(1600/5079=0.315\)</span>.
+Ordinary FastICA finds a somewhat different contrast (<span
+class="math inline">\(R^2=0.950\)</span>, correlation 0.72 with EB),
+whereas FastICA with an intercept closely matches EB (<span
+class="math inline">\(R^2=0.969\)</span>, correlation 0.99) and does not
+degenerate.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 26.5.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] SingleCellExperiment_1.24.0 SummarizedExperiment_1.32.0
+ [3] Biobase_2.62.0              GenomicRanges_1.54.1       
+ [5] GenomeInfoDb_1.38.8         IRanges_2.36.0             
+ [7] S4Vectors_0.40.2            BiocGenerics_0.48.1        
+ [9] MatrixGenerics_1.14.0       matrixStats_1.5.0          
+[11] irlba_2.3.7                 DuoClustering2018_1.20.0   
+[13] fastTopics_0.7-44           Matrix_1.6-4               
+[15] workflowr_1.7.2            
+
+loaded via a namespace (and not attached):
+  [1] RColorBrewer_1.1-3            rstudioapi_0.18.0            
+  [3] jsonlite_2.0.0                magrittr_2.0.5               
+  [5] farver_2.1.2                  rmarkdown_2.31               
+  [7] fs_1.6.6                      zlibbioc_1.48.2              
+  [9] vctrs_0.6.5                   memoise_2.0.1                
+ [11] RCurl_1.98-1.18               SQUAREM_2026.1               
+ [13] mixsqp_0.3-54                 htmltools_0.5.9              
+ [15] S4Arrays_1.2.1                progress_1.2.3               
+ [17] AnnotationHub_3.10.1          curl_6.4.0                   
+ [19] truncnorm_1.0-9               SparseArray_1.2.4            
+ [21] sass_0.4.10                   bslib_0.10.0                 
+ [23] htmlwidgets_1.6.4             plyr_1.8.9                   
+ [25] plotly_4.12.0                 cachem_1.1.0                 
+ [27] whisker_0.4.1                 mime_0.13                    
+ [29] lifecycle_1.0.5               pkgconfig_2.0.3              
+ [31] R6_2.6.1                      fastmap_1.2.0                
+ [33] GenomeInfoDbData_1.2.11       shiny_1.13.0                 
+ [35] digest_0.6.37                 AnnotationDbi_1.64.1         
+ [37] rprojroot_2.1.1               ExperimentHub_2.10.0         
+ [39] RSQLite_3.53.3                invgamma_1.2                 
+ [41] filelock_1.0.3                httr_1.4.8                   
+ [43] abind_1.4-8                   compiler_4.3.1               
+ [45] bit64_4.6.0-1                 withr_3.0.2                  
+ [47] viridis_0.6.5                 DBI_1.3.0                    
+ [49] DelayedArray_0.28.0           rappdirs_0.3.4               
+ [51] gtools_3.9.5                  tools_4.3.1                  
+ [53] otel_0.2.0                    interactiveDisplayBase_1.40.0
+ [55] httpuv_1.6.17                 glue_1.8.0                   
+ [57] quadprog_1.5-8                callr_3.7.6                  
+ [59] promises_1.5.0                grid_4.3.1                   
+ [61] Rtsne_0.17                    getPass_0.2-4                
+ [63] reshape2_1.4.5                generics_0.1.4               
+ [65] gtable_0.3.6                  tidyr_1.3.2                  
+ [67] data.table_1.17.8             hms_1.1.4                    
+ [69] XVector_0.42.0                ggrepel_0.9.6                
+ [71] BiocVersion_3.18.1            pillar_1.11.1                
+ [73] stringr_1.6.0                 later_1.4.8                  
+ [75] dplyr_1.1.4                   BiocFileCache_2.10.2         
+ [77] lattice_0.22-9                bit_4.6.0                    
+ [79] tidyselect_1.2.1              Biostrings_2.70.3            
+ [81] pbapply_1.7-4                 knitr_1.51                   
+ [83] git2r_0.36.2                  gridExtra_2.3                
+ [85] RhpcBLASctl_0.23-42           xfun_0.57                    
+ [87] stringi_1.8.7                 lazyeval_0.2.3               
+ [89] yaml_2.3.12                   evaluate_1.0.5               
+ [91] tibble_3.3.1                  BiocManager_1.30.26          
+ [93] cli_3.6.5                     uwot_0.2.4                   
+ [95] RcppParallel_5.1.11-2         xtable_1.8-8                 
+ [97] processx_3.8.7                jquerylib_0.1.4              
+ [99] Rcpp_1.1.0                    dbplyr_2.5.2                 
+[101] png_0.1-9                     parallel_4.3.1               
+[103] ggplot2_3.5.2                 blob_1.2.4                   
+[105] prettyunits_1.2.0             mclust_6.1.2                 
+[107] bitops_1.0-9                  viridisLite_0.4.3            
+[109] ggthemes_5.2.0                scales_1.4.0                 
+[111] purrr_1.0.4                   crayon_1.5.3                 
+[113] rlang_1.1.6                   cowplot_1.2.0                
+[115] ashr_2.2-63                   KEGGREST_1.42.0              </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    }
+  });
+</script>
+
+<script>
+(function () {
+  var theoremTypes = [
+    { className: "theorem", prefixes: ["thm"], label: "Theorem" },
+    { className: "lemma", prefixes: ["lem"], label: "Lemma" },
+    { className: "proposition", prefixes: ["prop", "prp"], label: "Proposition" },
+    { className: "remark", prefixes: ["rem"], label: "Remark" }
+  ];
+
+  function getType(block) {
+    for (var i = 0; i < theoremTypes.length; i += 1) {
+      if (block.classList.contains(theoremTypes[i].className)) {
+        return theoremTypes[i];
+      }
+    }
+    return null;
+  }
+
+  function addAlias(refs, alias, target) {
+    if (alias && !refs[alias]) {
+      refs[alias] = target;
+    }
+  }
+
+  function addAliases(refs, id, type, target) {
+    addAlias(refs, id, target);
+    addAlias(refs, id.replace(/:/g, "-"), target);
+
+    for (var i = 0; i < type.prefixes.length; i += 1) {
+      var prefix = type.prefixes[i];
+      var prefixPattern = new RegExp("^" + prefix + "[:-]");
+      var bareId = id.replace(prefixPattern, "");
+
+      addAlias(refs, prefix + "-" + bareId, target);
+      addAlias(refs, prefix + ":" + bareId, target);
+    }
+  }
+
+  function makeLink(ref) {
+    var link = document.createElement("a");
+    link.href = "#" + ref.id;
+    link.className = "theorem-ref";
+    link.textContent = ref.label + " " + ref.number;
+    return link;
+  }
+
+  function replaceCitationSpan(span, refs) {
+    var citeIds = (span.getAttribute("data-cites") || "").trim().split(/\s+/);
+    var replacements = citeIds.map(function (id) {
+      return refs[id];
+    });
+
+    if (!replacements.length || replacements.some(function (ref) { return !ref; })) {
+      return;
+    }
+
+    var fragment = document.createDocumentFragment();
+    replacements.forEach(function (ref, index) {
+      if (index > 0) {
+        fragment.appendChild(document.createTextNode(", "));
+      }
+      fragment.appendChild(makeLink(ref));
+    });
+    span.parentNode.replaceChild(fragment, span);
+  }
+
+  function replaceTextRefs(node, refs) {
+    var pattern = /\\?@ref\(([^)]+)\)|[@#]((?:thm|lem|prop|prp|rem)[:-][A-Za-z0-9_-]+)/g;
+    var text = node.nodeValue;
+    var match;
+    var lastIndex = 0;
+    var fragment = document.createDocumentFragment();
+
+    while ((match = pattern.exec(text)) !== null) {
+      var id = match[1] || match[2];
+      var ref = refs[id];
+
+      if (!ref) {
+        continue;
+      }
+
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      fragment.appendChild(makeLink(ref));
+      lastIndex = pattern.lastIndex;
+    }
+
+    if (lastIndex === 0) {
+      return;
+    }
+
+    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    node.parentNode.replaceChild(fragment, node);
+  }
+
+  function shouldSkip(node) {
+    var parent = node.parentElement;
+    return parent && parent.closest("a, code, pre, script, style, textarea, .math");
+  }
+
+  function replacePlainTextRefs(root, refs) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        return shouldSkip(node) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var nodes = [];
+    var node;
+
+    while ((node = walker.nextNode())) {
+      nodes.push(node);
+    }
+    nodes.forEach(function (textNode) {
+      replaceTextRefs(textNode, refs);
+    });
+  }
+
+  function buildRefs() {
+    var refs = {};
+    var blocks = document.querySelectorAll(".theorem, .lemma, .proposition, .remark");
+
+    blocks.forEach(function (block, index) {
+      var type = getType(block);
+
+      if (!type || !block.id) {
+        return;
+      }
+
+      var ref = {
+        id: block.id,
+        label: type.label,
+        number: index + 1
+      };
+
+      block.setAttribute("data-theorem-number", ref.number);
+      addAliases(refs, block.id, type, ref);
+    });
+
+    return refs;
+  }
+
+  function initTheoremRefs() {
+    var refs = buildRefs();
+    var citationSpans = document.querySelectorAll("span.citation[data-cites]");
+
+    citationSpans.forEach(function (span) {
+      replaceCitationSpan(span, refs);
+    });
+    replacePlainTextRefs(document.body, refs);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTheoremRefs);
+  } else {
+    initTheoremRefs();
+  }
+}());
+</script>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
