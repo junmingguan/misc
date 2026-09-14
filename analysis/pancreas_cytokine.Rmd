@@ -1,0 +1,280 @@
+---
+title: "Analysis of cytokine-stimulated mouse islet cells"
+author: "Junming Guan"
+date: "2026-08-25"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Data and preprocessing
+
+Here I analyze the pancreas cytokine data, retaining the cell-type and treatment-condition
+labels for visualization. The goal is to investigate if our proposed methods can identify cell-type or condition contrasts. 
+
+Genes expressed in fewer than 10 cells are removed,
+and counts are library-size normalized before applying the shifted log transform.
+
+```{r setup, message=FALSE}
+library(irlba)
+set.seed(1)
+load("data/pancreas_cytokine_lsa.RData")
+barcodes <- as.data.frame(barcodes)
+sample_info <- data.frame(
+  celltype = factor(barcodes$celltype,
+                    c("Acinar", "Ductal", "Endothelial/Mesnchymal", "Macrophage",
+                      "Alpha", "Beta", "Delta", "Gamma")),
+  condition = factor(barcodes$condition,
+                     c("Untreated", "IL-1B", "IFNg", "IL-1B_IFNg"))
+)
+n <- nrow(counts)
+table(sample_info$celltype, sample_info$condition)
+```
+
+```{r preprocess}
+# Remove genes that are expressed in fewer than 10 cells.
+x <- colSums(counts > 0)
+j <- which(x > 9)
+counts <- counts[, j]
+
+# Compute the shifted log counts.
+a <- 1
+s <- rowSums(counts)
+s <- s / mean(s)
+Y <- MatrixExtra::mapSparse(counts / (a * s), log1p)
+```
+
+## PCA and whitening
+
+I center the transformed expression matrix and retain 25 PCs. `U` has
+orthonormal columns; `X1` has whitened PCs in rows and cells in columns.
+
+```{r pca}
+n_comp <- 25
+# Center within irlba to avoid creating a dense cells-by-genes matrix.
+svd_fit <- irlba(Y, nv = n_comp, center = colMeans(Y))
+U <- svd_fit$u
+X1 <- sqrt(n) * t(U)
+
+plot(seq_along(svd_fit$d), svd_fit$d, type = "b", pch = 16,
+     xlab = "PC", ylab = "Singular value", cex.axis = 1.3, cex.lab = 1.3)
+```
+
+## Methods compared
+
+I compare the following rank-1 methods:
+
+- Log-Phi with $\alpha=1$ and $2$.
+- FastICA with an intercept.
+- First-order EB-proj with normalized Bernoulli and centered Exponential priors.
+- Goldenplus EB-proj with a normalized Bernoulli prior and the ICA-type Hessian approximation.
+
+All methods use 100 shared random starting directions.
+
+The normalized Bernoulli prior is
+
+$$
+\mathbb{P}[Z = \sqrt{(1-p)/p}] = p, \qquad
+\mathbb{P}[Z = -\sqrt{p/(1-p)}] = 1-p,
+$$
+
+and the centered Exponential prior is
+
+$$
+Z = T-1, \qquad T \sim \mathrm{Exp}(1).
+$$
+
+Both have mean zero and variance one. Bernoulli estimates $p$; the centered
+Exponential prior is fixed. Goldenplus first fits the scaled Bernoulli prior
+$cZ$ with fixed noise variance $c$, where $c=2/(1+\sqrt{5})$, then uses the
+unit-variance prior $Z$ with free precision. Both stages use the ICA-type
+Hessian approximation.
+
+```{r method-setup, message=FALSE}
+library(ggplot2)
+code_files <- file.path("code", c("projection_methods_temp.R",
+                                 "ebnm_normalized_bernoulli.R",
+                                 "ebnm_centered_exponential.R",
+                                 "ebproj_functions.R",
+                                 "ebproj_newton_functions.R"))
+for (file in code_files) source(file)
+
+set.seed(1)
+n_starts <- 100
+maxiter <- 100
+W_start <- matrix(rnorm(n_comp * n_starts), nrow = n_comp)
+W_aug <- rbind(rnorm(n_starts), W_start)
+W_start <- sweep(W_start, 2, sqrt(colSums(W_start^2)), "/")
+W_aug <- sweep(W_aug, 2, sqrt(colSums(W_aug^2)), "/")
+priors <- list(Bernoulli = ebnm_normalized_bernoulli,
+               Exponential = ebnm_centered_exponential)
+results <- list()
+```
+
+```{r ica}
+for (alpha in c(1, 2)) {
+  W <- W_start
+  for (iter in 1:50) W <- fastica_update_logphi(X1, W, alpha = alpha)
+  L <- t(X1) %*% W
+  results[[paste("Log-Phi alpha =", alpha)]] <- list(
+    loadings = L, objective = colMeans(pnorm(alpha * L, log.p = TRUE)))
+}
+
+X1_aug <- rbind(1, X1)
+W <- W_aug
+for (iter in 1:50) W <- fastica_update(X1_aug, W)
+L <- t(X1_aug) %*% W
+results[["FastICA"]] <- list(loadings = L, objective = colMeans(log(cosh(L))))
+```
+
+```{r eb-proj, cache=TRUE, cache.extra=list(U, W_start, n_starts, maxiter, tools::md5sum(code_files))}
+c_golden <- 2 / (1 + sqrt(5))
+
+# Scale posterior moments and density; fitted_g stores the unit prior's shape.
+warm_prior <- function(x, s, g_init = NULL, fix_g = FALSE, output = NULL) {
+  fit <- ebnm_normalized_bernoulli(x / c_golden, s / c_golden,
+    g_init = g_init, fix_g = fix_g, output = output)
+  fit$posterior$mean <- c_golden * fit$posterior$mean
+  fit$posterior$sd <- c_golden * fit$posterior$sd
+  fit$posterior$second_moment <- c_golden^2 * fit$posterior$second_moment
+  fit$log_likelihood <- as.numeric(fit$log_likelihood) - length(x) * log(c_golden)
+  fit
+}
+
+fit_goldplus <- function(w) {
+  warm <- eb_proj_newton(U, ebnm_fn = warm_prior, w_init = w, g_init = 0.5,
+                        sigma2 = c_golden, fix_tau = TRUE, maxiter = maxiter)
+  eb_proj_newton(U, ebnm_fn = ebnm_normalized_bernoulli, w_init = warm$w,
+                g_init = warm$fitted_g, tau = warm$tau, maxiter = maxiter)
+}
+
+L <- matrix(NA_real_, n, n_starts)
+objective <- numeric(n_starts)
+status <- character(n_starts)
+for (j in seq_len(n_starts)) {
+  fit <- fit_goldplus(W_start[, j])
+  L[, j] <- fit$x
+  objective[j] <- fit$objective
+  status[j] <- fit$status
+}
+eb_results <- list("Goldplus-Bern" = list(loadings = L, objective = objective, status = status))
+```
+
+```{r first-order, cache=TRUE, cache.extra=list(U, W_start, n_starts, maxiter, tools::md5sum(code_files))}
+P <- tcrossprod(U)
+first_order_results <- list()
+for (prior_name in names(priors)) {
+  prior <- priors[[prior_name]]
+  exponential <- prior_name == "Exponential"
+  method <- paste0("EBproj-1st-order-", if (exponential) "Exp" else "Bern")
+  L <- matrix(0, n, n_starts)
+  objective <- numeric(n_starts)
+  status <- character(n_starts)
+  for (j in seq_len(n_starts)) {
+    x_init <- as.vector(t(X1) %*% W_start[, j])
+    s_init <- sqrt(n / (n - 2 * n_comp))
+    initial <- if (exponential) prior(x_init, s_init) else
+      prior(x_init, s_init, g_init = 0.5, fix_g = TRUE)
+    fit <- eb_proj_rank1_update(P, initial$posterior$mean, ebnm_fn = prior,
+      v2_init = sum(initial$posterior$second_moment),
+      k = n_comp, b = n_comp / 2, maxiter = maxiter)
+    direction <- as.vector(crossprod(U, fit$vbar))
+    direction_norm <- sqrt(sum(direction^2))
+    status[j] <- if (fit$niter < maxiter) "converged" else "maximum iterations reached"
+    if (fit$v2 == 0) {
+      status[j] <- "null solution"
+    } else if (direction_norm <= .Machine$double.eps * max(1, sqrt(fit$v2))) {
+      status[j] <- "zero projected posterior mean"
+    } else {
+      L[, j] <- sqrt(n) * U %*% (direction / direction_norm)
+    }
+    objective[j] <- fit$objective
+  }
+  first_order_results[[method]] <- list(loadings = L, objective = objective, status = status)
+}
+```
+
+```{r collect-results}
+method_order <- c("Log-Phi alpha = 1", "Log-Phi alpha = 2",
+                  "Goldplus-Bern",
+                  "EBproj-1st-order-Bern", "EBproj-1st-order-Exp", "FastICA")
+results <- c(results, eb_results, first_order_results)[method_order]
+```
+
+## Grouped loading plots
+
+I group solutions by complete-linkage clustering of $1-|\mathrm{cor}|$, cut at
+0.1, as in [Matthew's pancreas note](https://stephenslab.github.io/single-cell-jamboree/pancreas_celseq2_ica.html).
+For each cluster, the first fit is shown, and the plots are ordered by decreasing objective.
+`n` counts starts; `obj` is the representative fit's objective.
+Each figure holds up to 15 subplots in three columns, with fixed subplot sizes.
+
+EB fits that stop at a null or zero projected posterior mean are excluded.
+
+<!-- iteration-limit fits remain in the plots. -->
+
+Cells are ordered by cell type, then treatment condition. Each set of components
+is colored by cell type and by condition, keeping the same cell order in both plots.
+
+First-order EB-proj panels plot $L=\sqrt{n}\,Uw$, where
+$w=U^\top m/\|U^\top m\|$ and $m$ is the posterior mean before projection.
+
+```{r plot-helper}
+plot_solutions <- function(result, method, start_labels = NULL) {
+  L <- result$loadings
+  keep <- which(apply(L, 2, sd) > 1e-8 & is.finite(result$objective))
+  if (!is.null(result$status)) {
+    keep <- keep[result$status[keep] %in% c("converged", "maximum iterations reached")]
+  }
+  if (!length(keep)) return(invisible(NULL))
+  clusters <- if (!is.null(start_labels)) seq_along(keep) else if (length(keep) == 1) 1 else cutree(
+    hclust(as.dist(1 - pmin(abs(cor(L[, keep, drop = FALSE])), 1)),
+           method = "complete"), h = 0.1)
+  groups <- split(keep, clusters)
+  representatives <- vapply(groups, function(idx) idx[1], 1L)
+  o <- order(result$objective[representatives], decreasing = TRUE)
+  representatives <- representatives[o]
+  labels <- sprintf("n: %d  obj: %.3f", lengths(groups)[o],
+                    result$objective[representatives])
+  if (!is.null(start_labels)) labels <- sprintf("%s  obj: %.3f",
+    start_labels[representatives], result$objective[representatives])
+  cell_order <- order(sample_info$celltype, sample_info$condition)
+  pages <- split(seq_along(representatives), ceiling(seq_along(representatives) / 15))
+  for (page in seq_along(pages)) {
+    idx <- pages[[page]]
+    df <- data.frame(
+      cell = rep(seq_len(n), length(idx)),
+      loading = as.vector(L[cell_order, representatives[idx], drop = FALSE]),
+      panel = factor(rep(representatives[idx], each = n), levels = representatives[idx]),
+      celltype = rep(sample_info$celltype[cell_order], length(idx)),
+      condition = rep(sample_info$condition[cell_order], length(idx)))
+    for (color_by in c("celltype", "condition")) {
+      p <- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
+        geom_point(size = 0.5, alpha = 0.7) +
+        geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
+        facet_wrap(~ panel, ncol = 3, scales = "free_y",
+                   labeller = labeller(panel = setNames(labels, representatives))) +
+        scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), "Dark 3")) +
+        labs(x = NULL, y = "Loading", color = color_by,
+             title = paste(method, "-", color_by),
+             subtitle = paste("Page", page, "of", length(pages))) +
+        theme_bw(base_size = 16) +
+        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              legend.position = "bottom", strip.text = element_text(size = 14)) +
+        guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
+      grid::grid.newpage()
+      g <- ggplotGrob(p)
+      panels <- grepl("^panel", g$layout$name)
+      g$widths[unique(g$layout$l[panels])] <- grid::unit(3.1, "in")
+      g$heights[unique(g$layout$t[panels])] <- grid::unit(1.15, "in")
+      g$vp <- grid::viewport(x = 0, y = 1, just = c("left", "top"),
+                            width = sum(g$widths), height = sum(g$heights))
+      grid::grid.draw(g)
+    }
+  }
+}
+```
+
+```{r grouped-solutions, fig.width=12, fig.height=10.5}
+for (method in names(results)) plot_solutions(results[[method]], method)
+```
