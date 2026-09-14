@@ -207,20 +207,21 @@ I group solutions by complete-linkage clustering of $1-|\mathrm{cor}|$, cut at
 0.1, as in [Matthew's pancreas note](https://stephenslab.github.io/single-cell-jamboree/pancreas_celseq2_ica.html).
 For each cluster, the first fit is shown, and the plots are ordered by decreasing objective.
 `n` counts starts; `obj` is the representative fit's objective.
-Each figure holds up to 15 subplots in three columns, with fixed subplot sizes.
+Each figure holds up to 25 subplots in five columns, with fixed subplot sizes
+and figure height adjusted to the occupied rows.
 
 EB fits that stop at a null or zero projected posterior mean are excluded.
 
 <!-- iteration-limit fits remain in the plots. -->
 
-Cells are ordered by cell type, then treatment condition. Each set of components
-is colored by cell type and by condition, keeping the same cell order in both plots.
+Cells are ordered by cell type, then treatment condition. Use the tabs under
+each method to switch between cell-type and condition coloring.
 
 First-order EB-proj panels plot $L=\sqrt{n}\,Uw$, where
 $w=U^\top m/\|U^\top m\|$ and $m$ is the posterior mean before projection.
 
 ```{r plot-helper}
-plot_solutions <- function(result, method, start_labels = NULL) {
+plot_solutions <- function(result, method, color_by, start_labels = NULL) {
   L <- result$loadings
   keep <- which(apply(L, 2, sd) > 1e-8 & is.finite(result$objective))
   if (!is.null(result$status)) {
@@ -239,7 +240,7 @@ plot_solutions <- function(result, method, start_labels = NULL) {
   if (!is.null(start_labels)) labels <- sprintf("%s  obj: %.3f",
     start_labels[representatives], result$objective[representatives])
   cell_order <- order(sample_info$celltype, sample_info$condition)
-  pages <- split(seq_along(representatives), ceiling(seq_along(representatives) / 15))
+  pages <- split(seq_along(representatives), ceiling(seq_along(representatives) / 25))
   for (page in seq_along(pages)) {
     idx <- pages[[page]]
     df <- data.frame(
@@ -248,33 +249,104 @@ plot_solutions <- function(result, method, start_labels = NULL) {
       panel = factor(rep(representatives[idx], each = n), levels = representatives[idx]),
       celltype = rep(sample_info$celltype[cell_order], length(idx)),
       condition = rep(sample_info$condition[cell_order], length(idx)))
-    for (color_by in c("celltype", "condition")) {
-      p <- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
-        geom_point(size = 0.5, alpha = 0.7) +
-        geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
-        facet_wrap(~ panel, ncol = 3, scales = "free_y",
-                   labeller = labeller(panel = setNames(labels, representatives))) +
-        scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), "Dark 3")) +
-        labs(x = NULL, y = "Loading", color = color_by,
-             title = paste(method, "-", color_by),
-             subtitle = paste("Page", page, "of", length(pages))) +
-        theme_bw(base_size = 16) +
-        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              legend.position = "bottom", strip.text = element_text(size = 14)) +
-        guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
-      grid::grid.newpage()
-      g <- ggplotGrob(p)
-      panels <- grepl("^panel", g$layout$name)
-      g$widths[unique(g$layout$l[panels])] <- grid::unit(3.1, "in")
-      g$heights[unique(g$layout$t[panels])] <- grid::unit(1.15, "in")
-      g$vp <- grid::viewport(x = 0, y = 1, just = c("left", "top"),
-                            width = sum(g$widths), height = sum(g$heights))
-      grid::grid.draw(g)
-    }
+    p <- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
+      geom_point(size = 0.5, alpha = 0.7) +
+      geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
+      facet_wrap(~ panel, ncol = 5, scales = "free_y",
+                 labeller = labeller(panel = setNames(labels, representatives))) +
+      scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), "Dark 3")) +
+      labs(x = NULL, y = "Loading", color = color_by,
+           subtitle = if (length(pages) > 1) paste("Page", page, "of", length(pages))) +
+      theme_bw(base_size = 12) +
+      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position = "bottom", legend.justification = "left",
+            strip.text = element_text(size = 10, margin = margin(2, 0, 2, 0)),
+            strip.background = element_rect(fill = "grey90", color = NA)) +
+      guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
+    g <- ggplotGrob(p)
+    panels <- grepl("^panel", g$layout$name)
+    g$widths[unique(g$layout$l[panels])] <- grid::unit(1.9, "in")
+    g$heights[unique(g$layout$t[panels])] <- grid::unit(1.15, "in")
+    g$vp <- grid::viewport(x = 0, y = 1, just = c("left", "top"),
+                          width = sum(g$widths), height = sum(g$heights))
+    height <- grid::convertHeight(sum(g$heights), "in", valueOnly = TRUE)
+    file <- knitr::fig_path(paste0(color_by, "-", make.names(method), "-", page, ".png"))
+    xfun::in_dir(knitr::opts_knit$get("output.dir"), {
+      dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+      ggsave(file, g, width = 12, height = height + 0.1, units = "in", dpi = 300, bg = "white")
+      cat(knitr::knit_hooks$get("plot")(file, knitr::opts_current$get()), "\n\n", sep = "")
+    })
   }
 }
 ```
 
-```{r grouped-solutions, fig.width=12, fig.height=10.5}
-for (method in names(results)) plot_solutions(results[[method]], method)
+```{r grouped-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
+for (method in names(results)) {
+  cat("\n\n### ", method, " {.tabset}\n\n", sep = "")
+  for (color_by in c("celltype", "condition")) {
+    heading <- if (color_by == "celltype") "Cell type" else "Condition"
+    cat("\n\n#### ", heading, "\n\n", sep = "")
+    plot_solutions(results[[method]], method, color_by)
+  }
+}
+```
+
+## Initialize from condition indicators
+
+I project each of the four centered condition indicators into the retained PC
+subspace and normalize its direction. First-order EB-proj-Bern and Goldplus-Bern
+use these starts with the same settings as above. Each panel is labeled by its
+starting condition, and panels are ordered by decreasing objective.
+
+```{r condition-starts, cache=TRUE, cache.extra=list(U, sample_info$condition, maxiter, tools::md5sum(code_files)), dependson="eb-proj"}
+L_condition <- scale(model.matrix(~ condition - 1, sample_info),
+                     center = TRUE, scale = FALSE)
+W_condition <- crossprod(U, L_condition)
+W_condition <- sweep(W_condition, 2, sqrt(colSums(W_condition^2)), "/")
+colnames(W_condition) <- levels(sample_info$condition)
+condition_results <- list()
+for (method in c("EBproj-1st-order-Bern", "Goldplus-Bern")) {
+  L <- matrix(0, n, ncol(W_condition))
+  objective <- numeric(ncol(W_condition))
+  status <- character(ncol(W_condition))
+  for (j in seq_len(ncol(W_condition))) {
+    if (method == "Goldplus-Bern") {
+      fit <- fit_goldplus(W_condition[, j])
+      L[, j] <- fit$x
+      status[j] <- fit$status
+    } else {
+      x_init <- as.vector(t(X1) %*% W_condition[, j])
+      initial <- ebnm_normalized_bernoulli(x_init, sqrt(n / (n - 2 * n_comp)),
+                                         g_init = 0.5, fix_g = TRUE)
+      fit <- eb_proj_rank1_update(P, initial$posterior$mean,
+        ebnm_fn = ebnm_normalized_bernoulli,
+        v2_init = sum(initial$posterior$second_moment),
+        k = n_comp, b = n_comp / 2, maxiter = maxiter)
+      direction <- as.vector(crossprod(U, fit$vbar))
+      direction_norm <- sqrt(sum(direction^2))
+      status[j] <- if (fit$niter < maxiter) "converged" else "maximum iterations reached"
+      if (fit$v2 == 0) {
+        status[j] <- "null solution"
+      } else if (direction_norm <= .Machine$double.eps * max(1, sqrt(fit$v2))) {
+        status[j] <- "zero projected posterior mean"
+      } else {
+        L[, j] <- sqrt(n) * U %*% (direction / direction_norm)
+      }
+    }
+    objective[j] <- fit$objective
+  }
+  condition_results[[method]] <- list(loadings = L, objective = objective, status = status)
+}
+```
+
+```{r condition-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
+for (method in names(condition_results)) {
+  cat("\n\n### ", method, " {.tabset}\n\n", sep = "")
+  for (color_by in c("celltype", "condition")) {
+    heading <- if (color_by == "celltype") "Cell type" else "Condition"
+    cat("\n\n#### ", heading, "\n\n", sep = "")
+    plot_solutions(condition_results[[method]], method, color_by,
+                   start_labels = colnames(W_condition))
+  }
+}
 ```

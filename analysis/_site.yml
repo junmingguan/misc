@@ -19,3 +19,6 @@ output:
     toc_float: yes
     theme: journal
     highlight: textmate
+    css: custom.css
+    includes:
+      after_body: math-env-refs.html

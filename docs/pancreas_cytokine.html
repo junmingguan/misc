@@ -360,7 +360,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Analysis of mouse pancreas endocrinogenesis</h1>
+<h1 class="title toc-ignore">Analysis of cytokine-stimulated mouse islet
+cells</h1>
 <h4 class="author">Junming Guan</h4>
 <h4 class="date">2026-08-25</h4>
 
@@ -391,7 +392,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-09-13
+<strong>Last updated:</strong> 2026-09-14
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -429,10 +430,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -525,15 +526,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreee692d799246813b8511cfa7e0c202efc42cbb028targetblanke692d79a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb6b3dc228971d6a96791aca3f9d69444e2fe85c7targetblankb6b3dc2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/e692d799246813b8511cfa7e0c202efc42cbb028" target="_blank">e692d79</a>
+<a href="https://github.com/junmingguan/misc/tree/b6b3dc228971d6a96791aca3f9d69444e2fe85c7" target="_blank">b6b3dc2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreee692d799246813b8511cfa7e0c202efc42cbb028targetblanke692d79a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb6b3dc228971d6a96791aca3f9d69444e2fe85c7targetblankb6b3dc2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -543,7 +544,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/e692d799246813b8511cfa7e0c202efc42cbb028" target="_blank">e692d79</a>.
+<a href="https://github.com/junmingguan/misc/tree/b6b3dc228971d6a96791aca3f9d69444e2fe85c7" target="_blank">b6b3dc2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -564,6 +565,7 @@ Ignored files:
     Ignored:    .luarc.json
     Ignored:    _extensions/
     Ignored:    analysis/.DS_Store
+    Ignored:    analysis/pancreas_endocrinogenesis_cache/
     Ignored:    analysis/presentation.html
     Ignored:    analysis/simulation_celltype_donor_cache/
 
@@ -590,12 +592,10 @@ Untracked files:
     Untracked:  analysis/math-env-refs.html
     Untracked:  analysis/note.md
     Untracked:  analysis/notes.Rmd
-    Untracked:  analysis/pancreas_endocrinogenesis.Rmd
     Untracked:  analysis/preemble.tex
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/real_data_note.md
     Untracked:  analysis/references.bib
-    Untracked:  analysis/simulation_celltype_donor.Rmd
     Untracked:  analysis/tree_example.Rmd
     Untracked:  code/ebnm_centered_exponential.R
     Untracked:  code/ebnm_normalized_bernoulli.R
@@ -616,7 +616,6 @@ Untracked files:
 
 Unstaged changes:
     Modified:   .gitignore
-    Modified:   analysis/_site.yml
     Modified:   analysis/eb_ica.Rmd
     Modified:   analysis/ebproj.Rmd
     Modified:   analysis/ebproj_rank_sensitivity.Rmd
@@ -627,10 +626,15 @@ Unstaged changes:
     Modified:   analysis/ica_with_noise.Rmd
     Modified:   analysis/on_flashier_and_whitened_data.Rmd
     Modified:   analysis/on_generalized_rademacher.Rmd
+    Modified:   analysis/pancreas_cytokine.Rmd
     Modified:   analysis/shifted_rademacher_for_ebproj.Rmd
+    Modified:   analysis/simulation_celltype_donor.Rmd
     Modified:   code/ebnm_normalized_rademacher.R
     Modified:   code/ica_functions.R
     Modified:   code/utils.R
+
+Staged changes:
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -646,18 +650,82 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/pancreas_cytokine.Rmd</code>) and
+HTML (<code>docs/pancreas_cytokine.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/b6b3dc228971d6a96791aca3f9d69444e2fe85c7/analysis/pancreas_cytokine.Rmd" target="_blank">b6b3dc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-13
+</td>
+<td>
+Publish pancreas cytokine analysis and cell-type donor simulation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/b6b3dc228971d6a96791aca3f9d69444e2fe85c7/docs/pancreas_cytokine.html" target="_blank">b6b3dc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-13
+</td>
+<td>
+Publish pancreas cytokine analysis and cell-type donor simulation
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
 </div>
 <div id="data-and-preprocessing" class="section level2">
 <h2>Data and preprocessing</h2>
-<p>Here I analyze the pancreas cytokine data, retaining the cell-type and
-treatment-condition labels for visualization. The goal is to investigate if
-our proposed methods can identify cell-type or condition contrasts.</p>
+<p>Here I analyze the pancreas cytokine data, retaining the cell-type
+and treatment-condition labels for visualization. The goal is to
+investigate if our proposed methods can identify cell-type or condition
+contrasts.</p>
 <p>Genes expressed in fewer than 10 cells are removed, and counts are
 library-size normalized before applying the shifted log transform.</p>
 <pre class="r"><code>library(irlba)
@@ -708,6 +776,43 @@ X1 &lt;- sqrt(n) * t(U)
 plot(seq_along(svd_fit$d), svd_fit$d, type = &quot;b&quot;, pch = 16,
      xlab = &quot;PC&quot;, ylab = &quot;Singular value&quot;, cex.axis = 1.3, cex.lab = 1.3)</code></pre>
 <p><img src="figure/pancreas_cytokine.Rmd/pca-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pca-1">
+Past versions of pca-1.png
+</button>
+</p>
+<div id="fig-pca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/b6b3dc228971d6a96791aca3f9d69444e2fe85c7/docs/figure/pancreas_cytokine.Rmd/pca-1.png" target="_blank">b6b3dc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="methods-compared" class="section level2">
 <h2>Methods compared</h2>
@@ -870,22 +975,23 @@ results &lt;- c(results, eb_results, first_order_results)[method_order]</code></
 <p>I group solutions by complete-linkage clustering of <span
 class="math inline">\(1-|\mathrm{cor}|\)</span>, cut at 0.1, as in <a
 href="https://stephenslab.github.io/single-cell-jamboree/pancreas_celseq2_ica.html">Matthew’s
-pancreas note</a>. For each cluster, the first fit is shown, and the plots are ordered by
-decreasing objective. <code>n</code> counts starts; <code>obj</code> is
-the representative fit’s objective. Each figure holds up to 15 subplots
-in three columns, with fixed subplot sizes.</p>
+pancreas note</a>. For each cluster, the first fit is shown, and the
+plots are ordered by decreasing objective. <code>n</code> counts starts;
+<code>obj</code> is the representative fit’s objective. Each figure
+holds up to 25 subplots in five columns, with fixed subplot sizes and
+figure height adjusted to the occupied rows.</p>
 <p>EB fits that stop at a null or zero projected posterior mean are
 excluded.</p>
 <!-- iteration-limit fits remain in the plots. -->
-<p>Cells are ordered by cell type, then treatment condition. Each set of
-components is colored by cell type and by condition, keeping the same
-cell order in both plots.</p>
+<p>Cells are ordered by cell type, then treatment condition. Use the
+tabs under each method to switch between cell-type and condition
+coloring.</p>
 <p>First-order EB-proj panels plot <span
 class="math inline">\(L=\sqrt{n}\,Uw\)</span>, where <span
 class="math inline">\(w=U^\top m/\|U^\top m\|\)</span> and <span
 class="math inline">\(m\)</span> is the posterior mean before
 projection.</p>
-<pre class="r"><code>plot_solutions &lt;- function(result, method, start_labels = NULL) {
+<pre class="r"><code>plot_solutions &lt;- function(result, method, color_by, start_labels = NULL) {
   L &lt;- result$loadings
   keep &lt;- which(apply(L, 2, sd) &gt; 1e-8 &amp; is.finite(result$objective))
   if (!is.null(result$status)) {
@@ -904,7 +1010,7 @@ projection.</p>
   if (!is.null(start_labels)) labels &lt;- sprintf(&quot;%s  obj: %.3f&quot;,
     start_labels[representatives], result$objective[representatives])
   cell_order &lt;- order(sample_info$celltype, sample_info$condition)
-  pages &lt;- split(seq_along(representatives), ceiling(seq_along(representatives) / 15))
+  pages &lt;- split(seq_along(representatives), ceiling(seq_along(representatives) / 25))
   for (page in seq_along(pages)) {
     idx &lt;- pages[[page]]
     df &lt;- data.frame(
@@ -913,33 +1019,169 @@ projection.</p>
       panel = factor(rep(representatives[idx], each = n), levels = representatives[idx]),
       celltype = rep(sample_info$celltype[cell_order], length(idx)),
       condition = rep(sample_info$condition[cell_order], length(idx)))
-    for (color_by in c(&quot;celltype&quot;, &quot;condition&quot;)) {
-      p &lt;- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
-        geom_point(size = 0.5, alpha = 0.7) +
-        geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
-        facet_wrap(~ panel, ncol = 3, scales = &quot;free_y&quot;,
-                   labeller = labeller(panel = setNames(labels, representatives))) +
-        scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), &quot;Dark 3&quot;)) +
-        labs(x = NULL, y = &quot;Loading&quot;, color = color_by,
-             title = paste(method, &quot;-&quot;, color_by),
-             subtitle = paste(&quot;Page&quot;, page, &quot;of&quot;, length(pages))) +
-        theme_bw(base_size = 16) +
-        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              legend.position = &quot;bottom&quot;, strip.text = element_text(size = 14)) +
-        guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
-      grid::grid.newpage()
-      g &lt;- ggplotGrob(p)
-      panels &lt;- grepl(&quot;^panel&quot;, g$layout$name)
-      g$widths[unique(g$layout$l[panels])] &lt;- grid::unit(3.1, &quot;in&quot;)
-      g$heights[unique(g$layout$t[panels])] &lt;- grid::unit(1.15, &quot;in&quot;)
-      g$vp &lt;- grid::viewport(x = 0, y = 1, just = c(&quot;left&quot;, &quot;top&quot;),
-                            width = sum(g$widths), height = sum(g$heights))
-      grid::grid.draw(g)
-    }
+    p &lt;- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
+      geom_point(size = 0.5, alpha = 0.7) +
+      geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
+      facet_wrap(~ panel, ncol = 5, scales = &quot;free_y&quot;,
+                 labeller = labeller(panel = setNames(labels, representatives))) +
+      scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), &quot;Dark 3&quot;)) +
+      labs(x = NULL, y = &quot;Loading&quot;, color = color_by,
+           subtitle = if (length(pages) &gt; 1) paste(&quot;Page&quot;, page, &quot;of&quot;, length(pages))) +
+      theme_bw(base_size = 12) +
+      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position = &quot;bottom&quot;, legend.justification = &quot;left&quot;,
+            strip.text = element_text(size = 10, margin = margin(2, 0, 2, 0)),
+            strip.background = element_rect(fill = &quot;grey90&quot;, color = NA)) +
+      guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
+    g &lt;- ggplotGrob(p)
+    panels &lt;- grepl(&quot;^panel&quot;, g$layout$name)
+    g$widths[unique(g$layout$l[panels])] &lt;- grid::unit(1.9, &quot;in&quot;)
+    g$heights[unique(g$layout$t[panels])] &lt;- grid::unit(1.15, &quot;in&quot;)
+    g$vp &lt;- grid::viewport(x = 0, y = 1, just = c(&quot;left&quot;, &quot;top&quot;),
+                          width = sum(g$widths), height = sum(g$heights))
+    height &lt;- grid::convertHeight(sum(g$heights), &quot;in&quot;, valueOnly = TRUE)
+    file &lt;- knitr::fig_path(paste0(color_by, &quot;-&quot;, make.names(method), &quot;-&quot;, page, &quot;.png&quot;))
+    xfun::in_dir(knitr::opts_knit$get(&quot;output.dir&quot;), {
+      dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+      ggsave(file, g, width = 12, height = height + 0.1, units = &quot;in&quot;, dpi = 300, bg = &quot;white&quot;)
+      cat(knitr::knit_hooks$get(&quot;plot&quot;)(file, knitr::opts_current$get()), &quot;\n\n&quot;, sep = &quot;&quot;)
+    })
   }
 }</code></pre>
-<pre class="r"><code>for (method in names(results)) plot_solutions(results[[method]], method)</code></pre>
-<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-2.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-3.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-4.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-5.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-6.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-7.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-8.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-9.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-10.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-11.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-12.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-13.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-14.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-15.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-16.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-17.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-18.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-19.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-20.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="log-phi-alpha-1" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 1</h3>
+<div id="cell-type" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...1-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-Log.Phi.alpha...1-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="log-phi-alpha-2" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 2</h3>
+<div id="cell-type-1" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-1" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-Log.Phi.alpha...2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="goldplus-bern" class="section level3 tabset">
+<h3 class="tabset">Goldplus-Bern</h3>
+<div id="cell-type-2" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-2" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ebproj-1st-order-bern" class="section level3 tabset">
+<h3 class="tabset">EBproj-1st-order-Bern</h3>
+<div id="cell-type-3" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-3" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ebproj-1st-order-exp" class="section level3 tabset">
+<h3 class="tabset">EBproj-1st-order-Exp</h3>
+<div id="cell-type-4" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-4" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="fastica" class="section level3 tabset">
+<h3 class="tabset">FastICA</h3>
+<div id="cell-type-5" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.celltype-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-5" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/grouped-solutions-1.condition-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="initialize-from-condition-indicators" class="section level2">
+<h2>Initialize from condition indicators</h2>
+<p>I project each of the four centered condition indicators into the
+retained PC subspace and normalize its direction. First-order
+EB-proj-Bern and Goldplus-Bern use these starts with the same settings
+as above. Each panel is labeled by its starting condition, and panels
+are ordered by decreasing objective.</p>
+<pre class="r"><code>L_condition &lt;- scale(model.matrix(~ condition - 1, sample_info),
+                     center = TRUE, scale = FALSE)
+W_condition &lt;- crossprod(U, L_condition)
+W_condition &lt;- sweep(W_condition, 2, sqrt(colSums(W_condition^2)), &quot;/&quot;)
+colnames(W_condition) &lt;- levels(sample_info$condition)
+condition_results &lt;- list()
+for (method in c(&quot;EBproj-1st-order-Bern&quot;, &quot;Goldplus-Bern&quot;)) {
+  L &lt;- matrix(0, n, ncol(W_condition))
+  objective &lt;- numeric(ncol(W_condition))
+  status &lt;- character(ncol(W_condition))
+  for (j in seq_len(ncol(W_condition))) {
+    if (method == &quot;Goldplus-Bern&quot;) {
+      fit &lt;- fit_goldplus(W_condition[, j])
+      L[, j] &lt;- fit$x
+      status[j] &lt;- fit$status
+    } else {
+      x_init &lt;- as.vector(t(X1) %*% W_condition[, j])
+      initial &lt;- ebnm_normalized_bernoulli(x_init, sqrt(n / (n - 2 * n_comp)),
+                                         g_init = 0.5, fix_g = TRUE)
+      fit &lt;- eb_proj_rank1_update(P, initial$posterior$mean,
+        ebnm_fn = ebnm_normalized_bernoulli,
+        v2_init = sum(initial$posterior$second_moment),
+        k = n_comp, b = n_comp / 2, maxiter = maxiter)
+      direction &lt;- as.vector(crossprod(U, fit$vbar))
+      direction_norm &lt;- sqrt(sum(direction^2))
+      status[j] &lt;- if (fit$niter &lt; maxiter) &quot;converged&quot; else &quot;maximum iterations reached&quot;
+      if (fit$v2 == 0) {
+        status[j] &lt;- &quot;null solution&quot;
+      } else if (direction_norm &lt;= .Machine$double.eps * max(1, sqrt(fit$v2))) {
+        status[j] &lt;- &quot;zero projected posterior mean&quot;
+      } else {
+        L[, j] &lt;- sqrt(n) * U %*% (direction / direction_norm)
+      }
+    }
+    objective[j] &lt;- fit$objective
+  }
+  condition_results[[method]] &lt;- list(loadings = L, objective = objective, status = status)
+}</code></pre>
+<div id="ebproj-1st-order-bern-1" class="section level3 tabset">
+<h3 class="tabset">EBproj-1st-order-Bern</h3>
+<div id="cell-type-6" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/condition-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-6" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/condition-solutions-1.condition-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="goldplus-bern-1" class="section level3 tabset">
+<h3 class="tabset">Goldplus-Bern</h3>
+<div id="cell-type-7" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/condition-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="condition-7" class="section level4">
+<h4>Condition</h4>
+<p><img src="figure/pancreas_cytokine.Rmd/condition-solutions-1.condition-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -977,21 +1219,24 @@ loaded via a namespace (and not attached):
 [13] rprojroot_2.1.1     jsonlite_2.0.0      processx_3.8.7     
 [16] whisker_0.4.1       mixsqp_0.3-54       promises_1.5.0     
 [19] httr_1.4.8          scales_1.4.0        truncnorm_1.0-9    
-[22] RhpcBLASctl_0.23-42 codetools_0.2-20    invgamma_1.2       
-[25] jquerylib_0.1.4     cli_3.6.5           rlang_1.1.6        
-[28] deconvolveR_1.2-1   splines_4.3.1       withr_3.0.2        
-[31] cachem_1.1.0        yaml_2.3.12         ebnm_1.1-42        
-[34] otel_0.2.0          SQUAREM_2021.1      tools_4.3.1        
-[37] parallel_4.3.1      dplyr_1.1.4         httpuv_1.6.17      
-[40] vctrs_0.6.5         R6_2.6.1            lifecycle_1.0.4    
-[43] git2r_0.36.2        stringr_1.5.1       fs_1.6.6           
-[46] trust_0.1-9         MatrixExtra_0.1.15  pkgconfig_2.0.3    
-[49] callr_3.7.6         pillar_1.11.0       bslib_0.10.0       
-[52] later_1.4.8         gtable_0.3.6        glue_1.8.0         
-[55] Rcpp_1.1.0          xfun_0.57           tibble_3.3.0       
-[58] tidyselect_1.2.1    rstudioapi_0.18.0   knitr_1.51         
-[61] farver_2.1.2        htmltools_0.5.9     labeling_0.4.3     
-[64] rmarkdown_2.31      compiler_4.3.1      getPass_0.2-4      </code></pre>
+[22] RhpcBLASctl_0.23-42 textshaping_1.0.1   codetools_0.2-20   
+[25] invgamma_1.2        jquerylib_0.1.4     cli_3.6.5          
+[28] rlang_1.1.6         deconvolveR_1.2-1   splines_4.3.1      
+[31] withr_3.0.2         cachem_1.1.0        yaml_2.3.12        
+[34] ebnm_1.1-42         otel_0.2.0          SQUAREM_2021.1     
+[37] tools_4.3.1         parallel_4.3.1      dplyr_1.1.4        
+[40] httpuv_1.6.17       vctrs_0.6.5         R6_2.6.1           
+[43] lifecycle_1.0.4     git2r_0.36.2        stringr_1.5.1      
+[46] fs_1.6.6            trust_0.1-9         ragg_1.4.0         
+[49] MatrixExtra_0.1.15  pkgconfig_2.0.3     callr_3.7.6        
+[52] pillar_1.11.0       bslib_0.10.0        later_1.4.8        
+[55] gtable_0.3.6        glue_1.8.0          Rcpp_1.1.0         
+[58] systemfonts_1.2.3   xfun_0.57           tibble_3.3.0       
+[61] tidyselect_1.2.1    rstudioapi_0.18.0   knitr_1.51         
+[64] farver_2.1.2        htmltools_0.5.9     labeling_0.4.3     
+[67] rmarkdown_2.31      compiler_4.3.1      getPass_0.2-4      </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

@@ -392,7 +392,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-09-13
+<strong>Last updated:</strong> 2026-09-14
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -430,10 +430,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -540,15 +540,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreee692d799246813b8511cfa7e0c202efc42cbb028targetblanke692d79a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb6b3dc228971d6a96791aca3f9d69444e2fe85c7targetblankb6b3dc2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/e692d799246813b8511cfa7e0c202efc42cbb028" target="_blank">e692d79</a>
+<a href="https://github.com/junmingguan/misc/tree/b6b3dc228971d6a96791aca3f9d69444e2fe85c7" target="_blank">b6b3dc2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreee692d799246813b8511cfa7e0c202efc42cbb028targetblanke692d79a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb6b3dc228971d6a96791aca3f9d69444e2fe85c7targetblankb6b3dc2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -558,7 +558,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/e692d799246813b8511cfa7e0c202efc42cbb028" target="_blank">e692d79</a>.
+<a href="https://github.com/junmingguan/misc/tree/b6b3dc228971d6a96791aca3f9d69444e2fe85c7" target="_blank">b6b3dc2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -579,6 +579,7 @@ Ignored files:
     Ignored:    .luarc.json
     Ignored:    _extensions/
     Ignored:    analysis/.DS_Store
+    Ignored:    analysis/pancreas_endocrinogenesis_cache/
     Ignored:    analysis/presentation.html
     Ignored:    analysis/simulation_celltype_donor_cache/
 
@@ -605,12 +606,10 @@ Untracked files:
     Untracked:  analysis/math-env-refs.html
     Untracked:  analysis/note.md
     Untracked:  analysis/notes.Rmd
-    Untracked:  analysis/pancreas_endocrinogenesis.Rmd
     Untracked:  analysis/preemble.tex
     Untracked:  analysis/presentation.qmd
     Untracked:  analysis/real_data_note.md
     Untracked:  analysis/references.bib
-    Untracked:  analysis/simulation_celltype_donor.Rmd
     Untracked:  analysis/tree_example.Rmd
     Untracked:  code/ebnm_centered_exponential.R
     Untracked:  code/ebnm_normalized_bernoulli.R
@@ -631,7 +630,6 @@ Untracked files:
 
 Unstaged changes:
     Modified:   .gitignore
-    Modified:   analysis/_site.yml
     Modified:   analysis/eb_ica.Rmd
     Modified:   analysis/ebproj.Rmd
     Modified:   analysis/ebproj_rank_sensitivity.Rmd
@@ -643,9 +641,13 @@ Unstaged changes:
     Modified:   analysis/on_flashier_and_whitened_data.Rmd
     Modified:   analysis/on_generalized_rademacher.Rmd
     Modified:   analysis/shifted_rademacher_for_ebproj.Rmd
+    Modified:   analysis/simulation_celltype_donor.Rmd
     Modified:   code/ebnm_normalized_rademacher.R
     Modified:   code/ica_functions.R
     Modified:   code/utils.R
+
+Staged changes:
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -661,9 +663,73 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/simulation_celltype_donor.Rmd</code>) and HTML
+(<code>docs/simulation_celltype_donor.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/b6b3dc228971d6a96791aca3f9d69444e2fe85c7/analysis/simulation_celltype_donor.Rmd" target="_blank">b6b3dc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-13
+</td>
+<td>
+Publish pancreas cytokine analysis and cell-type donor simulation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/b6b3dc228971d6a96791aca3f9d69444e2fe85c7/docs/simulation_celltype_donor.html" target="_blank">b6b3dc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-13
+</td>
+<td>
+Publish pancreas cytokine analysis and cell-type donor simulation
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -749,6 +815,43 @@ plot(seq_len(40), svd_fit$d[1:40], type = &quot;b&quot;, pch = 16,
      xlab = &quot;PC&quot;, ylab = &quot;Singular value&quot;, cex.axis = 1.3, cex.lab = 1.3)
 abline(v = 10, lty = 2, col = &quot;grey50&quot;)</code></pre>
 <p><img src="figure/simulation_celltype_donor.Rmd/pca-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pca-1">
+Past versions of pca-1.png
+</button>
+</p>
+<div id="fig-pca-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/b6b3dc228971d6a96791aca3f9d69444e2fe85c7/docs/figure/simulation_celltype_donor.Rmd/pca-1.png" target="_blank">b6b3dc2</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="methods-compared" class="section level2">
 <h2>Methods compared</h2>
@@ -914,17 +1017,18 @@ href="https://stephenslab.github.io/single-cell-jamboree/pancreas_celseq2_ica.ht
 pancreas note</a>. For each cluster, the first fit is shown, and the
 plots are ordered by decreasing objective. <code>n</code> counts starts;
 <code>obj</code> is the representative fit’s objective. Each figure
-holds up to 15 subplots in three columns, with fixed subplot sizes.</p>
+holds up to 25 subplots in five columns, as in Matthew’s note, with
+fixed subplot sizes and figure height adjusted to the occupied rows.</p>
 <!-- EB fits that stop at a null or zero projected -->
 <!-- posterior mean are excluded; iteration-limit fits remain in the plots. -->
-<p>Cells are ordered by cell type, then donor. Each set of components is
-colored by cell type and by donor.</p>
+<p>Cells are ordered by cell type, then donor. Use the tabs under each
+method to switch between cell-type and donor coloring.</p>
 <p>First-order EB-proj panels plot <span
 class="math inline">\(L=\sqrt{n}\,Uw\)</span>, where <span
 class="math inline">\(w=U^\top m/\|U^\top m\|\)</span> and <span
 class="math inline">\(m\)</span> is the posterior mean before
 projection.</p>
-<pre class="r"><code>plot_solutions &lt;- function(result, method, start_labels = NULL) {
+<pre class="r"><code>plot_solutions &lt;- function(result, method, color_by, start_labels = NULL) {
   L &lt;- result$loadings
   keep &lt;- which(apply(L, 2, sd) &gt; 1e-8 &amp; is.finite(result$objective))
   if (!is.null(result$status)) {
@@ -943,7 +1047,7 @@ projection.</p>
   if (!is.null(start_labels)) labels &lt;- sprintf(&quot;%s  obj: %.3f&quot;,
     start_labels[representatives], result$objective[representatives])
   cell_order &lt;- order(sample_info$celltype, sample_info$donor)
-  pages &lt;- split(seq_along(representatives), ceiling(seq_along(representatives) / 15))
+  pages &lt;- split(seq_along(representatives), ceiling(seq_along(representatives) / 25))
   for (page in seq_along(pages)) {
     idx &lt;- pages[[page]]
     df &lt;- data.frame(
@@ -952,33 +1056,107 @@ projection.</p>
       panel = factor(rep(representatives[idx], each = n), levels = representatives[idx]),
       celltype = rep(sample_info$celltype[cell_order], length(idx)),
       donor = rep(sample_info$donor[cell_order], length(idx)))
-    for (color_by in c(&quot;celltype&quot;, &quot;donor&quot;)) {
-      p &lt;- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
-        geom_point(size = 0.5, alpha = 0.7) +
-        geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
-        facet_wrap(~ panel, ncol = 3, scales = &quot;free_y&quot;,
-                   labeller = labeller(panel = setNames(labels, representatives))) +
-        scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), &quot;Dark 3&quot;)) +
-        labs(x = NULL, y = &quot;Loading&quot;, color = color_by,
-             title = paste(method, &quot;-&quot;, color_by),
-             subtitle = paste(&quot;Page&quot;, page, &quot;of&quot;, length(pages))) +
-        theme_bw(base_size = 16) +
-        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              legend.position = &quot;bottom&quot;, strip.text = element_text(size = 14)) +
-        guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
-      grid::grid.newpage()
-      g &lt;- ggplotGrob(p)
-      panels &lt;- grepl(&quot;^panel&quot;, g$layout$name)
-      g$widths[unique(g$layout$l[panels])] &lt;- grid::unit(3.1, &quot;in&quot;)
-      g$heights[unique(g$layout$t[panels])] &lt;- grid::unit(1.15, &quot;in&quot;)
-      g$vp &lt;- grid::viewport(x = 0, y = 1, just = c(&quot;left&quot;, &quot;top&quot;),
-                            width = sum(g$widths), height = sum(g$heights))
-      grid::grid.draw(g)
-    }
+    p &lt;- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
+      geom_point(size = 0.5, alpha = 0.7) +
+      geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
+      facet_wrap(~ panel, ncol = 5, scales = &quot;free_y&quot;,
+                 labeller = labeller(panel = setNames(labels, representatives))) +
+      scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), &quot;Dark 3&quot;)) +
+      labs(x = NULL, y = &quot;Loading&quot;, color = color_by,
+           subtitle = if (length(pages) &gt; 1) paste(&quot;Page&quot;, page, &quot;of&quot;, length(pages))) +
+      theme_bw(base_size = 12) +
+      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position = &quot;bottom&quot;, legend.justification = &quot;left&quot;,
+            strip.text = element_text(size = 10, margin = margin(2, 0, 2, 0)),
+            strip.background = element_rect(fill = &quot;grey90&quot;, color = NA)) +
+      guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
+    g &lt;- ggplotGrob(p)
+    panels &lt;- grepl(&quot;^panel&quot;, g$layout$name)
+    g$widths[unique(g$layout$l[panels])] &lt;- grid::unit(1.9, &quot;in&quot;)
+    g$heights[unique(g$layout$t[panels])] &lt;- grid::unit(1.15, &quot;in&quot;)
+    g$vp &lt;- grid::viewport(x = 0, y = 1, just = c(&quot;left&quot;, &quot;top&quot;),
+                          width = sum(g$widths), height = sum(g$heights))
+    height &lt;- grid::convertHeight(sum(g$heights), &quot;in&quot;, valueOnly = TRUE)
+    file &lt;- knitr::fig_path(paste0(color_by, &quot;-&quot;, make.names(method), &quot;-&quot;, page, &quot;.png&quot;))
+    xfun::in_dir(knitr::opts_knit$get(&quot;output.dir&quot;), {
+      dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+      ggsave(file, g, width = 12, height = height + 0.1, units = &quot;in&quot;, dpi = 300, bg = &quot;white&quot;)
+      cat(knitr::knit_hooks$get(&quot;plot&quot;)(file, knitr::opts_current$get()), &quot;\n\n&quot;, sep = &quot;&quot;)
+    })
   }
 }</code></pre>
-<pre class="r"><code>for (method in names(results)) plot_solutions(results[[method]], method)</code></pre>
-<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-2.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-3.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-4.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-5.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-6.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-7.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-8.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-9.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-10.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-11.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-12.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-13.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-14.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-15.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-16.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-17.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-18.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-19.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-20.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="log-phi-alpha-1" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 1</h3>
+<div id="cell-type" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...1-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Log.Phi.alpha...1-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="log-phi-alpha-2" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 2</h3>
+<div id="cell-type-1" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-1" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Log.Phi.alpha...2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="goldplus-bern" class="section level3 tabset">
+<h3 class="tabset">Goldplus-Bern</h3>
+<div id="cell-type-2" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-2" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ebproj-1st-order-bern" class="section level3 tabset">
+<h3 class="tabset">EBproj-1st-order-Bern</h3>
+<div id="cell-type-3" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-3" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ebproj-1st-order-exp" class="section level3 tabset">
+<h3 class="tabset">EBproj-1st-order-Exp</h3>
+<div id="cell-type-4" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-4" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="fastica" class="section level3 tabset">
+<h3 class="tabset">FastICA</h3>
+<div id="cell-type-5" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-5" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
 </div>
 <div id="initialize-from-the-true-donor-loadings"
 class="section level2">
@@ -1025,11 +1203,26 @@ for (method in c(&quot;EBproj-1st-order-Bern&quot;, &quot;Goldplus-Bern&quot;)) 
   }
   donor_results[[method]] &lt;- list(loadings = L, objective = objective, status = status)
 }</code></pre>
-<pre class="r"><code>for (method in names(donor_results)) {
-  plot_solutions(donor_results[[method]], paste(method, &quot;- donor starts&quot;),
-                 start_labels = colnames(W_donor))
-}</code></pre>
-<p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-2.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-3.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-4.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="ebproj-1st-order-bern-1" class="section level3 tabset">
+<h3 class="tabset">EBproj-1st-order-Bern</h3>
+<div id="cell-type-6" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-6" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="goldplus-bern-1" class="section level3 tabset">
+<h3 class="tabset">Goldplus-Bern</h3>
+<div id="cell-type-7" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-7" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1063,16 +1256,19 @@ loaded via a namespace (and not attached):
  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4        compiler_4.3.1    
  [5] promises_1.5.0     tidyselect_1.2.1   Rcpp_1.1.0         stringr_1.5.1     
  [9] git2r_0.36.2       callr_3.7.6        later_1.4.8        jquerylib_0.1.4   
-[13] scales_1.4.0       yaml_2.3.12        fastmap_1.2.0      R6_2.6.1          
-[17] labeling_0.4.3     generics_0.1.4     knitr_1.51         tibble_3.3.0      
-[21] rprojroot_2.1.1    RColorBrewer_1.1-3 bslib_0.10.0       pillar_1.11.0     
-[25] rlang_1.1.6        cachem_1.1.0       stringi_1.8.7      httpuv_1.6.17     
-[29] xfun_0.57          getPass_0.2-4      fs_1.6.6           sass_0.4.10       
-[33] otel_0.2.0         cli_3.6.5          withr_3.0.2        magrittr_2.0.3    
-[37] digest_0.6.37      grid_4.3.1         processx_3.8.7     rstudioapi_0.18.0 
-[41] lifecycle_1.0.4    vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0        
-[45] farver_2.1.2       whisker_0.4.1      rmarkdown_2.31     httr_1.4.8        
-[49] tools_4.3.1        pkgconfig_2.0.3    htmltools_0.5.9   </code></pre>
+[13] textshaping_1.0.1  systemfonts_1.2.3  scales_1.4.0       yaml_2.3.12       
+[17] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
+[21] knitr_1.51         tibble_3.3.0       rprojroot_2.1.1    RColorBrewer_1.1-3
+[25] bslib_0.10.0       pillar_1.11.0      rlang_1.1.6        cachem_1.1.0      
+[29] stringi_1.8.7      httpuv_1.6.17      xfun_0.57          getPass_0.2-4     
+[33] fs_1.6.6           sass_0.4.10        otel_0.2.0         cli_3.6.5         
+[37] withr_3.0.2        magrittr_2.0.3     digest_0.6.37      grid_4.3.1        
+[41] processx_3.8.7     rstudioapi_0.18.0  lifecycle_1.0.4    vctrs_0.6.5       
+[45] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       whisker_0.4.1     
+[49] ragg_1.4.0         rmarkdown_2.31     httr_1.4.8         tools_4.3.1       
+[53] pkgconfig_2.0.3    htmltools_0.5.9   </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

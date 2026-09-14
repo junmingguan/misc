@@ -234,19 +234,20 @@ results <- c(results, eb_results, first_order_results)[method_order]
 
 Here I group solutions using the method in [Matthew's pancreas note](https://stephenslab.github.io/single-cell-jamboree/pancreas_celseq2_ica.html). For each cluster, the first fit is shown, and the plots are ordered by decreasing objective.
 `n` counts starts; `obj` is the representative fit's objective.
-Each figure holds up to 15 subplots in three columns, with fixed subplot sizes.
+Each figure holds up to 25 subplots in five columns, as in Matthew's note,
+with fixed subplot sizes and figure height adjusted to the occupied rows.
 
 <!-- EB fits that stop at a null or zero projected -->
 <!-- posterior mean are excluded; iteration-limit fits remain in the plots. -->
 
-Cells are ordered by cell type, then donor. Each set of components
-is colored by cell type and by donor.
+Cells are ordered by cell type, then donor. Use the tabs under each method
+to switch between cell-type and donor coloring.
 
 First-order EB-proj panels plot $L=\sqrt{n}\,Uw$, where
 $w=U^\top m/\|U^\top m\|$ and $m$ is the posterior mean before projection.
 
 ```{r plot-helper}
-plot_solutions <- function(result, method, start_labels = NULL) {
+plot_solutions <- function(result, method, color_by, start_labels = NULL) {
   L <- result$loadings
   keep <- which(apply(L, 2, sd) > 1e-8 & is.finite(result$objective))
   if (!is.null(result$status)) {
@@ -265,7 +266,7 @@ plot_solutions <- function(result, method, start_labels = NULL) {
   if (!is.null(start_labels)) labels <- sprintf("%s  obj: %.3f",
     start_labels[representatives], result$objective[representatives])
   cell_order <- order(sample_info$celltype, sample_info$donor)
-  pages <- split(seq_along(representatives), ceiling(seq_along(representatives) / 15))
+  pages <- split(seq_along(representatives), ceiling(seq_along(representatives) / 25))
   for (page in seq_along(pages)) {
     idx <- pages[[page]]
     df <- data.frame(
@@ -274,35 +275,46 @@ plot_solutions <- function(result, method, start_labels = NULL) {
       panel = factor(rep(representatives[idx], each = n), levels = representatives[idx]),
       celltype = rep(sample_info$celltype[cell_order], length(idx)),
       donor = rep(sample_info$donor[cell_order], length(idx)))
-    for (color_by in c("celltype", "donor")) {
-      p <- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
-        geom_point(size = 0.5, alpha = 0.7) +
-        geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
-        facet_wrap(~ panel, ncol = 3, scales = "free_y",
-                   labeller = labeller(panel = setNames(labels, representatives))) +
-        scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), "Dark 3")) +
-        labs(x = NULL, y = "Loading", color = color_by,
-             title = paste(method, "-", color_by),
-             subtitle = paste("Page", page, "of", length(pages))) +
-        theme_bw(base_size = 16) +
-        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              legend.position = "bottom", strip.text = element_text(size = 14)) +
-        guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
-      grid::grid.newpage()
-      g <- ggplotGrob(p)
-      panels <- grepl("^panel", g$layout$name)
-      g$widths[unique(g$layout$l[panels])] <- grid::unit(3.1, "in")
-      g$heights[unique(g$layout$t[panels])] <- grid::unit(1.15, "in")
-      g$vp <- grid::viewport(x = 0, y = 1, just = c("left", "top"),
-                            width = sum(g$widths), height = sum(g$heights))
-      grid::grid.draw(g)
-    }
+    p <- ggplot(df, aes(cell, loading, color = .data[[color_by]])) +
+      geom_point(size = 0.5, alpha = 0.7) +
+      geom_hline(yintercept = 0, linetype = 2, linewidth = 0.3) +
+      facet_wrap(~ panel, ncol = 5, scales = "free_y",
+                 labeller = labeller(panel = setNames(labels, representatives))) +
+      scale_color_manual(values = hcl.colors(nlevels(df[[color_by]]), "Dark 3")) +
+      labs(x = NULL, y = "Loading", color = color_by,
+           subtitle = if (length(pages) > 1) paste("Page", page, "of", length(pages))) +
+      theme_bw(base_size = 12) +
+      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            legend.position = "bottom", legend.justification = "left",
+            strip.text = element_text(size = 10, margin = margin(2, 0, 2, 0)),
+            strip.background = element_rect(fill = "grey90", color = NA)) +
+      guides(color = guide_legend(override.aes = list(size = 3, alpha = 1)))
+    g <- ggplotGrob(p)
+    panels <- grepl("^panel", g$layout$name)
+    g$widths[unique(g$layout$l[panels])] <- grid::unit(1.9, "in")
+    g$heights[unique(g$layout$t[panels])] <- grid::unit(1.15, "in")
+    g$vp <- grid::viewport(x = 0, y = 1, just = c("left", "top"),
+                          width = sum(g$widths), height = sum(g$heights))
+    height <- grid::convertHeight(sum(g$heights), "in", valueOnly = TRUE)
+    file <- knitr::fig_path(paste0(color_by, "-", make.names(method), "-", page, ".png"))
+    xfun::in_dir(knitr::opts_knit$get("output.dir"), {
+      dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+      ggsave(file, g, width = 12, height = height + 0.1, units = "in", dpi = 300, bg = "white")
+      cat(knitr::knit_hooks$get("plot")(file, knitr::opts_current$get()), "\n\n", sep = "")
+    })
   }
 }
 ```
 
-```{r grouped-solutions, fig.width=12, fig.height=10.5}
-for (method in names(results)) plot_solutions(results[[method]], method)
+```{r grouped-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
+for (method in names(results)) {
+  cat("\n\n### ", method, " {.tabset}\n\n", sep = "")
+  for (color_by in c("celltype", "donor")) {
+    heading <- if (color_by == "celltype") "Cell type" else "Donor"
+    cat("\n\n#### ", heading, "\n\n", sep = "")
+    plot_solutions(results[[method]], method, color_by)
+  }
+}
 ```
 
 ## Initialize from the true donor loadings
@@ -353,9 +365,14 @@ for (method in c("EBproj-1st-order-Bern", "Goldplus-Bern")) {
 }
 ```
 
-```{r donor-solutions, fig.width=12, fig.height=10.5}
+```{r donor-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
 for (method in names(donor_results)) {
-  plot_solutions(donor_results[[method]], paste(method, "- donor starts"),
-                 start_labels = colnames(W_donor))
+  cat("\n\n### ", method, " {.tabset}\n\n", sep = "")
+  for (color_by in c("celltype", "donor")) {
+    heading <- if (color_by == "celltype") "Cell type" else "Donor"
+    cat("\n\n#### ", heading, "\n\n", sep = "")
+    plot_solutions(donor_results[[method]], method, color_by,
+                   start_labels = colnames(W_donor))
+  }
 }
 ```
