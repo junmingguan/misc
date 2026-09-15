@@ -392,7 +392,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-09-14
+<strong>Last updated:</strong> 2026-09-15
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -513,6 +513,12 @@ eb-proj
 <li>
 first-order
 </li>
+<li>
+rankr-ica
+</li>
+<li>
+symnmf-fit
+</li>
 </ul>
 <p>To ensure reproducibility of the results, delete the cache directory
 <code>simulation_celltype_donor_cache</code> and re-run the analysis. To
@@ -540,15 +546,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb6b3dc228971d6a96791aca3f9d69444e2fe85c7targetblankb6b3dc2a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree2d4385f1d86274858e9d8e8ea201b603320fa607targetblank2d4385fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/b6b3dc228971d6a96791aca3f9d69444e2fe85c7" target="_blank">b6b3dc2</a>
+<a href="https://github.com/junmingguan/misc/tree/2d4385f1d86274858e9d8e8ea201b603320fa607" target="_blank">2d4385f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctreeb6b3dc228971d6a96791aca3f9d69444e2fe85c7targetblankb6b3dc2a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree2d4385f1d86274858e9d8e8ea201b603320fa607targetblank2d4385fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -558,7 +564,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/b6b3dc228971d6a96791aca3f9d69444e2fe85c7" target="_blank">b6b3dc2</a>.
+<a href="https://github.com/junmingguan/misc/tree/2d4385f1d86274858e9d8e8ea201b603320fa607" target="_blank">2d4385f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -579,6 +585,7 @@ Ignored files:
     Ignored:    .luarc.json
     Ignored:    _extensions/
     Ignored:    analysis/.DS_Store
+    Ignored:    analysis/pancreas_cytokine_cache/
     Ignored:    analysis/pancreas_endocrinogenesis_cache/
     Ignored:    analysis/presentation.html
     Ignored:    analysis/simulation_celltype_donor_cache/
@@ -646,9 +653,6 @@ Unstaged changes:
     Modified:   code/ica_functions.R
     Modified:   code/utils.R
 
-Staged changes:
-    Modified:   analysis/_site.yml
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -693,6 +697,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/analysis/simulation_celltype_donor.Rmd" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+<td>
+Update loading plots and condition-initialized
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/simulation_celltype_donor.html" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+<td>
+Update loading plots and condition-initialized
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -853,11 +891,13 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="methods-compared" class="section level2">
-<h2>Methods compared</h2>
+<div id="rank-1-experiments" class="section level2">
+<h2>Rank-1 experiments</h2>
 <p>I compare the following rank-1 methods: - Log-Phi with <span
 class="math inline">\(\alpha=1\)</span> and <span
-class="math inline">\(2\)</span> - FastICA with an intercept -
+class="math inline">\(2\)</span> - ICA with contrasts <span
+class="math inline">\(x^3\)</span> and <span
+class="math inline">\(x|x|/2\)</span> - FastICA with an intercept -
 First-order EB-proj with normalized Bernoulli, and centered Exponential.
 - Goldenplus EB-proj with normalized Bernoulli, and centered
 Exponential, bith use ICA-type hessian approximation.</p>
@@ -910,6 +950,16 @@ results &lt;- list()</code></pre>
   results[[paste(&quot;Log-Phi alpha =&quot;, alpha)]] &lt;- list(
     loadings = L, objective = colMeans(pnorm(alpha * L, log.p = TRUE)))
 }
+
+W &lt;- W_start
+for (iter in 1:50) W &lt;- fastica_update_cubic(X1, W)
+L &lt;- t(X1) %*% W
+results[[&quot;ICA x^3&quot;]] &lt;- list(loadings = L, objective = colMeans(L^3))
+
+W &lt;- W_start
+for (iter in 1:50) W &lt;- fastica_update_skew(X1, W)
+L &lt;- t(X1) %*% W
+results[[&quot;ICA x|x|/2&quot;]] &lt;- list(loadings = L, objective = colMeans(L * abs(L) / 2))
 
 X1_aug &lt;- rbind(1, X1)
 W &lt;- W_aug
@@ -1006,6 +1056,7 @@ remove this warning. See the
 </p>
 </div>
 <pre class="r"><code>method_order &lt;- c(&quot;Log-Phi alpha = 1&quot;, &quot;Log-Phi alpha = 2&quot;,
+                  &quot;ICA x^3&quot;, &quot;ICA x|x|/2&quot;,
                   &quot;Goldplus-Bern&quot;,
                   &quot;EBproj-1st-order-Bern&quot;, &quot;EBproj-1st-order-Exp&quot;, &quot;FastICA&quot;)
 results &lt;- c(results, eb_results, first_order_results)[method_order]</code></pre>
@@ -1030,7 +1081,8 @@ class="math inline">\(m\)</span> is the posterior mean before
 projection.</p>
 <pre class="r"><code>plot_solutions &lt;- function(result, method, color_by, start_labels = NULL) {
   L &lt;- result$loadings
-  keep &lt;- which(apply(L, 2, sd) &gt; 1e-8 &amp; is.finite(result$objective))
+  keep &lt;- if (!is.null(start_labels)) seq_len(ncol(L)) else
+    which(apply(L, 2, sd) &gt; 1e-8 &amp; is.finite(result$objective))
   if (!is.null(result$status)) {
     keep &lt;- keep[result$status[keep] %in% c(&quot;converged&quot;, &quot;maximum iterations reached&quot;)]
   }
@@ -1040,12 +1092,17 @@ projection.</p>
            method = &quot;complete&quot;), h = 0.1)
   groups &lt;- split(keep, clusters)
   representatives &lt;- vapply(groups, function(idx) idx[1], 1L)
-  o &lt;- order(result$objective[representatives], decreasing = TRUE)
+  o &lt;- if (is.null(result$objective)) seq_along(representatives) else
+    order(result$objective[representatives], decreasing = TRUE)
   representatives &lt;- representatives[o]
-  labels &lt;- sprintf(&quot;n: %d  obj: %.3f&quot;, lengths(groups)[o],
-                    result$objective[representatives])
-  if (!is.null(start_labels)) labels &lt;- sprintf(&quot;%s  obj: %.3f&quot;,
-    start_labels[representatives], result$objective[representatives])
+  if (is.null(result$objective)) {
+    labels &lt;- start_labels[representatives]
+  } else {
+    labels &lt;- sprintf(&quot;n: %d  obj: %.3f&quot;, lengths(groups)[o],
+                      result$objective[representatives])
+    if (!is.null(start_labels)) labels &lt;- sprintf(&quot;%s  obj: %.3f&quot;,
+      start_labels[representatives], result$objective[representatives])
+  }
   cell_order &lt;- order(sample_info$celltype, sample_info$donor)
   pages &lt;- split(seq_along(representatives), ceiling(seq_along(representatives) / 25))
   for (page in seq_along(pages)) {
@@ -1090,10 +1147,86 @@ projection.</p>
 <div id="cell-type" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...1-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-Log.Phi.alpha...1-1">
+Past versions of grouped-solutions-1.celltype-Log.Phi.alpha…1-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-Log.Phi.alpha...1-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...1-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="donor" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Log.Phi.alpha...1-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-Log.Phi.alpha...1-1">
+Past versions of grouped-solutions-1.donor-Log.Phi.alpha…1-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-Log.Phi.alpha...1-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Log.Phi.alpha...1-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="log-phi-alpha-2" class="section level3 tabset">
@@ -1101,60 +1234,688 @@ projection.</p>
 <div id="cell-type-1" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-Log.Phi.alpha...2-1">
+Past versions of grouped-solutions-1.celltype-Log.Phi.alpha…2-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-Log.Phi.alpha...2-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Log.Phi.alpha...2-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="donor-1" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Log.Phi.alpha...2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-Log.Phi.alpha...2-1">
+Past versions of grouped-solutions-1.donor-Log.Phi.alpha…2-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-Log.Phi.alpha...2-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Log.Phi.alpha...2-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="ica-x3" class="section level3 tabset">
+<h3 class="tabset">ICA x^3</h3>
+<div id="cell-type-2" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-ICA.x.3-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-2" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-ICA.x.3-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ica-xx2" class="section level3 tabset">
+<h3 class="tabset">ICA x|x|/2</h3>
+<div id="cell-type-3" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-ICA.x.x..2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-3" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-ICA.x.x..2-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="goldplus-bern" class="section level3 tabset">
 <h3 class="tabset">Goldplus-Bern</h3>
-<div id="cell-type-2" class="section level4">
+<div id="cell-type-4" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-Goldplus.Bern-1">
+Past versions of grouped-solutions-1.celltype-Goldplus.Bern-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-Goldplus.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-2" class="section level4">
+</div>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-Goldplus.Bern-2">
+Past versions of grouped-solutions-1.celltype-Goldplus.Bern-2.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-Goldplus.Bern-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.Bern-2.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="donor-4" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-Goldplus.Bern-1">
+Past versions of grouped-solutions-1.donor-Goldplus.Bern-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-Goldplus.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-Goldplus.Bern-2">
+Past versions of grouped-solutions-1.donor-Goldplus.Bern-2.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-Goldplus.Bern-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.Bern-2.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="ebproj-1st-order-bern" class="section level3 tabset">
 <h3 class="tabset">EBproj-1st-order-Bern</h3>
-<div id="cell-type-3" class="section level4">
+<div id="cell-type-5" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-EBproj.1st.order.Bern-1">
+Past versions of
+grouped-solutions-1.celltype-EBproj.1st.order.Bern-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-EBproj.1st.order.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-3" class="section level4">
+</div>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-EBproj.1st.order.Bern-2">
+Past versions of
+grouped-solutions-1.celltype-EBproj.1st.order.Bern-2.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-EBproj.1st.order.Bern-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-2.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="donor-5" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-EBproj.1st.order.Bern-1">
+Past versions of grouped-solutions-1.donor-EBproj.1st.order.Bern-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-EBproj.1st.order.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-EBproj.1st.order.Bern-2">
+Past versions of grouped-solutions-1.donor-EBproj.1st.order.Bern-2.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-EBproj.1st.order.Bern-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-2.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="ebproj-1st-order-exp" class="section level3 tabset">
 <h3 class="tabset">EBproj-1st-order-Exp</h3>
-<div id="cell-type-4" class="section level4">
+<div id="cell-type-6" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-EBproj.1st.order.Exp-1">
+Past versions of grouped-solutions-1.celltype-EBproj.1st.order.Exp-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-EBproj.1st.order.Exp-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Exp-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-4" class="section level4">
+</div>
+</div>
+<div id="donor-6" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-EBproj.1st.order.Exp-1">
+Past versions of grouped-solutions-1.donor-EBproj.1st.order.Exp-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-EBproj.1st.order.Exp-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Exp-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="fastica" class="section level3 tabset">
 <h3 class="tabset">FastICA</h3>
-<div id="cell-type-5" class="section level4">
+<div id="cell-type-7" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-FastICA-1">
+Past versions of grouped-solutions-1.celltype-FastICA-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-FastICA-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-5" class="section level4">
+</div>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-FastICA-2">
+Past versions of grouped-solutions-1.celltype-FastICA-2.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-FastICA-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-2.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="donor-7" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-FastICA-1">
+Past versions of grouped-solutions-1.donor-FastICA-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-FastICA-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-FastICA-2">
+Past versions of grouped-solutions-1.donor-FastICA-2.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-FastICA-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-2.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1205,24 +1966,442 @@ for (method in c(&quot;EBproj-1st-order-Bern&quot;, &quot;Goldplus-Bern&quot;)) 
 }</code></pre>
 <div id="ebproj-1st-order-bern-1" class="section level3 tabset">
 <h3 class="tabset">EBproj-1st-order-Bern</h3>
-<div id="cell-type-6" class="section level4">
+<div id="cell-type-8" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-donor-solutions-1.celltype-EBproj.1st.order.Bern-1">
+Past versions of donor-solutions-1.celltype-EBproj.1st.order.Bern-1.png
+</button>
+</p>
+<div id="fig-donor-solutions-1.celltype-EBproj.1st.order.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-EBproj.1st.order.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-6" class="section level4">
+</div>
+</div>
+<div id="donor-8" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-donor-solutions-1.donor-EBproj.1st.order.Bern-1">
+Past versions of donor-solutions-1.donor-EBproj.1st.order.Bern-1.png
+</button>
+</p>
+<div id="fig-donor-solutions-1.donor-EBproj.1st.order.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-EBproj.1st.order.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="goldplus-bern-1" class="section level3 tabset">
 <h3 class="tabset">Goldplus-Bern</h3>
-<div id="cell-type-7" class="section level4">
+<div id="cell-type-9" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-donor-solutions-1.celltype-Goldplus.Bern-1">
+Past versions of donor-solutions-1.celltype-Goldplus.Bern-1.png
+</button>
+</p>
+<div id="fig-donor-solutions-1.celltype-Goldplus.Bern-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-Goldplus.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-7" class="section level4">
+</div>
+</div>
+<div id="donor-9" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-donor-solutions-1.donor-Goldplus.Bern-1">
+Past versions of donor-solutions-1.donor-Goldplus.Bern-1.png
+</button>
+</p>
+<div id="fig-donor-solutions-1.donor-Goldplus.Bern-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/2d4385f1d86274858e9d8e8ea201b603320fa607/docs/figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-Goldplus.Bern-1.png" target="_blank">2d4385f</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="rank-r-25-expriments" class="section level2">
+<h2>Rank-r (25) expriments</h2>
+<div id="ica" class="section level3">
+<h3>ICA</h3>
+<p>I fit rank-25 ICA different contrast functions, with parallel (polar)
+orthogonalization and once Gram-Schmidt (GS).</p>
+<p><!-- All eight fits use the same
+orthonormal start and 500 updates. Each figure shows all 25 components, without
+clustering, ordered by decreasing objective. --></p>
+<pre class="r"><code>r &lt;- 25
+n_iter &lt;- 500
+set.seed(2)
+W_rankr &lt;- polar(matrix(rnorm(n_comp * r), n_comp, r))
+rankr_methods &lt;- list(
+  &quot;Log-Phi alpha = 1&quot; = list(
+    parallel = function(U, W) fastica_update_logphi_rankr(U, W, alpha = 1),
+    GS = function(U, W) fastica_update_logphi_rankr_gs(U, W, alpha = 1),
+    objective = function(L) colMeans(pnorm(L, log.p = TRUE))),
+  &quot;Log-Phi alpha = 2&quot; = list(
+    parallel = function(U, W) fastica_update_logphi_rankr(U, W, alpha = 2),
+    GS = function(U, W) fastica_update_logphi_rankr_gs(U, W, alpha = 2),
+    objective = function(L) colMeans(pnorm(2 * L, log.p = TRUE))),
+  &quot;ICA x^3&quot; = list(
+    parallel = fastica_update_cubic_rankr,
+    GS = fastica_update_cubic_rankr_gs,
+    objective = function(L) colMeans(L^3)),
+  &quot;ICA x|x|/2&quot; = list(
+    parallel = fastica_update_skew_rankr,
+    GS = fastica_update_skew_rankr_gs,
+    objective = function(L) colMeans(L * abs(L) / 2))
+)
+rankr_results &lt;- list()
+for (contrast in names(rankr_methods)) {
+  method &lt;- rankr_methods[[contrast]]
+  for (orth in c(&quot;parallel&quot;, &quot;GS&quot;)) {
+    W &lt;- W_rankr
+    for (iter in seq_len(n_iter)) W &lt;- method[[orth]](X1, W)
+    L &lt;- t(X1) %*% W
+    rankr_results[[paste(contrast, orth, sep = &quot; - &quot;)]] &lt;- list(
+      loadings = L, objective = method$objective(L))
+  }
+}</code></pre>
+<div class="alert alert-warning">
+<p>
+<strong>Warning:</strong> The above code chunk cached its results, but
+it won’t be re-run if previous chunks it depends on are updated. If you
+need to use caching, it is highly recommended to also set
+<code>knitr::opts_chunk$set(autodep = TRUE)</code> at the top of the
+file (in a chunk that is not cached). Alternatively, you can customize
+the option <code>dependson</code> for each individual chunk that is
+cached. Using either <code>autodep</code> or <code>dependson</code> will
+remove this warning. See the
+<a href="https://yihui.name/knitr/options/#cache"
+>knitr cache options</a> for more details.
+</p>
+</div>
+</div>
+<div id="log-phi-alpha-1---parallel" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 1 - parallel</h3>
+<div id="cell-type-10" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...1...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-10" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...1...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="log-phi-alpha-1---gs" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 1 - GS</h3>
+<div id="cell-type-11" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...1...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-11" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...1...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="log-phi-alpha-2---parallel" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 2 - parallel</h3>
+<div id="cell-type-12" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-12" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="log-phi-alpha-2---gs" class="section level3 tabset">
+<h3 class="tabset">Log-Phi alpha = 2 - GS</h3>
+<div id="cell-type-13" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-13" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ica-x3---parallel" class="section level3 tabset">
+<h3 class="tabset">ICA x^3 - parallel</h3>
+<div id="cell-type-14" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.3...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-14" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.3...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ica-x3---gs" class="section level3 tabset">
+<h3 class="tabset">ICA x^3 - GS</h3>
+<div id="cell-type-15" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.3...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-15" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.3...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ica-xx2---parallel" class="section level3 tabset">
+<h3 class="tabset">ICA x|x|/2 - parallel</h3>
+<div id="cell-type-16" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.x..2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-16" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.x..2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ica-xx2---gs" class="section level3 tabset">
+<h3 class="tabset">ICA x|x|/2 - GS</h3>
+<div id="cell-type-17" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.x..2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-17" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.x..2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="symnmf-on-the-uncentered-gram-matrix"
+class="section level3 tabset">
+<h3 class="tabset">SymNMF on the uncentered Gram matrix</h3>
+<p>I use <a href="https://github.com/xxie6/codesymnmf">Annie’s
+codesymnmf implementation</a>, copied below, to fit <span
+class="math inline">\(A = XX^\top/p \approx HH^\top\)</span> with <span
+class="math inline">\(H\geq0\)</span>. Here <code>X</code> is the
+original simulated matrix, without additional centering or whitening. I
+fit 25 components from zeros for 100 iterations. The panels show all 25
+factors.</p>
+<p><!-- in their original order, each scaled to unit RMS for plotting; -->
+<!-- zero factors remain zero. --></p>
+<pre class="r"><code>codesymnmf_init &lt;- function(A, r, init_type){
+  n &lt;- ncol(A)
+  if(init_type == &#39;zeros&#39;){
+    H &lt;- matrix(rep(0,n*r), ncol = r)
+  }else{
+    H &lt;- matrix(runif(n*r), ncol = r)
+  }
+}
+
+codesymnmf_fit &lt;- function(A, H, maxiter = 100, rand_permutation = FALSE){
+  n &lt;- nrow(H)
+  r &lt;- ncol(H)
+
+  # scaling (if H is not the zero matrix)
+  if (max(H) &gt; 0){
+    HHt &lt;- tcrossprod(H)
+    beta &lt;- sum(A*HHt)/sum(HHt^2) #scaling factor
+    H &lt;- sqrt(beta)*H
+  }
+
+  iter &lt;- 1
+  x &lt;- rep(0,4)
+  # main loop
+  while(iter &lt;= maxiter){
+    # randomly permute columns if rand_permutation is TRUE
+    if (rand_permutation == TRUE){
+      col_permutation &lt;- sample(r, size = r, replace = FALSE)
+      H &lt;- H[,col_permutation]
+    }
+
+    # calculate residual
+    R &lt;- A - tcrossprod(H)
+    for (k in 1:r){
+      R &lt;- R + tcrossprod(H[,k])
+      diag_R &lt;- diag(R)
+      HtH &lt;- crossprod(H[,k]) #scalar, equals sum(H[,k]^2)
+      for (i in 1:n){
+        # coefficients a and b of x^3 + ax + b
+        HtH &lt;- HtH - H[i,k]^2 #scalar
+        a &lt;- HtH - diag_R[i] #scalar
+        b &lt;- -(t(H[,k]) %*% R[,i] - H[i,k]*diag_R[i]) #scalar
+
+        Delta &lt;- 4*(a^3) + 27*(b^2) # note: delta can be negative!
+        d &lt;- 0.5 * (-b + sqrt(as.complex(Delta/27))) #might be complex
+
+        if (Delta &lt;= 0) {
+          r3 &lt;- 2*(abs(d)^(1/3))
+          th3 &lt;- atan2(Im(d),Re(d))/3
+          x[2] &lt;- r3*cos(th3)
+          x[3] &lt;- r3*cos(th3 + (2*pi/3))
+          x[4] &lt;- r3*cos(th3 + (4*pi/3))
+          x &lt;- x[x &gt;= 0]
+          ind &lt;- which.min((x^4)/4 + c(a)*(x^2)/2 + c(b)*x)
+          H[i,k] &lt;- x[ind]
+          HtH &lt;- HtH + H[i,k]^2
+        }else{
+          d &lt;- Re(d) # d is just a real number in this case
+          z &lt;- sign(d)*(abs(d))^(1/3)
+          if (z == 0){ # check if z is zero
+            val &lt;- sign(-b)*(abs(b)^(1/3))
+          } else {
+          val &lt;- z - (a/(3*z))
+          }
+          if(((val^4)/4 + a*(val^2/2) + b*val &lt; 0) &amp; (val &gt;= 0)){
+            HtH &lt;- HtH + val^2
+            H[i,k] &lt;- val
+          }else{
+            H[i,k] &lt;- 0
+          }
+        }
+      } # end of 1:n for loop
+      R &lt;- R - tcrossprod(H[,k])
+    } # end of 1:r for loop
+    iter &lt;- iter + 1
+  } # end of maxiter while loop
+  # return output
+  return(list(H=H, obj_func = sum((A - tcrossprod(H))^2)))
+}
+
+codesymnmf &lt;- function(A, r, init_type = &#39;zeros&#39;, maxiter = 100, rand_permutation = FALSE){
+  H_init &lt;- codesymnmf_init(A, r, init_type)
+  codesymnmf_results &lt;- codesymnmf_fit(A, H_init, maxiter, rand_permutation)
+  return(codesymnmf_results)
+}</code></pre>
+<pre class="r"><code>A &lt;- tcrossprod(X) / ncol(X)
+symnmf_fit &lt;- codesymnmf(A, r = 25, init_type = &quot;zeros&quot;, maxiter = 100)</code></pre>
+<div class="alert alert-warning">
+<p>
+<strong>Warning:</strong> The above code chunk cached its results, but
+it won’t be re-run if previous chunks it depends on are updated. If you
+need to use caching, it is highly recommended to also set
+<code>knitr::opts_chunk$set(autodep = TRUE)</code> at the top of the
+file (in a chunk that is not cached). Alternatively, you can customize
+the option <code>dependson</code> for each individual chunk that is
+cached. Using either <code>autodep</code> or <code>dependson</code> will
+remove this warning. See the
+<a href="https://yihui.name/knitr/options/#cache"
+>knitr cache options</a> for more details.
+</p>
+</div>
+<div id="cell-type-18" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/symnmf-solutions-1.celltype-SymNMF-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-18" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/symnmf-solutions-1.donor-SymNMF-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

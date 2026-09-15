@@ -84,10 +84,11 @@ plot(seq_len(40), svd_fit$d[1:40], type = "b", pch = 16,
 abline(v = 10, lty = 2, col = "grey50")
 ```
 
-## Methods compared
+## Rank-1 experiments
 
 I compare the following rank-1 methods:
 - Log-Phi with $\alpha=1$ and $2$
+- ICA with contrasts $x^3$ and $x|x|/2$
 - FastICA with an intercept
 - First-order EB-proj with normalized Bernoulli, and centered Exponential.
 - Goldenplus EB-proj with normalized Bernoulli, and centered Exponential, bith use ICA-type hessian approximation.
@@ -148,6 +149,16 @@ for (alpha in c(1, 2)) {
   results[[paste("Log-Phi alpha =", alpha)]] <- list(
     loadings = L, objective = colMeans(pnorm(alpha * L, log.p = TRUE)))
 }
+
+W <- W_start
+for (iter in 1:50) W <- fastica_update_cubic(X1, W)
+L <- t(X1) %*% W
+results[["ICA x^3"]] <- list(loadings = L, objective = colMeans(L^3))
+
+W <- W_start
+for (iter in 1:50) W <- fastica_update_skew(X1, W)
+L <- t(X1) %*% W
+results[["ICA x|x|/2"]] <- list(loadings = L, objective = colMeans(L * abs(L) / 2))
 
 X1_aug <- rbind(1, X1)
 W <- W_aug
@@ -225,6 +236,7 @@ for (prior_name in names(priors)) {
 
 ```{r collect-results}
 method_order <- c("Log-Phi alpha = 1", "Log-Phi alpha = 2",
+                  "ICA x^3", "ICA x|x|/2",
                   "Goldplus-Bern",
                   "EBproj-1st-order-Bern", "EBproj-1st-order-Exp", "FastICA")
 results <- c(results, eb_results, first_order_results)[method_order]
@@ -249,7 +261,8 @@ $w=U^\top m/\|U^\top m\|$ and $m$ is the posterior mean before projection.
 ```{r plot-helper}
 plot_solutions <- function(result, method, color_by, start_labels = NULL) {
   L <- result$loadings
-  keep <- which(apply(L, 2, sd) > 1e-8 & is.finite(result$objective))
+  keep <- if (!is.null(start_labels)) seq_len(ncol(L)) else
+    which(apply(L, 2, sd) > 1e-8 & is.finite(result$objective))
   if (!is.null(result$status)) {
     keep <- keep[result$status[keep] %in% c("converged", "maximum iterations reached")]
   }
@@ -259,12 +272,17 @@ plot_solutions <- function(result, method, color_by, start_labels = NULL) {
            method = "complete"), h = 0.1)
   groups <- split(keep, clusters)
   representatives <- vapply(groups, function(idx) idx[1], 1L)
-  o <- order(result$objective[representatives], decreasing = TRUE)
+  o <- if (is.null(result$objective)) seq_along(representatives) else
+    order(result$objective[representatives], decreasing = TRUE)
   representatives <- representatives[o]
-  labels <- sprintf("n: %d  obj: %.3f", lengths(groups)[o],
-                    result$objective[representatives])
-  if (!is.null(start_labels)) labels <- sprintf("%s  obj: %.3f",
-    start_labels[representatives], result$objective[representatives])
+  if (is.null(result$objective)) {
+    labels <- start_labels[representatives]
+  } else {
+    labels <- sprintf("n: %d  obj: %.3f", lengths(groups)[o],
+                      result$objective[representatives])
+    if (!is.null(start_labels)) labels <- sprintf("%s  obj: %.3f",
+      start_labels[representatives], result$objective[representatives])
+  }
   cell_order <- order(sample_info$celltype, sample_info$donor)
   pages <- split(seq_along(representatives), ceiling(seq_along(representatives) / 25))
   for (page in seq_along(pages)) {
@@ -316,6 +334,7 @@ for (method in names(results)) {
   }
 }
 ```
+
 
 ## Initialize from the true donor loadings
 
@@ -374,5 +393,181 @@ for (method in names(donor_results)) {
     plot_solutions(donor_results[[method]], method, color_by,
                    start_labels = colnames(W_donor))
   }
+}
+```
+
+
+
+## Rank-r (25) expriments
+
+### ICA
+
+I fit rank-25 ICA different contrast functions, with parallel (polar) orthogonalization and once Gram-Schmidt (GS).
+
+ <!-- All eight fits use the same
+orthonormal start and 500 updates. Each figure shows all 25 components, without
+clustering, ordered by decreasing objective. -->
+
+```{r rankr-ica, cache=TRUE, cache.extra=list(X1, tools::md5sum(code_files))}
+r <- 25
+n_iter <- 500
+set.seed(2)
+W_rankr <- polar(matrix(rnorm(n_comp * r), n_comp, r))
+rankr_methods <- list(
+  "Log-Phi alpha = 1" = list(
+    parallel = function(U, W) fastica_update_logphi_rankr(U, W, alpha = 1),
+    GS = function(U, W) fastica_update_logphi_rankr_gs(U, W, alpha = 1),
+    objective = function(L) colMeans(pnorm(L, log.p = TRUE))),
+  "Log-Phi alpha = 2" = list(
+    parallel = function(U, W) fastica_update_logphi_rankr(U, W, alpha = 2),
+    GS = function(U, W) fastica_update_logphi_rankr_gs(U, W, alpha = 2),
+    objective = function(L) colMeans(pnorm(2 * L, log.p = TRUE))),
+  "ICA x^3" = list(
+    parallel = fastica_update_cubic_rankr,
+    GS = fastica_update_cubic_rankr_gs,
+    objective = function(L) colMeans(L^3)),
+  "ICA x|x|/2" = list(
+    parallel = fastica_update_skew_rankr,
+    GS = fastica_update_skew_rankr_gs,
+    objective = function(L) colMeans(L * abs(L) / 2))
+)
+rankr_results <- list()
+for (contrast in names(rankr_methods)) {
+  method <- rankr_methods[[contrast]]
+  for (orth in c("parallel", "GS")) {
+    W <- W_rankr
+    for (iter in seq_len(n_iter)) W <- method[[orth]](X1, W)
+    L <- t(X1) %*% W
+    rankr_results[[paste(contrast, orth, sep = " - ")]] <- list(
+      loadings = L, objective = method$objective(L))
+  }
+}
+```
+
+```{r rankr-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
+for (method in names(rankr_results)) {
+  cat("\n\n### ", method, " {.tabset}\n\n", sep = "")
+  for (color_by in c("celltype", "donor")) {
+    heading <- if (color_by == "celltype") "Cell type" else "Donor"
+    cat("\n\n#### ", heading, "\n\n", sep = "")
+    plot_solutions(rankr_results[[method]], method, color_by,
+                   start_labels = paste0("C", seq_len(r)))
+  }
+}
+```
+
+
+### SymNMF on the uncentered Gram matrix {.tabset}
+
+I use [Annie's codesymnmf implementation](https://github.com/xxie6/codesymnmf),
+copied below, to fit $A = XX^\top/p \approx HH^\top$ with $H\geq0$.
+Here `X` is the original simulated matrix, without additional centering or
+whitening. I fit 25 components from zeros for 100 iterations. The panels show
+all 25 factors.
+
+ <!-- in their original order, each scaled to unit RMS for plotting; -->
+<!-- zero factors remain zero. -->
+
+```{r symnmf-code}
+
+codesymnmf_init <- function(A, r, init_type){
+  n <- ncol(A)
+  if(init_type == 'zeros'){
+    H <- matrix(rep(0,n*r), ncol = r)
+  }else{
+    H <- matrix(runif(n*r), ncol = r)
+  }
+}
+
+codesymnmf_fit <- function(A, H, maxiter = 100, rand_permutation = FALSE){
+  n <- nrow(H)
+  r <- ncol(H)
+
+  # scaling (if H is not the zero matrix)
+  if (max(H) > 0){
+    HHt <- tcrossprod(H)
+    beta <- sum(A*HHt)/sum(HHt^2) #scaling factor
+    H <- sqrt(beta)*H
+  }
+
+  iter <- 1
+  x <- rep(0,4)
+  # main loop
+  while(iter <= maxiter){
+    # randomly permute columns if rand_permutation is TRUE
+    if (rand_permutation == TRUE){
+      col_permutation <- sample(r, size = r, replace = FALSE)
+      H <- H[,col_permutation]
+    }
+
+    # calculate residual
+    R <- A - tcrossprod(H)
+    for (k in 1:r){
+      R <- R + tcrossprod(H[,k])
+      diag_R <- diag(R)
+      HtH <- crossprod(H[,k]) #scalar, equals sum(H[,k]^2)
+      for (i in 1:n){
+        # coefficients a and b of x^3 + ax + b
+        HtH <- HtH - H[i,k]^2 #scalar
+        a <- HtH - diag_R[i] #scalar
+        b <- -(t(H[,k]) %*% R[,i] - H[i,k]*diag_R[i]) #scalar
+
+        Delta <- 4*(a^3) + 27*(b^2) # note: delta can be negative!
+        d <- 0.5 * (-b + sqrt(as.complex(Delta/27))) #might be complex
+
+        if (Delta <= 0) {
+          r3 <- 2*(abs(d)^(1/3))
+          th3 <- atan2(Im(d),Re(d))/3
+          x[2] <- r3*cos(th3)
+          x[3] <- r3*cos(th3 + (2*pi/3))
+          x[4] <- r3*cos(th3 + (4*pi/3))
+          x <- x[x >= 0]
+          ind <- which.min((x^4)/4 + c(a)*(x^2)/2 + c(b)*x)
+          H[i,k] <- x[ind]
+          HtH <- HtH + H[i,k]^2
+        }else{
+          d <- Re(d) # d is just a real number in this case
+          z <- sign(d)*(abs(d))^(1/3)
+          if (z == 0){ # check if z is zero
+            val <- sign(-b)*(abs(b)^(1/3))
+          } else {
+          val <- z - (a/(3*z))
+          }
+          if(((val^4)/4 + a*(val^2/2) + b*val < 0) & (val >= 0)){
+            HtH <- HtH + val^2
+            H[i,k] <- val
+          }else{
+            H[i,k] <- 0
+          }
+        }
+      } # end of 1:n for loop
+      R <- R - tcrossprod(H[,k])
+    } # end of 1:r for loop
+    iter <- iter + 1
+  } # end of maxiter while loop
+  # return output
+  return(list(H=H, obj_func = sum((A - tcrossprod(H))^2)))
+}
+
+codesymnmf <- function(A, r, init_type = 'zeros', maxiter = 100, rand_permutation = FALSE){
+  H_init <- codesymnmf_init(A, r, init_type)
+  codesymnmf_results <- codesymnmf_fit(A, H_init, maxiter, rand_permutation)
+  return(codesymnmf_results)
+}
+```
+
+```{r symnmf-fit, cache=TRUE, cache.extra=list(X, body(codesymnmf_init), body(codesymnmf_fit), body(codesymnmf))}
+A <- tcrossprod(X) / ncol(X)
+symnmf_fit <- codesymnmf(A, r = 25, init_type = "zeros", maxiter = 100)
+```
+
+```{r symnmf-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
+H <- symnmf_fit$H
+H_plot <- sweep(H, 2, pmax(sqrt(colMeans(H^2)), 1e-15), "/")
+for (color_by in c("celltype", "donor")) {
+  heading <- if (color_by == "celltype") "Cell type" else "Donor"
+  cat("\n\n#### ", heading, "\n\n", sep = "")
+  plot_solutions(list(loadings = H_plot), "SymNMF", color_by,
+                 start_labels = paste0("C", seq_len(ncol(H))))
 }
 ```
