@@ -89,11 +89,16 @@ abline(v = 10, lty = 2, col = "grey50")
 I compare the following rank-1 methods:
 - Log-Phi with $\alpha=1$ and $2$
 - ICA with contrasts $x^3$ and $x|x|/2$
+- ICA with integrated log-cosh, as Matthew suggested
 - FastICA with an intercept
 - First-order EB-proj with normalized Bernoulli, and centered Exponential.
 - Goldenplus EB-proj with normalized Bernoulli, and centered Exponential, bith use ICA-type hessian approximation.
 
 I look at 100 random starts and visualize their solutions.
+
+Integrated log-cosh uses $g(x)=\log\cosh(x)$ and $g'(x)=\tanh(x)$ to smooth
+the $x|x|/2$ contrast. For objectives and GS ordering, I approximate
+$G(x)=\int_0^x\log\cosh(t)\,dt$ on a trapezoidal grid with spacing 0.001.
 
 The normalized Bernoulli is given by
 
@@ -159,6 +164,12 @@ W <- W_start
 for (iter in 1:50) W <- fastica_update_skew(X1, W)
 L <- t(X1) %*% W
 results[["ICA x|x|/2"]] <- list(loadings = L, objective = colMeans(L * abs(L) / 2))
+
+W <- W_start
+for (iter in 1:50) W <- fastica_update_ilogcosh(X1, W)
+L <- t(X1) %*% W
+results[["ICA integrated log-cosh"]] <- list(
+  loadings = L, objective = colMeans(integrated_logcosh(L)))
 
 X1_aug <- rbind(1, X1)
 W <- W_aug
@@ -236,7 +247,7 @@ for (prior_name in names(priors)) {
 
 ```{r collect-results}
 method_order <- c("Log-Phi alpha = 1", "Log-Phi alpha = 2",
-                  "ICA x^3", "ICA x|x|/2",
+                  "ICA x^3", "ICA x|x|/2", "ICA integrated log-cosh",
                   "Goldplus-Bern",
                   "EBproj-1st-order-Bern", "EBproj-1st-order-Exp", "FastICA")
 results <- c(results, eb_results, first_order_results)[method_order]
@@ -400,11 +411,12 @@ for (method in names(donor_results)) {
 
 ## Rank-r (25) expriments
 
-### ICA
+### rank-r ICA
 
-I fit rank-25 ICA different contrast functions, with parallel (polar) orthogonalization and once Gram-Schmidt (GS).
+I fit rank-25 ICA with Log-Phi ($\alpha=1,2$), $x^3$, $x|x|/2$, and integrated
+log-cosh, each with parallel (polar) orthogonalization and Gram-Schmidt (GS).
 
- <!-- All eight fits use the same
+ <!-- All ten fits use the same
 orthonormal start and 500 updates. Each figure shows all 25 components, without
 clustering, ordered by decreasing objective. -->
 
@@ -429,7 +441,11 @@ rankr_methods <- list(
   "ICA x|x|/2" = list(
     parallel = fastica_update_skew_rankr,
     GS = fastica_update_skew_rankr_gs,
-    objective = function(L) colMeans(L * abs(L) / 2))
+    objective = function(L) colMeans(L * abs(L) / 2)),
+  "ICA integrated log-cosh" = list(
+    parallel = fastica_update_ilogcosh_rankr,
+    GS = fastica_update_ilogcosh_rankr_gs,
+    objective = function(L) colMeans(integrated_logcosh(L)))
 )
 rankr_results <- list()
 for (contrast in names(rankr_methods)) {
@@ -456,6 +472,28 @@ for (method in names(rankr_results)) {
 }
 ```
 
+### rank-r EB-proj with GS
+
+```{r rankr-ebproj, cache=TRUE, cache.extra=list(U, W_rankr, tools::md5sum(code_files))}
+rankr_eb_results <- list()
+for (prior in c("bernoulli", "exponential")) {
+  method <- if (prior == "bernoulli") "Goldplus-Bern - GS" else "Goldplus-Exp - GS"
+  rankr_eb_results[[method]] <- eb_proj_goldenplus_rankr_gs(
+    U, W_rankr, prior = prior, n_warmup = 50, n_full = 100)
+}
+```
+
+```{r rankr-ebproj-solutions, results='asis', echo=FALSE, fig.width=12, out.width='100%'}
+for (method in names(rankr_eb_results)) {
+  cat("\n\n### ", method, " {.tabset}\n\n", sep = "")
+  for (color_by in c("celltype", "donor")) {
+    heading <- if (color_by == "celltype") "Cell type" else "Donor"
+    cat("\n\n#### ", heading, "\n\n", sep = "")
+    plot_solutions(rankr_eb_results[[method]], method, color_by,
+                   start_labels = paste0("C", seq_len(ncol(W_rankr))))
+  }
+}
+```
 
 ### SymNMF on the uncentered Gram matrix {.tabset}
 
