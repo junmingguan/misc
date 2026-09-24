@@ -392,7 +392,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-09-15
+<strong>Last updated:</strong> 2026-09-23
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -546,15 +546,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree87229d719384506dced996aac9a9733186fc4200targetblank87229d7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree412cb83e646642d2a5f54d972b14bf5b2cf89b60targetblank412cb83a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/junmingguan/misc/tree/87229d719384506dced996aac9a9733186fc4200" target="_blank">87229d7</a>
+<a href="https://github.com/junmingguan/misc/tree/412cb83e646642d2a5f54d972b14bf5b2cf89b60" target="_blank">412cb83</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree87229d719384506dced996aac9a9733186fc4200targetblank87229d7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjunmingguanmisctree412cb83e646642d2a5f54d972b14bf5b2cf89b60targetblank412cb83a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -564,7 +564,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/junmingguan/misc/tree/87229d719384506dced996aac9a9733186fc4200" target="_blank">87229d7</a>.
+<a href="https://github.com/junmingguan/misc/tree/412cb83e646642d2a5f54d972b14bf5b2cf89b60" target="_blank">412cb83</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -620,11 +620,11 @@ Untracked files:
     Untracked:  analysis/tree_example.Rmd
     Untracked:  code/ebnm_centered_exponential.R
     Untracked:  code/ebnm_normalized_bernoulli.R
+    Untracked:  code/ebnm_normalized_point_exponential.R
     Untracked:  code/ebnm_two_point.R
     Untracked:  code/ebproj_functions.R
     Untracked:  code/ebproj_newton_functions.R
     Untracked:  code/mw_functions.R
-    Untracked:  code/projection_methods_temp.R
     Untracked:  code/references.bib
     Untracked:  code/robust_binary_decomposition.R
     Untracked:  code/robust_binary_decomposition.md
@@ -650,6 +650,7 @@ Unstaged changes:
     Modified:   analysis/shifted_rademacher_for_ebproj.Rmd
     Modified:   code/ebnm_normalized_rademacher.R
     Modified:   code/ica_functions.R
+    Modified:   code/projection_methods_temp.R
     Modified:   code/utils.R
 
 </code></pre>
@@ -696,6 +697,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/412cb83e646642d2a5f54d972b14bf5b2cf89b60/analysis/simulation_celltype_donor.Rmd" target="_blank">412cb83</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-23
+</td>
+<td>
+wflow_publish("analysis/simulation_celltype_donor.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/junmingguan/misc/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/simulation_celltype_donor.html" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -950,8 +985,8 @@ class="math inline">\(x^3\)</span> and <span
 class="math inline">\(x|x|/2\)</span> - ICA with integrated log-cosh, as
 Matthew suggested - FastICA with an intercept - First-order EB-proj with
 normalized Bernoulli, and centered Exponential. - Goldenplus EB-proj
-with normalized Bernoulli, and centered Exponential, bith use ICA-type
-hessian approximation.</p>
+with normalized Bernoulli and normalized point-Exponential, both using
+the ICA-type Hessian approximation.</p>
 <p>I look at 100 random starts and visualize their solutions.</p>
 <p>Integrated log-cosh uses <span
 class="math inline">\(g(x)=\log\cosh(x)\)</span> and <span
@@ -972,6 +1007,16 @@ Z = T-1,\quad T\sim \text{Exp}(1).
 <p>Both have mean <span class="math inline">\(0\)</span> and variance
 <span class="math inline">\(1\)</span>. Note that EB-proj with centered
 Exp is not really an EB method, as the prior is fixed.</p>
+<p>For point-Exponential, <span
+class="math inline">\(Z_q=(BT-q)/\sqrt{q(2-q)}\)</span>, where <span
+class="math inline">\(B\sim\mathrm{Bernoulli}(q)\)</span> and <span
+class="math inline">\(T\sim\mathrm{Exp}(1)\)</span> are independent. I
+estimate <span class="math inline">\(q\)</span>, the slab probability,
+starting at 0.5. Goldenplus uses prior <span
+class="math inline">\(cZ_q\)</span> and fixed noise variance <span
+class="math inline">\(c=2/(1+\sqrt{5})\)</span> for warm-up, then prior
+<span class="math inline">\(Z_q\)</span> and free precision, with at
+most 100 Newton updates per phase.</p>
 <!-- Use 100 shared random starts, 50 Log-Phi/FastICA updates, and at most 100
 updates per EB stage. FastICA uses an intercept; Log-Phi and EB-proj use
 centered projections. Bernoulli estimates $\pi$ in
@@ -987,6 +1032,7 @@ posterior moments at $\tau=1$ along the same starting directions. -->
 <pre class="r"><code>code_files &lt;- file.path(&quot;code&quot;, c(&quot;projection_methods_temp.R&quot;,
                                  &quot;ebnm_normalized_bernoulli.R&quot;,
                                  &quot;ebnm_centered_exponential.R&quot;,
+                                 &quot;ebnm_normalized_point_exponential.R&quot;,
                                  &quot;ebproj_functions.R&quot;,
                                  &quot;ebproj_newton_functions.R&quot;))
 for (file in code_files) source(file)
@@ -1074,6 +1120,32 @@ remove this warning. See the
 >knitr cache options</a> for more details.
 </p>
 </div>
+<pre class="r"><code>L &lt;- matrix(NA_real_, n, n_starts)
+objective &lt;- q &lt;- numeric(n_starts)
+status &lt;- character(n_starts)
+for (j in seq_len(n_starts)) {
+  fit &lt;- eb_proj_goldenplus_point_exponential(U, w_init = W_start[, j], maxiter = maxiter)
+  L[, j] &lt;- fit$x
+  objective[j] &lt;- fit$objective
+  q[j] &lt;- fit$fitted_g$q
+  status[j] &lt;- fit$status
+}
+point_exp_results &lt;- list(&quot;Goldplus-PointExp&quot; = list(
+  loadings = L, objective = objective, status = status, q = q))</code></pre>
+<div class="alert alert-warning">
+<p>
+<strong>Warning:</strong> The above code chunk cached its results, but
+it won’t be re-run if previous chunks it depends on are updated. If you
+need to use caching, it is highly recommended to also set
+<code>knitr::opts_chunk$set(autodep = TRUE)</code> at the top of the
+file (in a chunk that is not cached). Alternatively, you can customize
+the option <code>dependson</code> for each individual chunk that is
+cached. Using either <code>autodep</code> or <code>dependson</code> will
+remove this warning. See the
+<a href="https://yihui.name/knitr/options/#cache"
+>knitr cache options</a> for more details.
+</p>
+</div>
 <pre class="r"><code>P &lt;- tcrossprod(U)
 first_order_results &lt;- list()
 for (prior_name in names(priors)) {
@@ -1121,9 +1193,9 @@ remove this warning. See the
 </div>
 <pre class="r"><code>method_order &lt;- c(&quot;Log-Phi alpha = 1&quot;, &quot;Log-Phi alpha = 2&quot;,
                   &quot;ICA x^3&quot;, &quot;ICA x|x|/2&quot;, &quot;ICA integrated log-cosh&quot;,
-                  &quot;Goldplus-Bern&quot;,
+                  &quot;Goldplus-Bern&quot;, &quot;Goldplus-PointExp&quot;,
                   &quot;EBproj-1st-order-Bern&quot;, &quot;EBproj-1st-order-Exp&quot;, &quot;FastICA&quot;)
-results &lt;- c(results, eb_results, first_order_results)[method_order]</code></pre>
+results &lt;- c(results, eb_results, point_exp_results, first_order_results)[method_order]</code></pre>
 </div>
 <div id="grouped-loading-plots" class="section level2">
 <h2>Grouped loading plots</h2>
@@ -1556,10 +1628,87 @@ junmingguan
 <div id="cell-type-4" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-ICA.integrated.log.cosh-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.celltype-ICA.integrated.log.cosh-1">
+Past versions of
+grouped-solutions-1.celltype-ICA.integrated.log.cosh-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.celltype-ICA.integrated.log.cosh-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-ICA.integrated.log.cosh-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="donor-4" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-ICA.integrated.log.cosh-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-grouped-solutions-1.donor-ICA.integrated.log.cosh-1">
+Past versions of grouped-solutions-1.donor-ICA.integrated.log.cosh-1.png
+</button>
+</p>
+<div id="fig-grouped-solutions-1.donor-ICA.integrated.log.cosh-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-ICA.integrated.log.cosh-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="goldplus-bern" class="section level3 tabset">
@@ -1727,9 +1876,20 @@ junmingguan
 </div>
 </div>
 </div>
+<div id="goldplus-pointexp" class="section level3 tabset">
+<h3 class="tabset">Goldplus-PointExp</h3>
+<div id="cell-type-6" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-Goldplus.PointExp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-6" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-Goldplus.PointExp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
 <div id="ebproj-1st-order-bern" class="section level3 tabset">
 <h3 class="tabset">EBproj-1st-order-Bern</h3>
-<div id="cell-type-6" class="section level4">
+<div id="cell-type-7" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -1812,7 +1972,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-6" class="section level4">
+<div id="donor-7" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -1896,7 +2056,7 @@ junmingguan
 </div>
 <div id="ebproj-1st-order-exp" class="section level3 tabset">
 <h3 class="tabset">EBproj-1st-order-Exp</h3>
-<div id="cell-type-7" class="section level4">
+<div id="cell-type-8" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -1938,7 +2098,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-7" class="section level4">
+<div id="donor-8" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-EBproj.1st.order.Exp-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -1983,7 +2143,7 @@ junmingguan
 </div>
 <div id="fastica" class="section level3 tabset">
 <h3 class="tabset">FastICA</h3>
-<div id="cell-type-8" class="section level4">
+<div id="cell-type-9" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.celltype-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2062,7 +2222,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-8" class="section level4">
+<div id="donor-9" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/grouped-solutions-1.donor-FastICA-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2190,7 +2350,7 @@ for (method in c(&quot;EBproj-1st-order-Bern&quot;, &quot;Goldplus-Bern&quot;)) 
 }</code></pre>
 <div id="ebproj-1st-order-bern-1" class="section level3 tabset">
 <h3 class="tabset">EBproj-1st-order-Bern</h3>
-<div id="cell-type-9" class="section level4">
+<div id="cell-type-10" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2232,7 +2392,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-9" class="section level4">
+<div id="donor-10" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-EBproj.1st.order.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2277,7 +2437,7 @@ junmingguan
 </div>
 <div id="goldplus-bern-1" class="section level3 tabset">
 <h3 class="tabset">Goldplus-Bern</h3>
-<div id="cell-type-10" class="section level4">
+<div id="cell-type-11" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.celltype-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2319,7 +2479,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-10" class="section level4">
+<div id="donor-11" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/donor-solutions-1.donor-Goldplus.Bern-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2428,7 +2588,7 @@ remove this warning. See the
 </div>
 <div id="log-phi-alpha-1---parallel" class="section level3 tabset">
 <h3 class="tabset">Log-Phi alpha = 1 - parallel</h3>
-<div id="cell-type-11" class="section level4">
+<div id="cell-type-12" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...1...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2471,7 +2631,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-11" class="section level4">
+<div id="donor-12" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...1...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2516,7 +2676,7 @@ junmingguan
 </div>
 <div id="log-phi-alpha-1---gs" class="section level3 tabset">
 <h3 class="tabset">Log-Phi alpha = 1 - GS</h3>
-<div id="cell-type-12" class="section level4">
+<div id="cell-type-13" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...1...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2558,7 +2718,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-12" class="section level4">
+<div id="donor-13" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...1...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2603,7 +2763,7 @@ junmingguan
 </div>
 <div id="log-phi-alpha-2---parallel" class="section level3 tabset">
 <h3 class="tabset">Log-Phi alpha = 2 - parallel</h3>
-<div id="cell-type-13" class="section level4">
+<div id="cell-type-14" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2646,7 +2806,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-13" class="section level4">
+<div id="donor-14" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2691,7 +2851,7 @@ junmingguan
 </div>
 <div id="log-phi-alpha-2---gs" class="section level3 tabset">
 <h3 class="tabset">Log-Phi alpha = 2 - GS</h3>
-<div id="cell-type-14" class="section level4">
+<div id="cell-type-15" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-Log.Phi.alpha...2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2733,7 +2893,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-14" class="section level4">
+<div id="donor-15" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-Log.Phi.alpha...2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2778,7 +2938,7 @@ junmingguan
 </div>
 <div id="ica-x3---parallel" class="section level3 tabset">
 <h3 class="tabset">ICA x^3 - parallel</h3>
-<div id="cell-type-15" class="section level4">
+<div id="cell-type-16" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.3...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2820,7 +2980,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-15" class="section level4">
+<div id="donor-16" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.3...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2865,7 +3025,7 @@ junmingguan
 </div>
 <div id="ica-x3---gs" class="section level3 tabset">
 <h3 class="tabset">ICA x^3 - GS</h3>
-<div id="cell-type-16" class="section level4">
+<div id="cell-type-17" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.3...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2907,7 +3067,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-16" class="section level4">
+<div id="donor-17" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.3...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2951,7 +3111,7 @@ junmingguan
 </div>
 <div id="ica-xx2---parallel" class="section level3 tabset">
 <h3 class="tabset">ICA x|x|/2 - parallel</h3>
-<div id="cell-type-17" class="section level4">
+<div id="cell-type-18" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.x..2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -2993,7 +3153,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-17" class="section level4">
+<div id="donor-18" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.x..2...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -3038,7 +3198,7 @@ junmingguan
 </div>
 <div id="ica-xx2---gs" class="section level3 tabset">
 <h3 class="tabset">ICA x|x|/2 - GS</h3>
-<div id="cell-type-18" class="section level4">
+<div id="cell-type-19" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.x.x..2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -3080,7 +3240,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-18" class="section level4">
+<div id="donor-19" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.x.x..2...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -3126,31 +3286,202 @@ junmingguan
 <div id="ica-integrated-log-cosh---parallel"
 class="section level3 tabset">
 <h3 class="tabset">ICA integrated log-cosh - parallel</h3>
-<div id="cell-type-19" class="section level4">
+<div id="cell-type-20" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.integrated.log.cosh...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-solutions-1.celltype-ICA.integrated.log.cosh...parallel-1">
+Past versions of
+rankr-solutions-1.celltype-ICA.integrated.log.cosh…parallel-1.png
+</button>
+</p>
+<div
+id="fig-rankr-solutions-1.celltype-ICA.integrated.log.cosh...parallel-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.integrated.log.cosh...parallel-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-19" class="section level4">
+</div>
+</div>
+<div id="donor-20" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.integrated.log.cosh...parallel-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-solutions-1.donor-ICA.integrated.log.cosh...parallel-1">
+Past versions of
+rankr-solutions-1.donor-ICA.integrated.log.cosh…parallel-1.png
+</button>
+</p>
+<div
+id="fig-rankr-solutions-1.donor-ICA.integrated.log.cosh...parallel-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.integrated.log.cosh...parallel-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="ica-integrated-log-cosh---gs" class="section level3 tabset">
 <h3 class="tabset">ICA integrated log-cosh - GS</h3>
-<div id="cell-type-20" class="section level4">
+<div id="cell-type-21" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.integrated.log.cosh...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-solutions-1.celltype-ICA.integrated.log.cosh...GS-1">
+Past versions of
+rankr-solutions-1.celltype-ICA.integrated.log.cosh…GS-1.png
+</button>
+</p>
+<div id="fig-rankr-solutions-1.celltype-ICA.integrated.log.cosh...GS-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-solutions-1.celltype-ICA.integrated.log.cosh...GS-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-20" class="section level4">
+</div>
+</div>
+<div id="donor-21" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.integrated.log.cosh...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-solutions-1.donor-ICA.integrated.log.cosh...GS-1">
+Past versions of
+rankr-solutions-1.donor-ICA.integrated.log.cosh…GS-1.png
+</button>
+</p>
+<div id="fig-rankr-solutions-1.donor-ICA.integrated.log.cosh...GS-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-solutions-1.donor-ICA.integrated.log.cosh...GS-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="rank-r-eb-proj-with-gs" class="section level3">
 <h3>rank-r EB-proj with GS</h3>
+<ul>
+<li>Fit 25 components from the shared ICA start, using Bernoulli,
+Exponential, and normalized point-Exponential priors.</li>
+<li>Run 50 gradient + 50 Newton warm-up steps with prior <span
+class="math inline">\(cZ\)</span> and noise variance <span
+class="math inline">\(c\)</span>, then 100 Newton steps with prior <span
+class="math inline">\(Z\)</span> and free precision.</li>
+<li>Apply objective-ordered GS after each direction update, then refresh
+prior parameters and precision. Point-Exponential estimates a separate
+<span class="math inline">\(q\)</span> for each component; its final
+prior remains centered with unit variance.</li>
+</ul>
 <pre class="r"><code>rankr_eb_results &lt;- list()
-for (prior in c(&quot;bernoulli&quot;, &quot;exponential&quot;)) {
-  method &lt;- if (prior == &quot;bernoulli&quot;) &quot;Goldplus-Bern - GS&quot; else &quot;Goldplus-Exp - GS&quot;
+for (prior in c(&quot;bernoulli&quot;, &quot;exponential&quot;, &quot;point_exponential&quot;)) {
+  method &lt;- switch(prior, bernoulli = &quot;Goldplus-Bern - GS&quot;,
+                   exponential = &quot;Goldplus-Exp - GS&quot;, point_exponential = &quot;Goldplus-PointExp - GS&quot;)
   rankr_eb_results[[method]] &lt;- eb_proj_goldenplus_rankr_gs(
     U, W_rankr, prior = prior, n_warmup = 50, n_full = 100)
 }</code></pre>
@@ -3171,24 +3502,188 @@ remove this warning. See the
 </div>
 <div id="goldplus-bern---gs" class="section level3 tabset">
 <h3 class="tabset">Goldplus-Bern - GS</h3>
-<div id="cell-type-21" class="section level4">
+<div id="cell-type-22" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.celltype-Goldplus.Bern...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-ebproj-solutions-1.celltype-Goldplus.Bern...GS-1">
+Past versions of
+rankr-ebproj-solutions-1.celltype-Goldplus.Bern…GS-1.png
+</button>
+</p>
+<div id="fig-rankr-ebproj-solutions-1.celltype-Goldplus.Bern...GS-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.celltype-Goldplus.Bern...GS-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-21" class="section level4">
+</div>
+</div>
+<div id="donor-22" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.donor-Goldplus.Bern...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-ebproj-solutions-1.donor-Goldplus.Bern...GS-1">
+Past versions of rankr-ebproj-solutions-1.donor-Goldplus.Bern…GS-1.png
+</button>
+</p>
+<div id="fig-rankr-ebproj-solutions-1.donor-Goldplus.Bern...GS-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.donor-Goldplus.Bern...GS-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="goldplus-exp---gs" class="section level3 tabset">
 <h3 class="tabset">Goldplus-Exp - GS</h3>
-<div id="cell-type-22" class="section level4">
+<div id="cell-type-23" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.celltype-Goldplus.Exp...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-ebproj-solutions-1.celltype-Goldplus.Exp...GS-1">
+Past versions of rankr-ebproj-solutions-1.celltype-Goldplus.Exp…GS-1.png
+</button>
+</p>
+<div id="fig-rankr-ebproj-solutions-1.celltype-Goldplus.Exp...GS-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.celltype-Goldplus.Exp...GS-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="donor-22" class="section level4">
+</div>
+</div>
+<div id="donor-23" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.donor-Goldplus.Exp...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rankr-ebproj-solutions-1.donor-Goldplus.Exp...GS-1">
+Past versions of rankr-ebproj-solutions-1.donor-Goldplus.Exp…GS-1.png
+</button>
+</p>
+<div id="fig-rankr-ebproj-solutions-1.donor-Goldplus.Exp...GS-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/junmingguan/misc/blob/da782b3eabfbb320bbd590b8bff2f56b531226c2/docs/figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.donor-Goldplus.Exp...GS-1.png" target="_blank">da782b3</a>
+</td>
+<td>
+junmingguan
+</td>
+<td>
+2026-09-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="goldplus-pointexp---gs" class="section level3 tabset">
+<h3 class="tabset">Goldplus-PointExp - GS</h3>
+<div id="cell-type-24" class="section level4">
+<h4>Cell type</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.celltype-Goldplus.PointExp...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="donor-24" class="section level4">
+<h4>Donor</h4>
+<p><img src="figure/simulation_celltype_donor.Rmd/rankr-ebproj-solutions-1.donor-Goldplus.PointExp...GS-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="symnmf-on-the-uncentered-gram-matrix"
@@ -3303,7 +3798,7 @@ remove this warning. See the
 >knitr cache options</a> for more details.
 </p>
 </div>
-<div id="cell-type-23" class="section level4">
+<div id="cell-type-25" class="section level4">
 <h4>Cell type</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/symnmf-solutions-1.celltype-SymNMF-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -3344,7 +3839,7 @@ junmingguan
 </div>
 </div>
 </div>
-<div id="donor-23" class="section level4">
+<div id="donor-25" class="section level4">
 <h4>Donor</h4>
 <p><img src="figure/simulation_celltype_donor.Rmd/symnmf-solutions-1.donor-SymNMF-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
@@ -3414,20 +3909,23 @@ other attached packages:
 [1] ggplot2_3.5.2   workflowr_1.7.2
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4        compiler_4.3.1    
- [5] promises_1.5.0     tidyselect_1.2.1   Rcpp_1.1.0         stringr_1.5.1     
- [9] git2r_0.36.2       callr_3.7.6        later_1.4.8        jquerylib_0.1.4   
-[13] textshaping_1.0.1  systemfonts_1.2.3  scales_1.4.0       yaml_2.3.12       
-[17] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-[21] knitr_1.51         tibble_3.3.0       rprojroot_2.1.1    RColorBrewer_1.1-3
-[25] bslib_0.10.0       pillar_1.11.0      rlang_1.1.6        cachem_1.1.0      
-[29] stringi_1.8.7      httpuv_1.6.17      xfun_0.57          getPass_0.2-4     
-[33] fs_1.6.6           sass_0.4.10        otel_0.2.0         cli_3.6.5         
-[37] withr_3.0.2        magrittr_2.0.3     digest_0.6.37      grid_4.3.1        
-[41] processx_3.8.7     rstudioapi_0.18.0  lifecycle_1.0.4    vctrs_0.6.5       
-[45] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       whisker_0.4.1     
-[49] ragg_1.4.0         rmarkdown_2.31     httr_1.4.8         tools_4.3.1       
-[53] pkgconfig_2.0.3    htmltools_0.5.9   </code></pre>
+ [1] sass_0.4.10        generics_0.1.4     ashr_2.2-63        stringi_1.8.7     
+ [5] lattice_0.22-9     digest_0.6.37      magrittr_2.0.3     evaluate_1.0.5    
+ [9] grid_4.3.1         RColorBrewer_1.1-3 fastmap_1.2.0      rprojroot_2.1.1   
+[13] jsonlite_2.0.0     Matrix_1.6-4       processx_3.8.7     whisker_0.4.1     
+[17] mixsqp_0.3-54      promises_1.5.0     httr_1.4.8         scales_1.4.0      
+[21] truncnorm_1.0-9    textshaping_1.0.1  codetools_0.2-20   invgamma_1.2      
+[25] jquerylib_0.1.4    cli_3.6.5          rlang_1.1.6        deconvolveR_1.2-1 
+[29] splines_4.3.1      withr_3.0.2        cachem_1.1.0       yaml_2.3.12       
+[33] otel_0.2.0         ebnm_1.1-42        tools_4.3.1        SQUAREM_2021.1    
+[37] dplyr_1.1.4        httpuv_1.6.17      vctrs_0.6.5        R6_2.6.1          
+[41] lifecycle_1.0.4    git2r_0.36.2       stringr_1.5.1      fs_1.6.6          
+[45] trust_0.1-9        ragg_1.4.0         irlba_2.3.7        pkgconfig_2.0.3   
+[49] callr_3.7.6        pillar_1.11.0      bslib_0.10.0       later_1.4.8       
+[53] gtable_0.3.6       glue_1.8.0         Rcpp_1.1.0         systemfonts_1.2.3 
+[57] xfun_0.57          tibble_3.3.0       tidyselect_1.2.1   rstudioapi_0.18.0 
+[61] knitr_1.51         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
+[65] rmarkdown_2.31     compiler_4.3.1     getPass_0.2-4     </code></pre>
 </div>
 </div>
 </div>
