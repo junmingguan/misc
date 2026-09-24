@@ -92,7 +92,8 @@ I compare the following rank-1 methods:
 - ICA with integrated log-cosh, as Matthew suggested
 - FastICA with an intercept
 - First-order EB-proj with normalized Bernoulli, and centered Exponential.
-- Goldenplus EB-proj with normalized Bernoulli, and centered Exponential, bith use ICA-type hessian approximation.
+- Goldenplus EB-proj with normalized Bernoulli and normalized point-Exponential,
+  both using the ICA-type Hessian approximation.
 
 I look at 100 random starts and visualize their solutions.
 
@@ -114,6 +115,12 @@ $$
 
 Both have mean $0$ and variance $1$. Note that EB-proj with centered Exp is not really an EB method, as the prior is fixed.
 
+For point-Exponential, $Z_q=(BT-q)/\sqrt{q(2-q)}$, where
+$B\sim\mathrm{Bernoulli}(q)$ and $T\sim\mathrm{Exp}(1)$ are independent.
+I estimate $q$, the slab probability, starting at 0.5. Goldenplus uses prior
+$cZ_q$ and fixed noise variance $c=2/(1+\sqrt{5})$ for warm-up, then prior
+$Z_q$ and free precision, with at most 100 Newton updates per phase.
+
 <!-- Use 100 shared random starts, 50 Log-Phi/FastICA updates, and at most 100
 updates per EB stage. FastICA uses an intercept; Log-Phi and EB-proj use
 centered projections. Bernoulli estimates $\pi$ in
@@ -130,6 +137,7 @@ library(ggplot2)
 code_files <- file.path("code", c("projection_methods_temp.R",
                                  "ebnm_normalized_bernoulli.R",
                                  "ebnm_centered_exponential.R",
+                                 "ebnm_normalized_point_exponential.R",
                                  "ebproj_functions.R",
                                  "ebproj_newton_functions.R"))
 for (file in code_files) source(file)
@@ -211,6 +219,21 @@ for (j in seq_len(n_starts)) {
 eb_results <- list("Goldplus-Bern" = list(loadings = L, objective = objective, status = status))
 ```
 
+```{r point-exp-goldenplus, cache=TRUE, cache.extra=list(U, W_start, n_starts, maxiter, tools::md5sum(code_files))}
+L <- matrix(NA_real_, n, n_starts)
+objective <- q <- numeric(n_starts)
+status <- character(n_starts)
+for (j in seq_len(n_starts)) {
+  fit <- eb_proj_goldenplus_point_exponential(U, w_init = W_start[, j], maxiter = maxiter)
+  L[, j] <- fit$x
+  objective[j] <- fit$objective
+  q[j] <- fit$fitted_g$q
+  status[j] <- fit$status
+}
+point_exp_results <- list("Goldplus-PointExp" = list(
+  loadings = L, objective = objective, status = status, q = q))
+```
+
 ```{r first-order, cache=TRUE, cache.extra=list(U, W_start, n_starts, maxiter, tools::md5sum(code_files))}
 P <- tcrossprod(U)
 first_order_results <- list()
@@ -248,9 +271,9 @@ for (prior_name in names(priors)) {
 ```{r collect-results}
 method_order <- c("Log-Phi alpha = 1", "Log-Phi alpha = 2",
                   "ICA x^3", "ICA x|x|/2", "ICA integrated log-cosh",
-                  "Goldplus-Bern",
+                  "Goldplus-Bern", "Goldplus-PointExp",
                   "EBproj-1st-order-Bern", "EBproj-1st-order-Exp", "FastICA")
-results <- c(results, eb_results, first_order_results)[method_order]
+results <- c(results, eb_results, point_exp_results, first_order_results)[method_order]
 ```
 
 ## Grouped loading plots
@@ -474,10 +497,19 @@ for (method in names(rankr_results)) {
 
 ### rank-r EB-proj with GS
 
+- Fit 25 components from the shared ICA start, using Bernoulli, Exponential,
+  and normalized point-Exponential priors.
+- Run 50 gradient + 50 Newton warm-up steps with prior $cZ$ and noise variance
+  $c$, then 100 Newton steps with prior $Z$ and free precision.
+- Apply objective-ordered GS after each direction update, then refresh prior
+  parameters and precision. Point-Exponential estimates a separate $q$ for each
+  component; its final prior remains centered with unit variance.
+
 ```{r rankr-ebproj, cache=TRUE, cache.extra=list(U, W_rankr, tools::md5sum(code_files))}
 rankr_eb_results <- list()
-for (prior in c("bernoulli", "exponential")) {
-  method <- if (prior == "bernoulli") "Goldplus-Bern - GS" else "Goldplus-Exp - GS"
+for (prior in c("bernoulli", "exponential", "point_exponential")) {
+  method <- switch(prior, bernoulli = "Goldplus-Bern - GS",
+                   exponential = "Goldplus-Exp - GS", point_exponential = "Goldplus-PointExp - GS")
   rankr_eb_results[[method]] <- eb_proj_goldenplus_rankr_gs(
     U, W_rankr, prior = prior, n_warmup = 50, n_full = 100)
 }
