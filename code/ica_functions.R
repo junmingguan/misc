@@ -745,3 +745,274 @@ ebica_generalized_parallel <- function(X, K, ebnm_fn, max_iter = 1000, tol = 1e-
     obj = obj_history[1:iter]
   ))
 }
+
+## ----rank-one-ica-solvers----
+# Independent rank-1 ICA fits. X is whitened PCs x samples; each column of
+# starts is a separate unit-sphere direction. No intercept or deflation.
+rank1_ica_contrast <- function(y, contrast, alpha = 1) {
+  contrast <- match.arg(contrast, c("logcosh", "quartic", "cubic", "abs", "logphi"))
+  answer <- switch(contrast,
+    logcosh = list(G = abs(y) + log1p(exp(-2 * abs(y))) - log(2),
+                   g = tanh(y), gprime = 1 - tanh(y)^2),
+    quartic = list(G = y^4, g = 4 * y^3, gprime = 12 * y^2),
+    cubic = list(G = y^3 / 3, g = y^2, gprime = 2 * y),
+    abs = list(G = y * abs(y) / 2, g = abs(y), gprime = sign(y)),
+    logphi = {
+      u <- alpha * y
+      logcdf <- pnorm(u, log.p = TRUE)
+      h <- exp(dnorm(u, log = TRUE) - logcdf)
+      list(G = logcdf, g = alpha * h, gprime = -alpha^2 * h * (u + h))
+    })
+  lapply(answer, function(z) { dim(z) <- dim(y); z })
+}
+
+.rank1_prepare <- function(X, starts, maxiter, tol) {
+  starts <- as.matrix(starts)
+  stopifnot(is.matrix(X), is.numeric(X), all(is.finite(X)),
+    nrow(starts) == nrow(X), ncol(starts) > 0L,
+    all(is.finite(starts)), all(colSums(starts^2) > 0),
+    length(maxiter) == 1L, maxiter >= 1L, maxiter == as.integer(maxiter))
+  if (!missing(tol)) stopifnot(length(tol) == 1L, is.finite(tol), tol > 0)
+  sweep(starts, 2, sqrt(colSums(starts^2)), "/")
+}
+
+.rank1_gap <- function(a, b, symmetric = FALSE) {
+  gap <- sqrt(colSums((a - b)^2))
+  if (symmetric) gap <- pmin(gap, sqrt(colSums((a + b)^2)))
+  gap
+}
+
+.rank1_fastica_step <- function(X, W, contrast, alpha = 1) {
+  c <- rank1_ica_contrast(t(X) %*% W, contrast, alpha)
+  # Newton correction: E[X g(X'w)] - E[g'(X'w)] w.
+  raw <- X %*% c$g / ncol(X) - sweep(W, 2, colMeans(c$gprime), "*")
+  norms <- sqrt(colSums(raw^2))
+  good <- is.finite(norms) & norms > 1e-14
+  candidate <- W
+  candidate[, good] <- sweep(raw[, good, drop = FALSE], 2, norms[good], "/")
+  list(W = candidate, good = good)
+}
+
+# Run a fixed number of ordinary FastICA updates for each starting direction.
+rank1_fastica_updates <- function(X, starts, contrast, n_iter = 50L, alpha = 1) {
+  W <- .rank1_prepare(X, starts, n_iter)
+  for (i in seq_len(n_iter)) {
+    W <- .rank1_fastica_step(X, W, contrast, alpha)$W
+  }
+  W
+}
+
+fit_rank1_fastica <- function(X, starts, contrast, maxiter = 5000L,
+                              tol = 1e-7, progress = function(...) NULL, alpha = 1) {
+  W <- .rank1_prepare(X, starts, maxiter, tol)
+  symmetric <- contrast %in% c("logcosh", "quartic")
+  nr <- ncol(W)
+  active <- seq_len(nr)
+  lagged <- W
+  iterations <- integer(nr)
+  status <- rep("iteration_limit", nr)
+  trace <- vector("list", maxiter)
+  for (iter in seq_len(maxiter)) {
+    old <- W[, active, drop = FALSE]
+    step <- .rank1_fastica_step(X, old, contrast, alpha)
+    gap <- .rank1_gap(step$W, old, symmetric)
+    two_gap <- .rank1_gap(step$W, lagged[, active, drop = FALSE], symmetric)
+    lagged[, active] <- old
+    W[, active] <- step$W
+    iterations[active] <- iter
+    done <- step$good & gap < tol
+    cycle <- step$good & !done & iter > 1L & two_gap < tol
+    # A small backward gap can occur before an unstable fixed point/cycle.
+    # Confirm the residual from the returned candidate before stopping it.
+    check <- which(done | cycle)
+    if (length(check)) {
+      candidate <- step$W[, check, drop = FALSE]
+      forward1 <- .rank1_fastica_step(X, candidate, contrast, alpha)
+      forward2 <- .rank1_fastica_step(X, forward1$W, contrast, alpha)
+      valid <- forward1$good & forward2$good
+      one <- .rank1_gap(forward1$W, candidate, symmetric)
+      two <- .rank1_gap(forward2$W, candidate, symmetric)
+      step$good[check] <- valid
+      done[check] <- valid & one < tol
+      cycle[check] <- valid & !done[check] & two < tol
+    }
+    status[active[done]] <- "converged"
+    status[active[cycle]] <- "two_cycle"
+    status[active[!step$good]] <- "numerical_failure"
+    active <- active[step$good & !done & !cycle]
+    trace[[iter]] <- data.frame(iteration = iter, active = length(active),
+      max_step = max(gap), median_step = median(gap))
+    if (iter == 1L || iter %% 100L == 0L || !length(active))
+      progress(sprintf("FastICA %s: iteration %d, %d active", contrast, iter, length(active)))
+    if (!length(active)) break
+  }
+  next1 <- .rank1_fastica_step(X, W, contrast, alpha)
+  next2 <- .rank1_fastica_step(X, next1$W, contrast, alpha)
+  residual <- .rank1_gap(next1$W, W, symmetric)
+  two_residual <- .rank1_gap(next2$W, W, symmetric)
+  good <- next1$good & next2$good & status != "numerical_failure"
+  status[good] <- ifelse(iterations[good] >= maxiter,
+    "iteration_limit", "tolerance_not_met")
+  status[good & residual < tol] <- "converged"
+  status[good & residual >= tol & two_residual < tol] <- "two_cycle"
+  status[!good] <- "numerical_failure"
+  c <- rank1_ica_contrast(t(X) %*% W, contrast, alpha)
+  gradient <- X %*% c$g / ncol(X)
+  gradient <- gradient - sweep(W, 2, colSums(W * gradient), "*")
+  diagnostics <- data.frame(start = seq_len(nr), iterations = iterations,
+    status = status, objective = colMeans(c$G),
+    gradient_norm = sqrt(colSums(gradient^2)),
+    one_step_residual = residual, two_step_residual = two_residual)
+  list(W = W, diagnostics = diagnostics, trace = do.call(rbind, trace[seq_len(iter)]))
+}
+
+fit_rank1_pg <- function(X, starts, contrast, maxiter = 5000L,
+                         tol = 1e-7, progress = function(...) NULL, alpha = 1) {
+  W <- .rank1_prepare(X, starts, maxiter, tol)
+  nr <- ncol(W)
+  Xt <- t(X)
+  objective <- function(w) colMeans(rank1_ica_contrast(Xt %*% w, contrast, alpha)$G)
+  values <- initial <- objective(W)
+  eta <- rep(1, nr)
+  iterations <- backtracks <- integer(nr)
+  status <- rep("iteration_limit", nr)
+  active <- seq_len(nr)
+  trace <- vector("list", maxiter + 1L)
+  trace[[1]] <- data.frame(iteration = 0L, active = nr,
+    objective_mean = mean(values), min_objective_gain = 0, max_gradient = NA_real_)
+  for (iter in seq_len(maxiter)) {
+    old <- W[, active, drop = FALSE]
+    c <- rank1_ica_contrast(Xt %*% old, contrast, alpha)
+    gradient <- X %*% c$g / ncol(X)
+    tangent <- gradient - sweep(old, 2, colSums(old * gradient), "*")
+    norm2 <- colSums(tangent^2)
+    done <- is.finite(norm2) & norm2 < tol^2
+    bad <- !is.finite(norm2)
+    status[active[done]] <- "converged"
+    status[active[bad]] <- "numerical_failure"
+    pending <- which(!done & !bad)
+    gain <- numeric()
+    accepted_ids <- integer()
+    for (bt in seq_len(60L)) {
+      if (!length(pending)) break
+      ids <- active[pending]
+      candidate <- old[, pending, drop = FALSE] +
+        sweep(tangent[, pending, drop = FALSE], 2, eta[ids], "*")
+      candidate <- sweep(candidate, 2, sqrt(colSums(candidate^2)), "/")
+      proposed <- objective(candidate)
+      # Require monotone Armijo ascent after normalization to the sphere.
+      accept <- is.finite(proposed) & proposed >= values[ids] +
+        1e-4 * eta[ids] * norm2[pending]
+      moved <- .rank1_gap(candidate, old[, pending, drop = FALSE]) > 0
+      stalled <- accept & !moved
+      status[ids[stalled]] <- "line_search_stalled"
+      accept <- accept & moved
+      if (any(accept)) {
+        accepted <- ids[accept]
+        gain <- c(gain, proposed[accept] - values[accepted])
+        W[, accepted] <- candidate[, accept, drop = FALSE]
+        values[accepted] <- proposed[accept]
+        iterations[accepted] <- iterations[accepted] + 1L
+        eta[accepted] <- pmin(2 * eta[accepted], 1024)
+        accepted_ids <- c(accepted_ids, accepted)
+      }
+      reject <- !accept & !stalled
+      eta[ids[reject]] <- eta[ids[reject]] / 2
+      backtracks[ids[reject]] <- backtracks[ids[reject]] + 1L
+      pending <- pending[reject]
+    }
+    if (length(pending)) status[active[pending]] <- "line_search_stalled"
+    active <- sort(accepted_ids)
+    trace[[iter + 1L]] <- data.frame(iteration = iter, active = length(active),
+      objective_mean = mean(values), min_objective_gain = if (length(gain)) min(gain) else 0,
+      max_gradient = max(sqrt(norm2)))
+    if (iter == 1L || iter %% 100L == 0L || !length(active))
+      progress(sprintf("Projected gradient %s: iteration %d, %d active", contrast, iter, length(active)))
+    if (!length(active)) break
+  }
+  c <- rank1_ica_contrast(Xt %*% W, contrast, alpha)
+  gradient <- X %*% c$g / ncol(X)
+  gradient <- gradient - sweep(W, 2, colSums(W * gradient), "*")
+  gradient_norm <- sqrt(colSums(gradient^2))
+  status[is.finite(gradient_norm) & gradient_norm < tol] <- "converged"
+  diagnostics <- data.frame(start = seq_len(nr), iterations = iterations,
+    status = status, initial_objective = initial, objective = colMeans(c$G),
+    gradient_norm = gradient_norm, backtracks = backtracks)
+  list(W = W, diagnostics = diagnostics,
+    trace = do.call(rbind, trace[seq_len(iter + 1L)]))
+}
+
+# FastICA with mean curvature on the tangent space of the unit sphere.
+tangent_ica_step <- function(U, W, nonlin, obs_norm2 = colSums(U^2)) {
+  P <- crossprod(U, W)
+  out <- nonlin(P)
+  curvature <- (drop(crossprod(obs_norm2, out$gprime)) -
+    colSums(out$gprime * P^2)) / (nrow(U) - 1L)
+  V <- U %*% out$g - sweep(W, 2, curvature, "*")
+  V <- sweep(V, 2, ifelse(colSums(W * V) < 0, -1, 1), "*")
+  norms <- sqrt(colSums(V^2))
+  good <- is.finite(norms) & norms >= 1e-12
+  candidate <- W
+  candidate[, good] <- sweep(V[, good, drop = FALSE], 2, norms[good], "/")
+  list(W = candidate, good = good, finite = is.finite(norms))
+}
+
+fit_rank1_tangent <- function(X, starts, contrast, alpha = 1,
+                              maxiter = 5000L, tol = 1e-7) {
+  stopifnot(nrow(X) >= 2L)
+  W <- .rank1_prepare(X, starts, maxiter, tol)
+  nonlin <- function(P) rank1_ica_contrast(P, contrast, alpha)
+  obs_norm2 <- colSums(X^2)
+  step <- function(W) tangent_ica_step(X, W, nonlin, obs_norm2)
+  active <- seq_len(ncol(W))
+  lagged <- W
+  iterations <- integer(ncol(W))
+  trace <- vector("list", maxiter)
+  for (iter in seq_len(maxiter)) {
+    old <- W[, active, drop = FALSE]
+    next_step <- step(old)
+    gap <- .rank1_gap(next_step$W, old)
+    two_gap <- .rank1_gap(next_step$W, lagged[, active, drop = FALSE])
+    lagged[, active] <- old
+    W[, active] <- next_step$W
+    iterations[active] <- iter
+    stop_now <- !next_step$good
+    # Give shrinking alternating steps time to reach the one-step tolerance.
+    check <- which(next_step$good & (gap < tol |
+      (iter > 1L & gap > 1e-5 & two_gap < tol)))
+    if (length(check)) {
+      candidate <- next_step$W[, check, drop = FALSE]
+      forward <- step(candidate)
+      next_forward <- step(forward$W)
+      one <- .rank1_gap(forward$W, candidate)
+      two <- .rank1_gap(next_forward$W, candidate)
+      stop_now[check] <- !forward$good | one < tol |
+        (next_forward$good & one > 1e-5 & two < tol)
+    }
+    active <- active[!stop_now]
+    trace[[iter]] <- data.frame(iteration = iter, active = length(active),
+      max_step = max(gap), median_step = median(gap))
+    if (!length(active)) break
+  }
+  forward <- step(W)
+  next_forward <- step(forward$W)
+  residual <- .rank1_gap(forward$W, W)
+  two_residual <- .rank1_gap(next_forward$W, W)
+  status <- ifelse(iterations == maxiter, "iteration_limit", "tolerance_not_met")
+  status[forward$good & residual < tol] <- "converged"
+  status[forward$good & next_forward$good & residual >= tol &
+    two_residual < tol] <- "two_cycle"
+  # A safeguarded return of the old direction does not certify convergence.
+  status[!forward$good] <- ifelse(forward$finite[!forward$good],
+    "zero_update", "numerical_failure")
+  L <- crossprod(X, W)
+  out <- nonlin(L)
+  gradient <- X %*% out$g / ncol(X)
+  tangent_gradient <- gradient - sweep(W, 2, colSums(W * gradient), "*")
+  diagnostics <- data.frame(start = seq_len(ncol(W)), iterations = iterations,
+    status = status, objective = colMeans(out$G),
+    gradient_norm = sqrt(colSums(tangent_gradient^2)),
+    one_step_residual = residual, two_step_residual = two_residual)
+  list(W = W, L = L, diagnostics = diagnostics,
+    trace = do.call(rbind, trace[seq_len(iter)]))
+}

@@ -1,0 +1,302 @@
+---
+title: "Rank-1 ICA on the human pancreas CEL-seq2 data"
+output:
+  html_document:
+    toc: true
+    code_folding: hidden
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+knitr::opts_chunk$set(fig.width = 13, fig.height = 8, out.width = "100%")
+```
+
+## Pancreas data
+
+We fit rank-1 ICA to the top 25 and 30 whitened PCs of the same CEL-seq2 cells. We look at two ways to initialize the rank-1 fit:
+
+- Random unit directions;
+- Init from each row of the sample whitened data: $w_i^{(0)}=U_{i,1:k}/\|U_{i,1:k}\|_2$ for $i=1,\dots, n$.
+
+```{r pancreas-data}
+root <- if (file.exists("data/pancreas.RData")) "." else ".."
+pancreas <- readRDS(file.path(root, "pancreas_CEL_seq2", "pancreas_CEL_seq2.rds"))
+sample_info <- pancreas$metadata
+library(Matrix)
+raw <- new.env()
+load(file.path(root, "data", "pancreas.RData"), envir = raw)
+counts <- raw$counts[raw$sample_info$tech == "celseq2", , drop = FALSE]
+stopifnot(identical(rownames(counts), sample_info$cell_id),
+          identical(rownames(pancreas$pcs), sample_info$cell_id))
+counts <- counts[, colSums(counts > 0) >= 10, drop = FALSE]
+size <- rowSums(counts)
+Y <- log1p(Diagonal(x = mean(size) / size) %*% counts)
+set.seed(1)
+sv <- irlba::irlba(Y, nv = 30, center = colMeans(Y), tol = 1e-9)
+X <- sqrt(nrow(Y)) * sv$u
+# Orient the first 25 PCs as in the saved analysis.
+alignment <- diag(crossprod(pancreas$pcs, X[, 1:25])) / nrow(X)
+stopifnot(all(abs(alignment) > 1 - 1e-8))
+X[, 1:25] <- sweep(X[, 1:25], 2, sign(alignment), "*")
+stopifnot(max(abs(colMeans(X))) < 1e-8,
+          max(abs(crossprod(X) / nrow(X) - diag(30))) < 1e-8)
+rm(raw, counts, Y, sv)
+table(sample_info$celltype)
+```
+
+## Rank-1 ICA functions
+
+```{r fastica-update}
+source(file.path(root, "code", "ica_functions.R"), local = TRUE)
+```
+
+## Clustering and plotting functions
+
+
+```{r plotting-functions}
+
+source(file.path(root, "code", "ica_loading_plots.R"), local = TRUE)
+
+
+prune_and_count_cluster <- function(L, tau = 0.9) {
+  # Drop constant columns before computing correlation (zero variance -> NaN in cor())
+  L <- L[, apply(L, 2, sd) > 1e-10, drop = FALSE]
+  # 1. Convert correlation to distance (1 - absolute correlation)
+  dist_mat <- as.dist(1 - abs(cor(L)))
+
+  # 2. Hierarchical clustering
+  # 'complete' linkage ensures no two rows in a cluster are further apart than the threshold
+  hc <- hclust(dist_mat, method = "complete")
+
+  # 3. Cut the dendrogram to form clusters (distance of 1 - tau corresponds to correlation of tau)
+  clusters <- cutree(hc, h = 1 - tau)
+
+  # 4. Select a representative from each cluster
+  # match() quickly grabs the first index of each unique cluster ID
+  kept_indices <- match(unique(clusters), clusters)
+
+  # 5. Map the sizes to the exact order of kept_indices
+  # Extract the cluster ID for each kept row, then use it to index the table
+  cluster_sizes_table = table(clusters)
+  kept_cluster_ids <- clusters[kept_indices]
+  cluster_sizes <- as.integer(cluster_sizes_table[as.character(kept_cluster_ids)])
+
+  list(
+    pruned_matrix = L[,kept_indices , drop = FALSE],
+    cluster_sizes = cluster_sizes,
+    kept_indices = kept_indices,
+    cluster_assignments = clusters
+  )
+}
+
+celltype_palette <- c(
+  "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",
+  "#A65628", "#F781BF", "#1B9E77", "#D95F02", "#7570B3",
+  "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666"
+)
+
+obj_logcosh <- function(L) colMeans(log(cosh(L)))
+
+lhat_ggplot <- function(Lhat.pc, idx, title, si = sample_info,
+                         obj_fn = obj_logcosh, max_panels = 25,
+                         color_by = c("celltype", "donor")) {
+  if (sum(idx) == 0) return(invisible(NULL))
+  color_by <- match.arg(color_by)
+  palette <- if (color_by == "celltype") celltype_palette else
+    c(D28 = "#0072B2", D29 = "#D55E00", D30 = "#009E73", D31 = "#CC79A7")
+  legend_title <- if (color_by == "celltype") "Cell type" else "Donor"
+  Lhat.prune <- Lhat.pc$pruned_matrix
+  Lhat_sub   <- Lhat.prune[, idx, drop = FALSE]
+  obj_sub    <- obj_fn(Lhat_sub)
+  labels <- paste0("n:", Lhat.pc$cluster_sizes[idx], " obj:", round(obj_sub, 3))
+  plots <- ica_loading_panels(Lhat_sub, labels, si[[color_by]], order(si$celltype),
+    palette, legend_title, title, panel_order = order(obj_sub), max_panels = max_panels,
+    point_size = 1, legend_point_size = 4.5)
+  for (p in plots) print(p)
+  invisible(plots)
+}
+
+plot_Lhat_maxima <- function(Lhat.pc, obj_threshold = 0.42, si = sample_info,
+                              obj_fn = obj_logcosh, max_panels = 25, color_by = "celltype") {
+  obj <- obj_fn(Lhat.pc$pruned_matrix)
+  lhat_ggplot(Lhat.pc, obj > obj_threshold, paste0("Maxima (obj > ", obj_threshold, ")"), si, obj_fn, max_panels, color_by)
+}
+
+plot_Lhat_minima <- function(Lhat.pc, obj_threshold = 0.42, si = sample_info,
+                              obj_fn = obj_logcosh, max_panels = 25, color_by = "celltype") {
+  obj <- obj_fn(Lhat.pc$pruned_matrix)
+  lhat_ggplot(Lhat.pc, obj <= obj_threshold, paste0("Minima (obj <= ", obj_threshold, ")"), si, obj_fn, max_panels, color_by)
+}
+
+# General version for unlabeled/unordered loading matrices
+plot_loadings_matrix <- function(Lhat, label_prefix = "ct:", si = sample_info,
+                                  obj_fn = obj_logcosh, max_panels = 25, labels = NULL) {
+  obj <- obj_fn(Lhat)
+  cell_order <- order(si$celltype)
+  n_cells <- nrow(Lhat)
+  n_comp <- ncol(Lhat)
+
+  if (is.null(labels)) {
+    o    <- order(obj)
+    Lhat <- Lhat[, o, drop = FALSE]
+    obj  <- obj[o]
+    comp_labels <- make.unique(paste0(label_prefix, seq_len(n_comp), " obj:", round(obj, 3)))
+  } else {
+    comp_labels <- make.unique(paste0(labels, " obj:", round(obj, 3)))
+  }
+  df <- data.frame(
+    rank      = rep(seq_len(n_cells), n_comp),
+    celltype  = rep(si$celltype[cell_order], n_comp),
+    loading   = as.vector(Lhat[cell_order, ]),
+    component = factor(rep(comp_labels, each = n_cells), levels = comp_labels)
+  )
+
+  pages   <- split(comp_labels, ceiling(seq_along(comp_labels) / max_panels))
+  n_pages <- length(pages)
+  plots <- lapply(seq_along(pages), function(i) {
+    pg_labels <- pages[[i]]
+    df_pg <- df[df$component %in% pg_labels, ]
+    df_pg$component <- factor(as.character(df_pg$component), levels = pg_labels)
+    pg_title <- if (n_pages > 1) paste0(i, "/", n_pages) else NULL
+    ggplot(df_pg, aes(x = rank, y = loading, color = celltype)) +
+      geom_point(size = 1, alpha = 0.7) +
+      geom_hline(yintercept = 0, linetype = "dashed", linewidth = 0.3) +
+      facet_wrap(~ component, ncol = 5, scales = "free_y") +
+      scale_color_manual(values = celltype_palette) +
+      labs(x = NULL, y = "Loading", color = "Cell type", title = pg_title) +
+      theme_bw(base_size = 10) +
+      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            strip.text = element_text(size = 7, margin = margin(2, 0, 2, 0)),
+            strip.background = element_rect(fill = "grey90", color = NA),
+            legend.position = "bottom") +
+      guides(color = guide_legend(override.aes = list(size = 4.5, alpha = 1)))
+  })
+  for (p in plots) print(p)
+  invisible(plots)
+}
+```
+
+## FastICA
+
+
+```{r fastica-fits}
+pc_counts <- c(25L, 30L)
+set.seed(1)
+n_starts <- 1000L
+draws <- rbind(matrix(rnorm(25L * n_starts), nrow = 25L),
+               matrix(rnorm(5L * n_starts), nrow = 5L))
+starts <- list()
+run_labels <- character()
+clusters <- list()
+titles <- c(logcosh = "Log-cosh", cubic = "Cubic",
+            signed_quadratic = "Signed quadratic", logphi = "Log-Phi (alpha = 1)",
+            logphi3 = "Log-Phi (alpha = 3)")
+objectives <- list(
+  logcosh = obj_logcosh,
+  cubic = function(L) colMeans(L^3),
+  signed_quadratic = function(L) colMeans(L * abs(L) / 2),
+  logphi = function(L) colMeans(pnorm(L, log.p = TRUE)),
+  logphi3 = function(L) colMeans(pnorm(3 * L, log.p = TRUE))
+)
+solver_contrasts <- c(logcosh = "logcosh", cubic = "cubic",
+                  signed_quadratic = "abs", logphi = "logphi", logphi3 = "logphi")
+for (k in pc_counts) {
+  key <- as.character(k)
+  Z <- t(X[, seq_len(k)])
+  W0 <- draws[seq_len(k), ]
+  starts[[key]] <- sweep(W0, 2, sqrt(colSums(W0^2)), "/")
+  run_labels[key] <- paste0(k, " PCs (random starts)")
+
+  row_key <- paste0(k, "-rows")
+  row_norms <- sqrt(colSums(Z^2))
+  stopifnot(all(is.finite(row_norms) & row_norms > 0))
+  starts[[row_key]] <- sweep(Z, 2, row_norms, "/")
+  colnames(starts[[row_key]]) <- sample_info$cell_id
+  run_labels[row_key] <- paste0(k, " PCs (row starts)")
+}
+for (key in names(starts)) {
+  Z <- t(X[, seq_len(nrow(starts[[key]]))])
+  for (contrast in names(titles)) {
+    W <- rank1_fastica_updates(Z, starts[[key]], solver_contrasts[[contrast]],
+                              n_iter = 50L, alpha = if (contrast == "logphi3") 3 else 1)
+    clusters[[key]][[contrast]] <- prune_and_count_cluster(crossprod(Z, W))
+  }
+}
+```
+
+```{r fastica-plots, results='asis', echo=FALSE}
+plot_solver_clusters <- function(results, prefix, split_logcosh = FALSE) {
+  views <- c(celltype = "Cell type", donor = "Donor")
+  for (key in names(results)) {
+    rank_id <- paste(prefix, key, sep = "-")
+    cat("\n\n### ", run_labels[[key]], " {#", rank_id, " .tabset}\n\n", sep = "")
+    for (contrast in names(titles)) {
+      id <- paste(rank_id, contrast, sep = "-")
+      cat("\n\n#### ", titles[[contrast]], " {#", id, " .tabset}\n\n", sep = "")
+      fit <- results[[key]][[contrast]]
+      if (!ncol(fit$pruned_matrix)) {
+        cat("No starts met the convergence criterion.\n\n")
+        next
+      }
+      for (color_by in names(views)) {
+        cat("\n\n##### ", views[[color_by]], " {#", id, "-", color_by, "}\n\n", sep = "")
+        if (split_logcosh && contrast == "logcosh") {
+          plot_Lhat_maxima(fit, color_by = color_by)
+          plot_Lhat_minima(fit, color_by = color_by)
+        } else {
+          lhat_ggplot(fit, rep(TRUE, ncol(fit$pruned_matrix)), titles[[contrast]],
+                      obj_fn = objectives[[contrast]], color_by = color_by)
+        }
+        cat("\n\n")
+      }
+    }
+  }
+}
+plot_solver_clusters(clusters, "fastica", split_logcosh = TRUE)
+```
+
+## Projected gradient ascent
+
+Here we use the projected gradient ascent update:
+
+$$
+\boldsymbol{w}_{\mathrm{new}}
+=
+\frac{
+\boldsymbol{w}+\eta(\boldsymbol{I}-\boldsymbol{ww}^\top)\nabla G(\boldsymbol{w})
+}{
+\|\boldsymbol{w}+\eta(\boldsymbol{I}-\boldsymbol{ww}^\top)\nabla G(w)\|_2
+}.
+$$
+
+
+```{r projected-gradient}
+fit_and_cluster <- function(solver) {
+  fits <- clusters <- list()
+  for (key in names(starts)) {
+    Z <- t(X[, seq_len(nrow(starts[[key]]))])
+    for (contrast in names(solver_contrasts)) {
+      fit <- solver(Z, starts[[key]], solver_contrasts[[contrast]], tol = 1e-6,
+                    alpha = if (contrast == "logphi3") 3 else 1)
+      # Cell loadings can be recovered from Z and W for any start.
+      fits[[key]][[contrast]] <- fit[c("W", "diagnostics", "trace")]
+      converged <- fit$diagnostics$status == "converged"
+      loadings <- crossprod(Z, fit$W[, converged, drop = FALSE])
+      clusters[[key]][[contrast]] <- if (ncol(loadings) >= 2L) {
+        prune_and_count_cluster(loadings)
+      } else {
+        list(pruned_matrix = loadings, cluster_sizes = rep(1L, ncol(loadings)))
+      }
+    }
+  }
+  list(fits = fits, clusters = clusters)
+}
+pg_results <- fit_and_cluster(fit_rank1_pg)
+pg_fits <- pg_results$fits
+pg_clusters <- pg_results$clusters
+```
+
+
+```{r projected-gradient-plots, results='asis', echo=FALSE}
+plot_solver_clusters(pg_clusters, "pg")
+```
